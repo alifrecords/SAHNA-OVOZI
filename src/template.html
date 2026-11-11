@@ -245,6 +245,32 @@ html.native .show-info{cursor:pointer}
 .fader{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
 .fader span{display:flex;justify-content:space-between}
 .fader input{accent-color:var(--amber)}
+header .btn{height:34px;padding:0 10px;font-size:12px;border-radius:7px}
+header .btn.panic{height:38px}
+header .btn.proj{max-width:150px}
+header .show-info{padding-left:12px}
+header .show-info #showName{font-size:13px!important;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+header .bname>span:first-child{font-size:17px}
+header .bsub{font-size:9px;letter-spacing:.18em}
+header .clock{padding:4px 10px}
+header .clock .st{display:none}
+header .clock.live .dot{animation:pulse2 1.6s ease-in-out infinite}@keyframes pulse2{50%{opacity:.35}}
+header .clock .mono{font-size:18px!important}
+header{gap:8px 8px!important}
+header .brand svg{width:24px;height:24px}
+.zoomc{display:flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden;height:34px}
+.zoomc button{background:var(--bg);border:none;border-right:1px solid var(--line2);font-size:13px;font-weight:700;min-width:30px;padding:0 8px;color:var(--text)}
+.zoomc button:last-child{border-right:none}
+.zoomc #zoomV{font-size:11px;min-width:48px;color:var(--muted)}
+.zoomc button:hover{background:#1C1F25}
+.zgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cue[draggable="true"]{cursor:grab}
+.cue.dragging{opacity:.4}
+.cue.drop-b{box-shadow:0 -3px 0 var(--amber)}
+.cue.drop-a{box-shadow:0 3px 0 var(--amber)}
+.cue{position:relative}
+.cue .cg{position:absolute;right:10px;bottom:6px;font-size:10px;font-weight:700;color:#1A1206;background:var(--amber);border-radius:10px;padding:1px 6px}
+
 @media (max-width:640px){.faders{grid-template-columns:1fr}}
 @media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
 </style>
@@ -258,15 +284,15 @@ html.native .show-info{cursor:pointer}
     </div>
     <button class="btn" type="button" id="homeBtn" aria-label="Bosh sahifa"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></button>
     <button type="button" class="show-info" id="showBtn" aria-label="Spektakl ma'lumotlari"><span class="lbl">Spektakl</span><span style="font-size:14px;font-weight:600;color:var(--text)" id="showName">—</span></button>
-    <div style="flex:1 1 20px"></div>
+    <div style="flex:1 1 0"></div>
+    <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <button class="btn" id="dbBtn" type="button" aria-label="Ma'lumotlar bazasi va jurnal">Baza</button>
     <button class="btn proj" id="projBtn" type="button" aria-label="Loyiha: saqlash va ochish"><span class="pname">Loyiha</span></button>
-    <button class="btn" id="installBtn" type="button">O'rnatish</button>
     <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Tahrirlash</button>
     <button class="btn" type="button" id="audioBadge" aria-label="Ovoz holati va tekshiruv">OVOZ: —</button>
     <div class="clock" id="clockBox"><span class="dot"></span><span class="st" style="font-size:12px;font-weight:700;letter-spacing:.1em" id="liveTxt">TAYYOR</span><span class="mono" style="font-size:22px;font-weight:700;margin-left:6px" id="clock">00:00:00</span></div>
-    <button class="btn" id="libBtn" type="button">Ovozlar kutubxonasi</button>
-    <button class="btn panic" id="panicBtn" type="button">HAMMASINI TO'XTATISH · Esc</button>
+    <button class="btn" id="libBtn" type="button" title="Ovozlar kutubxonasi (Ctrl+L)" aria-label="Ovozlar kutubxonasi"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a1 1 0 0 1 1-1h3v16H5a1 1 0 0 1-1-1zM8 4h4v16H8zM14 5l3.5-1 3.5 15-3.5 1z"></path></svg></button>
+    <button class="btn panic" id="panicBtn" type="button" title="Hammasini to'xtatish">■ TO'XTATISH · Esc</button>
   </header>
 
   <div id="editBar" class="warn">
@@ -387,7 +413,7 @@ html.native .show-info{cursor:pointer}
     <h1>Jonli sahna ovoz pulti</h1>
     <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
     <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
-    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · [ ] — bank almashtirish · ↑ ↓ — keyingi cue</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Ctrl + g'ildirak — masshtab</p>
     <button id="start" type="button">Ovozni yoqish va boshlash</button>
     <span class="muted" style="font-size:12px" id="gateMsg"></span>
   </div>
@@ -721,7 +747,7 @@ async function trimBake(){
 function play(id,bus,o){
  o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
  const src=ctx.createBufferSource();src.buffer=buf;const g=ctx.createGain();
- const lvl=dbToG(gainFor(id))*(o.level==null?1:o.level),now=ctx.currentTime,fi=o.fadeIn||0;
+ const lvl0=dbToG(gainFor(id))*(o.level==null?1:o.level),lvl=lvl0*(o.cue?dbToG(o.cue.g||0):1),now=ctx.currentTime,fi=o.fadeIn||0;
  if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
  src.connect(g);g.connect(buses[bus].input);
  const m=META[id]||{};let off=0;const base=(!overrides[id]&&m.loop)?m.loopStart:0;
@@ -735,7 +761,7 @@ function play(id,bus,o){
   if(o.loop){src.loop=true;if(!overrides[id]&&m.loop){src.loopStart=m.loopStart;src.loopEnd=m.loopEnd;off=m.loopStart;}}
   src.start(now,off);dur=buf.duration-off;
  }
- const v={vid:++vid,ref:id,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
+ const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
  voices.push(v);
  src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
  renderVoices();renderPadStates();return v;
@@ -746,14 +772,14 @@ function stopVoice(v,t){if(!v||v.stopping)return;t=Math.max(t||0,.02);const now=
 function preview(id){const v=voices.find(x=>x.ref===id&&x.preview);if(v){stopVoice(v,.1);return;}if(!buffers[id]){toast('Bu ovozda fayl yo\'q');return;}play(id,'sfx',{title:'▶ '+titleOf(id),preview:true});}
 
 const layerGain=v=>2*Math.pow(v/100,2);
-function startScene(key,t){
+function startScene(key,t,cue){
  const def=show.scenes[key];if(!def){toast('Atmosfera topilmadi');return;}
  if(scene)scene.layers.forEach(l=>stopVoice(l.voice,t));
- scene={key,layers:def.layers.map(l=>({a:l.a,v:l.v,t:l.t,voice:null}))};
- scene.layers.forEach(l=>{l.voice=play(l.a,'atmos',{loop:true,fadeIn:t,level:layerGain(l.v),title:layerTitle(l)});});
+ scene={key,cue:cue||null,layers:def.layers.map(l=>({a:l.a,v:l.v,t:l.t,voice:null}))};
+ scene.layers.forEach(l=>{l.voice=play(l.a,'atmos',{loop:true,fadeIn:t,level:layerGain(l.v),title:layerTitle(l),cue:scene.cue});});
  renderScene();
 }
-function setLayerVol(i,vol){if(!scene)return;const l=scene.layers[i];l.v=vol;const v=l.voice;if(v&&!v.stopping){const tg=dbToG(gainFor(l.a))*layerGain(vol);v.g.gain.cancelScheduledValues(ctx.currentTime);v.g.gain.setTargetAtTime(tg,ctx.currentTime,.04);}
+function setLayerVol(i,vol){if(!scene)return;const l=scene.layers[i];l.v=vol;const v=l.voice;if(v&&!v.stopping){v.lvl0=dbToG(gainFor(l.a))*layerGain(vol);const tg=v.lvl0*(scene.cue?dbToG(scene.cue.g||0):1);v.g.gain.cancelScheduledValues(ctx.currentTime);v.g.gain.setTargetAtTime(tg,ctx.currentTime,.04);}
  const out=document.getElementById('lv'+i);if(out)out.textContent=vol+'%';}
 function sceneOff(t){if(scene){scene.layers.forEach(l=>stopVoice(l.voice,t));scene=null;renderScene();}}
 function busOff(bus,t){voices.filter(v=>v.bus===bus).forEach(v=>stopVoice(v,t));}
@@ -761,13 +787,44 @@ function busOff(bus,t){voices.filter(v=>v.bus===bus).forEach(v=>stopVoice(v,t));
 function fireCue(i){
  const c=show.cues[i];if(!c)return;
  if(showStart==null){showStart=performance.now();$('#clockBox').classList.add('live');$('#liveTxt').textContent='JONLI';}
- if(c.type==='atmos')startScene(c.ref,fadeT);
+ if(c.type==='atmos')startScene(c.ref,fadeT,c);
  else if(!buffers[c.ref])toast('“'+c.name+'” uchun ovoz fayli yo\'q — Tahrirlash rejimida ✎ orqali biriktiring.');
- else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim});}
- else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim});
- else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim});
+ else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c});}
+ else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c});
+ else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c});
  cur=i;next=Math.min(i+1,show.cues.length);renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
 }
+const dbStr=d=>(d>0?'+':d<0?'−':'')+Math.abs(d).toFixed(Number.isInteger(d)?0:1)+' dB';
+function applyCueGain(c){if(!ctx)return;const k=dbToG(c.g||0),n=ctx.currentTime;voices.forEach(v=>{if(v.cue===c&&!v.stopping){v.g.gain.cancelScheduledValues(n);v.g.gain.setTargetAtTime(v.lvl0*k,n,.03);}});}
+function cueGainStep(d){
+ const i=Math.min(next,show.cues.length-1),c=show.cues[i];if(!c){toast('Cue tanlanmagan');return;}
+ c.g=Math.max(-30,Math.min(12,(c.g||0)+d));if(!c.g)delete c.g;applyCueGain(c);saveShow();renderCues();
+ toast('Q'+(i+1)+' · '+c.name+': '+dbStr(c.g||0)+(voices.some(v=>v.cue===c&&!v.stopping)?' (jonli)':''));
+}
+function masterStep(d){
+ const b=buses.master;b.val=Math.max(0,Math.min(100,b.val+d*2));applyFader('master');
+ const f=document.querySelector('.vfader[data-bus="master"]');if(f)f.value=b.val;const l=$('#db_master');if(l)l.textContent=faderDb(b.val);
+ storeMix('master');toast('Master: '+faderDb(b.val)+' dB');
+}
+function moveCueTo(from,to){
+ const a=show.cues;if(from<0||from>=a.length)return;if(to>from)to--;if(to===from)return;
+ const co=a[cur],no=a[next];const [x]=a.splice(from,1);a.splice(Math.max(0,Math.min(to,a.length)),0,x);
+ cur=co?a.indexOf(co):-1;next=no?a.indexOf(no):a.length;saveShow();renderCues();renderNow();logEvent('Cue ko\'chirildi: “'+x.name+'” → Q'+(a.indexOf(x)+1));
+}
+let dragCue=null;
+function dragEnd(){dragCue=null;document.querySelectorAll('.drop-b,.drop-a,.dragging').forEach(x=>x.classList.remove('drop-b','drop-a','dragging'));}
+document.addEventListener('dragstart',e=>{const r=e.target.closest&&e.target.closest('[data-dcue]');if(!r)return;dragCue=+r.dataset.dcue;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','cue');}catch(_){}r.classList.add('dragging');});
+document.addEventListener('dragover',e=>{if(dragCue==null)return;const r=e.target.closest&&e.target.closest('[data-dcue]');document.querySelectorAll('.drop-b,.drop-a').forEach(x=>x.classList.remove('drop-b','drop-a'));if(!r)return;e.preventDefault();e.dataTransfer.dropEffect='move';const bb=r.getBoundingClientRect();r.classList.add(e.clientY<bb.top+bb.height/2?'drop-b':'drop-a');});
+document.addEventListener('drop',e=>{if(dragCue==null)return;e.preventDefault();const r=e.target.closest&&e.target.closest('[data-dcue]');if(r){let to=+r.dataset.dcue;if(r.classList.contains('drop-a'))to++;moveCueTo(dragCue,to);}dragEnd();});
+document.addEventListener('dragend',dragEnd);
+/* --- butun oyna masshtabi (zoom) --- */
+const ZOOMS=[.5,.67,.75,.8,.9,1,1.1,1.25,1.5,1.75,2];let uiZoom=1;
+function setZoom(z,quiet){uiZoom=Math.max(.5,Math.min(2,Math.round(z*100)/100));document.body.style.zoom=uiZoom;const v=$('#zoomV');if(v)v.textContent=Math.round(uiZoom*100)+'%';try{localStorage.setItem('sahnaOvozi.zoom',uiZoom);}catch(e){}if(!quiet)toast('Masshtab: '+Math.round(uiZoom*100)+'%');}
+function zoomStep(d){if(!d){setZoom(1);return;}if(d>0){const z=ZOOMS.find(z=>z>uiZoom+0.001);setZoom(z||2);}else{const z=[...ZOOMS].reverse().find(z=>z<uiZoom-0.001);setZoom(z||.5);}}
+function zoomFit(){setZoom(Math.min(window.innerWidth*uiZoom/1480,window.innerHeight*uiZoom/960));}
+function zoomMenu(){openModal('Masshtab','<div class="zgrid">'+ZOOMS.map(z=>'<button type="button" class="btn'+(Math.abs(z-uiZoom)<.005?' on':'')+'" data-zset="'+z+'">'+Math.round(z*100)+'%</button>').join('')+'</div><div class="frow"><button type="button" class="btn primary" id="zFit">Ekranga moslash</button></div><p class="hint">Ctrl + g\'ildirak — ravon masshtab · Ctrl + = / Ctrl + − / Ctrl + 0 — kattalashtirish / kichraytirish / 100%</p>',[{label:'Yopish',fn:()=>{}}],{click:(e,b)=>{if(b.dataset.zset){setZoom(+b.dataset.zset);closeModal();}else if(b.id==='zFit'){zoomFit();closeModal();}}});}
+try{const z=+localStorage.getItem('sahnaOvozi.zoom');if(z)setZoom(z,true);}catch(e){}
+
 function go(){if(next>=show.cues.length){toast('Cue ro\'yxati tugadi. Boshidan boshlash uchun Q1 ni tanlang.');return;}fireCue(next);}
 function panic(){if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
 
@@ -839,13 +896,14 @@ function editCue(i){
  const body='<div class="field"><label for="cName">Cue nomi</label><input class="inp" type="text" id="cName" value="'+esc(c.name)+'"></div>'+
   '<div class="field"><label for="cType">Turi</label><select class="inp" id="cType">'+Object.keys(TYPE).map(k=>'<option value="'+k+'"'+(k===c.type?' selected':'')+'>'+TYPE[k].n+'</option>').join('')+'</select></div>'+
   '<div id="cSrcBox">'+srcHtml(c.type)+'</div>'+
+  '<div class="field wfield"><label for="cGain">Cue darajasi: <span id="cGainV">'+dbStr(c.g||0)+'</span> <span class="muted" style="font-weight:500">(spektaklda: strelka bilan tanlab Num + / Num −)</span></label><input type="range" id="cGain" min="-30" max="12" step="1" value="'+(c.g||0)+'" style="accent-color:var(--amber)"></div>'+
   '<div class="field"><label for="cNote">Operator uchun izoh (signal)</label><input class="inp" type="text" id="cNote" placeholder="masalan: aktyor eshikka qo\'l tekkizganda" value="'+esc(c.note)+'"></div>';
- const save=()=>{c.name=val('cName').trim()||'Nomsiz cue';c.type=val('cType');c.ref=val('cSrc');c.note=val('cNote').trim();if(c.type==='atmos'||!c.trim)delete c.trim;
+ const save=()=>{c.name=val('cName').trim()||'Nomsiz cue';c.type=val('cType');c.ref=val('cSrc');c.note=val('cNote').trim();c.g=+val('cGain')||0;if(!c.g)delete c.g;if(c.type==='atmos'||!c.trim)delete c.trim;
   if(isNew){show.cues.push(c);if(next>=show.cues.length-1)next=show.cues.length-1;}else show.cues[i]=c;
   saveShow();renderCues();renderNow();toast('Cue saqlandi');logEvent('Tahrir: cue “'+c.name+'” saqlandi');};
  const btns=[{label:'Saqlash',cls:'primary',fn:save},{label:'Bekor',fn:()=>{}}];
  if(!isNew)btns.unshift({label:'O\'chirish',cls:'danger',fn:()=>{show.cues.splice(i,1);if(i<cur)cur--;else if(i===cur)cur=-1;next=Math.min(next>i?next-1:next,show.cues.length);saveShow();renderCues();toast('Cue o\'chirildi');}});
- openModal(isNew?'Yangi cue':'Cue Q'+(i+1)+' ni tahrirlash',body,btns,{change:e=>{if(e.target.id==='cType'){c.type=e.target.value;c.ref=e.target.value==='atmos'?Object.keys(show.scenes)[0]||'':'';$('#cSrcBox').innerHTML=srcHtml(c.type);delete c.trim;mountTrim('cTrim',c.type==='atmos'?null:c.ref,null,t=>{c.trim=t||undefined;});}
+ openModal(isNew?'Yangi cue':'Cue Q'+(i+1)+' ni tahrirlash',body,btns,{input:e=>{if(e.target.id==='cGain')$('#cGainV').textContent=dbStr(+e.target.value);},change:e=>{if(e.target.id==='cType'){c.type=e.target.value;c.ref=e.target.value==='atmos'?Object.keys(show.scenes)[0]||'':'';$('#cSrcBox').innerHTML=srcHtml(c.type);delete c.trim;mountTrim('cTrim',c.type==='atmos'?null:c.ref,null,t=>{c.trim=t||undefined;});}
   else if(e.target.id==='cSrc'&&c.type!=='atmos'){c.ref=e.target.value;delete c.trim;mountTrim('cTrim',c.ref,null,t=>{c.trim=t||undefined;});}}});
  if(c.type!=='atmos')mountTrim('cTrim',c.ref,c.trim,t=>{c.trim=t||undefined;});
 }
@@ -912,9 +970,9 @@ function cueLen(c){if(c.type==='atmos'){const s=show.scenes[c.ref];return s?s.na
 function renderCues(){
  const C=show.cues;if(next>C.length)next=C.length;if(cur>=C.length)cur=-1;
  $('#cues').innerHTML=C.length?C.map((c,i)=>{const T=TYPE[c.type]||TYPE.sfx;const st=i===cur?'live':(i===next?'next':(i<cur?'done':''));const tag=i===cur?'JONLI':(i===next?'KEYINGI':(i<cur?'TUGADI':''));
-  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span><span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
-  if(editing)return '<div class="cue editrow '+st+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
-  return '<button type="button" class="cue '+st+'" data-cue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
+  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
+  if(editing)return '<div class="cue editrow '+st+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
+  return '<button type="button" class="cue '+st+'" data-cue="'+i+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
  $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
 }
@@ -1005,7 +1063,7 @@ function updateBadge(){
  const b=$('#audioBadge');if(!b)return;
  if(!ctx){b.textContent='OVOZ: —';b.className='btn';return;}
  const ok=ctx.state==='running';b.className='btn '+(ok?'ok':'bad');
- b.textContent=ok?'OVOZ ✓':'OVOZ O\'CHIQ — bosing';
+ b.textContent=ok?'OVOZ ✓':'OVOZ O\'CHIQ';
 }
 function wake(){if(!ctx)return;if(ctx.state!=='running'){unlockAudio();ctx.resume().then(updateBadge,updateBadge);}}
 ['pointerdown','keydown','touchend'].forEach(ev=>document.addEventListener(ev,wake,true));
@@ -1053,7 +1111,7 @@ function wheelTarget(t){
  return box?box.querySelector('input[type=range]'):null;
 }
 document.addEventListener('wheel',e=>{
- if(e.ctrlKey)return; // brauzer zoom
+ if(e.ctrlKey){e.preventDefault();const r=e.deltaY||e.deltaX;if(r)setZoom(uiZoom*(r<0?1.05:1/1.05),true);return;}
  const r=wheelTarget(e.target);if(!r||r.disabled)return;
  e.preventDefault();
  if(wheelEl!==r){wheelEl=r;wheelAcc=0;}
@@ -1168,7 +1226,7 @@ function logEvent(txt){
 function updateDbBadge(){
  const b=$('#dbBtn');if(!b)return;const on=navigator.onLine;
  const where=Store.mode==='folder'?'Documents':'Brauzer';
- b.innerHTML='<span class="ndot" style="background:'+(on?'#4FC3B5':'#9AA0A8')+'" title="'+(on?'Onlayn':'Oflayn')+'"></span>Baza: '+where+(FS.busy?' <span class="muted">· yozilmoqda…</span>':(Store.mode==='folder'?' ✓':''));
+ b.innerHTML='<span class="ndot" style="background:'+(on?'#4FC3B5':'#9AA0A8')+'" title="'+(on?'Onlayn':'Oflayn')+'"></span>'+where+(FS.busy?' <span class="muted">· yozilmoqda…</span>':(Store.mode==='folder'?' ✓':''));
  b.classList.toggle('ok',Store.mode==='folder');
 }
 window.addEventListener('online',()=>{updateDbBadge();toast('Internet tiklandi');});
@@ -1358,7 +1416,7 @@ async function projMenu(){
  const all=await DB.all();const rec=all.__recent||[];
  const body='<div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)"><b>'+esc(proj.name)+'</b> · '+(proj.dirty?'<span class="badc">saqlanmagan o\'zgarishlar bor</span>':'<span class="okc">faylga saqlangan</span>')+'<br><span class="muted" style="font-size:12px">Avtomatik zaxira: shu brauzerda doim saqlanadi. Fayl (.sahna) — ovozlar bilan birga to\'liq loyiha.</span></div>'+
   '<div class="frow"><button type="button" class="btn primary" id="pjSave">Saqlash · Ctrl+S</button><button type="button" class="btn" id="pjSaveAs">Boshqacha saqlash · Ctrl+Shift+S</button><button type="button" class="btn" id="pjOpen">Ochish · Ctrl+O</button></div>'+
-  '<div class="frow"><button type="button" class="btn" id="pjNew">Yangi bo\'sh loyiha</button><button type="button" class="btn" id="pjDemo">Namuna loyiha</button></div>'+
+  (NATIVE||isStandalone()?'':'<div class="frow"><button type="button" class="btn" id="pjInstall">⤓ Ilova sifatida o\'rnatish (PC / telefon)</button></div>')+'<div class="frow"><button type="button" class="btn" id="pjNew">Yangi bo\'sh loyiha</button><button type="button" class="btn" id="pjDemo">Namuna loyiha</button></div>'+
   (Store.mode==='folder'?await (async()=>{const L=[];try{for await (const [n,h] of FS.dirs.loyihalar.entries())if(h.kind==='file'&&/\.sahna(\.zip)?$/i.test(n))L.push(n);}catch(e){}L.sort();window.__fl=L;return L.length?'<div class="field"><span class="flabel">Documents / Sahna Ovozi / loyihalar</span>'+L.map((n,i)=>'<button type="button" class="btn" style="justify-content:flex-start" data-floj="'+i+'">'+esc(n)+'</button>').join('')+'</div>':'';})():'')+
   (rec.length&&CAN_FS?'<div class="field"><span class="flabel">So\'nggi loyihalar</span>'+rec.map((r,i)=>'<button type="button" class="btn" style="justify-content:flex-start;text-align:left" data-recent="'+i+'">'+esc(r.name)+' <span class="muted" style="font-weight:500;margin-left:8px">'+new Date(r.at).toLocaleString('uz-UZ')+'</span></button>').join('')+'</div>':'')+
   '<p class="hint">Loyiha fayli ichida: cue ro\'yxati, SFX banklar, atmosferalar, mikser va dublaj sozlamalari hamda siz yuklagan barcha ovoz fayllari. Faylni boshqa kompyuter yoki telefonga ko\'chirib, xuddi shu holatda ochish mumkin.</p>';
@@ -1366,6 +1424,7 @@ async function projMenu(){
   if(b.id==='pjSave'){closeModal();saveProject(false);}
   else if(b.id==='pjSaveAs'){closeModal();saveProject(true);}
   else if(b.id==='pjOpen'){closeModal();guardDirty(openProject);}
+  else if(b.id==='pjInstall'){closeModal();installApp();}
   else if(b.id==='pjNew'){closeModal();guardDirty(()=>newProject(false));}
   else if(b.id==='pjDemo'){closeModal();guardDirty(()=>newProject(true));}
   else if(b.dataset.floj!=null){const n=window.__fl[+b.dataset.floj];closeModal();guardDirty(async()=>{const h=await FS.dirs.loyihalar.getFileHandle(n);await openFile(await h.getFile(),h);addRecent(h);});}
@@ -1381,7 +1440,7 @@ let installEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;});
 window.addEventListener('appinstalled',()=>{installEvt=null;toast('Sahna Ovozi ilova sifatida o\'rnatildi');renderInstall();});
 const isStandalone=()=>window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches)||navigator.standalone===true;
-function renderInstall(){const b=$('#installBtn');if(b)b.style.display=(NATIVE||isStandalone())?'none':'';}
+function renderInstall(){const b=$('#installBtn');if(b&&b.style)b.style.display=(NATIVE||isStandalone())?'none':'';}
 async function installApp(){
  if(installEvt){installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;return;}
  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document),android=/Android/.test(ua);
@@ -1609,18 +1668,21 @@ document.addEventListener('input',e=>{
  else if(t.id==='amt'){dub.amount=t.value/100;$('#amtV').textContent=t.value+'%';buildDubFx();show.dubfx={preset:dub.preset,amount:dub.amount};saveShow();}
 });
 $('#goBtn').addEventListener('click',e=>{e.stopPropagation();go();});
+$('#zoomIn').addEventListener('click',e=>{e.stopPropagation();zoomStep(1);});
+$('#zoomOut').addEventListener('click',e=>{e.stopPropagation();zoomStep(-1);});
+$('#zoomV').addEventListener('click',e=>{e.stopPropagation();zoomMenu();});
 $('#homeBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)showHub('home');});
 if(NATIVE){
  azNative.onMenu(cmd=>{if(!ctx)return;if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
   ({home:()=>showHub('home'),new:()=>newProjectDialog(),open:()=>guardDirty(()=>openProject().then(()=>{if(!proj.dirty)hideHub();})),save:()=>saveProject(false),saveas:()=>saveProject(true),
     edit:()=>{hideHub();setEditing(!editing);},lib:()=>{hideHub();$('#libBtn').click();},diag:()=>runDiag(false),db:()=>dbMenu(),go:()=>go(),panic:()=>panic(),about:()=>aboutApp(),profile:()=>editProfile(),
-    projects:()=>showHub('projects'),trash:()=>showHub('trash')}[cmd]||(()=>{}))();});
+    projects:()=>showHub('projects'),zoomin:()=>zoomStep(1),zoomout:()=>zoomStep(-1),zoomreset:()=>zoomStep(0),zoomfit:()=>zoomFit(),trash:()=>showHub('trash')}[cmd]||(()=>{}))();});
  azNative.onOpenFile(p=>{if(!ctx){window.__launchPath=p;return;}guardDirty(async()=>{const h=nFile(null,p.split(/[\\/]/).pop(),p);await openFile(await h.getFile(),h);hideHub();});});
  azNative.onCloseRequest(()=>{if(!proj.dirty){azNative.closeNow();return;}guardDirty(()=>azNative.closeNow());});
 }
 $('#dbBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)dbMenu();});
 $('#projBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)projMenu();});
-$('#installBtn').addEventListener('click',e=>{e.stopPropagation();installApp();});
+($('#installBtn')||{addEventListener(){}}).addEventListener('click',e=>{e.stopPropagation();installApp();});
 $('#audioBadge').addEventListener('click',e=>{e.stopPropagation();runDiag(false);});
 $('#backBtn').addEventListener('click',e=>{e.stopPropagation();next=Math.max(0,next-1);renderCues();});
 $('#panicBtn').addEventListener('click',e=>{e.stopPropagation();panic();});
@@ -1642,6 +1704,8 @@ const KEYPAD={};KEYS.forEach(([code],i)=>KEYPAD[code]=i);
 const typing=t=>t&&(t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!/^(range|checkbox|button)$/.test(t.type)));
 document.addEventListener('keydown',e=>{
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
+ if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else cueGainStep(d);return;}
+ if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
  if(!ctx||e.ctrlKey||e.metaKey||e.altKey)return;
  if(!$('#hub').hidden){if(e.code==='Escape'&&!modalOpen()&&ctx){e.preventDefault();hideHub();}return;}
  if(modalOpen()){if(e.code==='Escape'){e.preventDefault();closeModal();}return;}
@@ -1687,7 +1751,7 @@ async function boot(){
   SP(3,'Loyihalar va profil',0.86);await loadProfile();
   renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
   SP(4,'Sahna oynasi',1);
-  $('#gate').remove();$('#goBtn').focus();requestAnimationFrame(loop);updateBadge();
+  $('#gate').remove();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
   setTimeout(()=>{if(ctx.state!=='running')runDiag(true);},600);
   logEvent('Ilova ochildi · '+(NATIVE?'o\'rnatilgan dastur v'+APP_VERSION:isStandalone()?'o\'rnatilgan ilova':'brauzer')+' · baza: '+(Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer'));
   let opened=false;

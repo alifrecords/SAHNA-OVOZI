@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.2.0: masshtab (zoom) · klaviaturadan daraja · cue'larni sudrash
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Masshtab | Sarlavhada `− 100% +`: butun oyna 50–200%; foizni bosish — tayyor o'lchamlar va "Ekranga moslash"; Ctrl + g'ildirak — ravon; Ctrl + = / Ctrl + − / Ctrl + 0. Tanlov saqlanadi |
+| Ixcham sarlavha | Tugmalar kichraytirildi, 1366 px ekranda bitta qatorga sig'adi; kutubxona — belgi tugma; "O'rnatish" Loyiha menyusiga o'tdi |
+| Cue darajasi | ↑ ↓ bilan tanlangan cue: **Num +** / **Num −** — ±1 dB (−30…+12). Cue chalinayotgan bo'lsa ovoz shu zahoti o'zgaradi; qatorda sariq "−4 dB" belgisi; cue muharririda ham slayder |
+| Master | **Ctrl + Num +** / **Ctrl + Num −** — Master fader ±1.5 dB |
+| Cue tartibi | Cue qatorini sichqoncha bilan ushlab sudrab joyini almashtirish (sariq chiziq — tushadigan joy); JONLI / KEYINGI belgilari o'z cue'si bilan qoladi |
+
 ## 1.1.0: audio kesish (AZ-Playlist mexanizmi)
 
 | Bo'lim | Nima qilindi |

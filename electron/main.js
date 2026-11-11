@@ -175,7 +175,10 @@ function buildMenu() {
     { label: 'Ko\'rinish', submenu: [
       { role: 'togglefullscreen', label: 'To\'liq ekran' },
       { type: 'separator' },
-      { role: 'zoomIn', label: 'Kattalashtirish' }, { role: 'zoomOut', label: 'Kichraytirish' }, { role: 'resetZoom', label: '100%' }
+      { label: 'Kattalashtirish', accelerator: 'CmdOrCtrl+=', click: () => send('zoomin') },
+      { label: 'Kichraytirish', accelerator: 'CmdOrCtrl+-', click: () => send('zoomout') },
+      { label: '100%', accelerator: 'CmdOrCtrl+0', click: () => send('zoomreset') },
+      { label: 'Ekranga moslash', click: () => send('zoomfit') }
     ]},
     { label: 'Yordam', submenu: [
       { label: 'Ovoz tekshiruvi', click: () => send('diag') },
