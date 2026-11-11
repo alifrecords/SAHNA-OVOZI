@@ -1,0 +1,70 @@
+name: Sahna Ovozi build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  APP_VERSION: 1.0.0
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Paketlar
+        run: npm install --no-audit --no-fund
+      - name: Dastur (Electron) yig'ish
+        run: npm run pack:win
+      - name: O'rnatuvchi (Inno Setup)
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DAppVer=$env:APP_VERSION installer\windows\SahnaOvozi.iss
+      - name: Paketlash
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item installer/windows/Output/*.exe dist/
+      - uses: actions/upload-artifact@v4
+        with: { name: Sahna-Ovozi-Windows, path: dist }
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Paketlar
+        run: npm install --no-audit --no-fund
+      - name: Dastur (Universal) yig'ish
+        run: npm run pack:mac
+      - name: Paketlash
+        run: |
+          mkdir -p dist && cp -R "build/Sahna Ovozi-darwin-universal/Sahna Ovozi.app" dist/
+          cp installer/macos/ORNATISH.txt dist/
+          ditto -c -k --keepParent dist Sahna-Ovozi-macOS.zip
+      - uses: actions/upload-artifact@v4
+        with: { name: Sahna-Ovozi-macOS, path: Sahna-Ovozi-macOS.zip }
+
+  release:
+    needs: [ windows, macos ]
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/download-artifact@v4
+      - run: cd Sahna-Ovozi-Windows && zip -r ../Sahna-Ovozi-Windows.zip . && cd ..
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.APP_VERSION }}
+          target_commitish: ${{ github.sha }}
+          name: Sahna Ovozi ${{ env.APP_VERSION }}
+          body: |
+            Sahna Ovozi — teatr va dublaj uchun jonli ovoz pulti (Azimxodjayev Music)
+            Windows: Sahna-Ovozi-Windows.zip ichidagi Sahna-Ovozi-${{ env.APP_VERSION }}-Setup.exe ni ishga tushiring
+            macOS: Sahna-Ovozi-macOS.zip (Intel + Apple Silicon) — ORNATISH.txt ni o'qing
+          files: |
+            Sahna-Ovozi-Windows.zip
+            Sahna-Ovozi-macOS/Sahna-Ovozi-macOS.zip

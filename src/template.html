@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sahna Ovozi — jonli pult</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0E0F12;--panel:#16181D;--line:#262A31;--line2:#3A3F48;--text:#E8E6E1;--muted:#9AA0A8;--amber:#F2A93B;--teal:#4FC3B5;--violet:#A78BFA;--rose:#F27A8A}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+button{font-family:inherit;cursor:pointer;color:var(--text)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+h1,h2{font-family:'Space Grotesk',sans-serif;margin:0}
+h2{font-size:16px;font-weight:600}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+#app{padding:16px;display:flex;flex-direction:column;gap:14px;min-height:100vh}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.btn{height:44px;padding:0 14px;border-radius:8px;background:var(--bg);border:1px solid var(--line2);font-size:13px;font-weight:600}
+.btn:hover{border-color:#5A606B}
+.btn.on{border-color:var(--amber);background:#2A2113;color:#FFD9A0}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+header{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;letter-spacing:.04em}
+.show{display:flex;flex-direction:column;gap:2px;padding-left:16px;border-left:1px solid var(--line)}
+.lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.clock{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#555}
+.live .dot{background:var(--rose);box-shadow:0 0 8px var(--rose)}
+.live .st{color:var(--rose)}
+.panic{background:#3A1E22;color:#FFB3BC;border:1px solid var(--rose);font-weight:700;letter-spacing:.04em}
+.panic:hover{background:#4A2328}
+
+.main{display:flex;flex-wrap:wrap;gap:14px;align-items:stretch}
+.col-l{flex:1 1 290px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.col-c{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.col-r{flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:14px}
+
+.cue{display:flex;align-items:center;gap:10px;text-align:left;min-height:50px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);width:100%}
+.cue .num{font-size:12px;font-weight:700;color:var(--muted);width:28px}
+.cue .bar{width:4px;align-self:stretch;border-radius:2px}
+.cue .nm{font-size:14px;font-weight:600}
+.cue .sub{font-size:11px;color:var(--muted)}
+.cue .tag{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-left:auto}
+.cue.live{border-color:var(--amber);background:#2A2113}
+.cue.live .tag{color:var(--amber)}
+.cue.next{border-color:#6B7280;border-style:dashed}
+.cue.done{opacity:.55}
+.go{flex:1;height:76px;border-radius:10px;background:var(--amber);border:none;color:#1A1206;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.go:hover{background:#FFB84D}
+.go:active{transform:scale(.99)}
+.go b{font-family:'Space Grotesk',sans-serif;font-size:28px;letter-spacing:.06em}
+.go span{font-size:12px;font-weight:600}
+.back{width:64px;height:76px;border-radius:10px;background:var(--bg);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center}
+
+.seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.seg button{height:40px;min-width:44px;padding:0 10px;background:var(--bg);border:none;border-right:1px solid var(--line2);font-size:12px;font-weight:600;color:var(--muted)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:#2A2113;color:var(--amber)}
+
+.layers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.layer{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.layer label{font-size:13px;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--teal);height:24px;margin:0}
+.empty{font-size:13px;color:var(--muted);padding:18px;text-align:center;border:1px dashed var(--line2);border-radius:10px}
+
+.pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.pad{position:relative}
+.pad .hit{width:100%;min-height:84px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:10px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;transition:background .08s,border-color .08s}
+.pad .hit:hover{border-color:#5A606B}
+.pad .top{display:flex;width:100%;justify-content:space-between;align-items:center}
+.pad .cat{width:10px;height:10px;border-radius:3px}
+.pad .key{font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:1px 6px}
+.pad .nm{font-size:14px;font-weight:600;padding-right:30px}
+.pad .own{font-size:10px;color:var(--amber);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pad.playing .hit{border-color:var(--amber);background:#211A10}
+.pad.flash .hit{background:#3A2C14}
+.pad.drag .hit{border-color:var(--teal);border-style:dashed}
+.pad .up{position:absolute;right:6px;bottom:6px;width:32px;height:32px;border-radius:6px;background:transparent;border:1px solid transparent;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.pad .up:hover{border-color:var(--line2);color:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.strips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.strip{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 4px}
+.mfad{display:flex;gap:6px;align-items:flex-end;height:150px}
+.meter{width:7px;height:150px;background:var(--line);border-radius:3px;position:relative;overflow:hidden}
+.meter i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:3px}
+input.vfader{writing-mode:vertical-lr;direction:rtl;width:24px;height:150px;accent-color:var(--text)}
+.strip .db{font-size:11px}
+.strip .nm{font-size:11px;font-weight:600;color:var(--muted);text-align:center}
+.mute{width:44px;height:30px;border-radius:6px;background:transparent;border:1px solid var(--line2);font-size:11px;font-weight:700;color:var(--muted)}
+.mute.on{background:#3A1E22;border-color:var(--rose);color:#FFB3BC}
+
+.presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.preset{min-height:54px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.preset small{font-size:10px;color:var(--muted);font-weight:500}
+.preset.on{border-color:var(--rose);background:#3A1E22}
+
+.voices{display:flex;flex-direction:column;gap:6px}
+.voice{display:grid;grid-template-columns:10px minmax(120px,220px) 1fr 70px 44px;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.voice .c{width:10px;height:10px;border-radius:3px}
+.voice .t{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voice .t small{font-weight:500;color:var(--muted);margin-left:6px}
+.prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
+.prog i{position:absolute;top:0;bottom:0;left:0;border-radius:4px}
+.prog.loop i{width:30%;animation:lp 2.4s linear infinite}
+@keyframes lp{from{left:-30%}to{left:100%}}
+.voice .rem{font-size:12px;text-align:right}
+.x{width:36px;height:32px;border-radius:6px;background:transparent;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.x:hover{color:var(--text);border-color:#5A606B}
+
+#gate{position:fixed;inset:0;background:rgba(10,11,13,.94);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+#gate .card{max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px}
+#gate h1{font-size:30px}
+#gate p{margin:0;color:var(--muted);line-height:1.55;font-size:14px}
+#start{height:56px;border-radius:10px;background:var(--amber);border:none;color:#1A1206;font-size:16px;font-weight:700}
+#start:disabled{opacity:.6;cursor:wait}
+
+#lib{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--panel);border-left:1px solid var(--line);z-index:40;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .2s}
+#lib.open{transform:none}
+#lib .hd{padding:16px;border-bottom:1px solid var(--line)}
+#lib .bd{padding:12px 16px 24px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.lgroup h3{margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.lrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.lrow .nm{flex:1;min-width:0;font-size:13px;font-weight:600}
+.lrow .nm small{display:block;font-weight:500;color:var(--muted);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .btn{height:36px;padding:0 10px;font-size:12px}
+.warn{font-size:12px;color:#FFD9A0;background:#2A2113;border:1px solid #5A4520;border-radius:8px;padding:8px 10px;line-height:1.45}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#22252B;border:1px solid var(--line2);border-radius:10px;padding:12px 16px;font-size:13px;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw}
+#toast.show{opacity:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.btn.edit-on{border-color:var(--amber);color:var(--amber)}
+#editBar{display:none;align-items:center;gap:10px;flex-wrap:wrap}
+body.editing #editBar{display:flex}
+.edit-only{display:none!important}
+body.editing .edit-only{display:flex!important}
+.cue.editrow{cursor:default}
+.ctools{display:flex;gap:4px;margin-left:auto}
+.ctools button,.ibtn{width:34px;height:34px;border-radius:6px;background:transparent;border:1px solid var(--line2);font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.ctools button:hover,.ibtn:hover{color:var(--text);border-color:#5A606B}
+.addbtn{height:44px;border-radius:8px;border:1px dashed var(--line2);background:transparent;color:var(--muted);font-size:13px;font-weight:600;width:100%}
+.addbtn:hover{color:var(--text);border-color:var(--amber)}
+.banks{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.bank{height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--line2);background:var(--bg);font-size:12px;font-weight:600;color:var(--muted)}
+.bank.on{border-color:var(--amber);color:var(--amber);background:#2A2113}
+body.editing .pad .hit{border-style:dashed}
+.pad.vacant .hit{border-style:dashed;opacity:.7}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.show-info{display:flex;flex-direction:column;gap:2px;padding-left:16px;border-left:1px solid var(--line);background:none;border-top:none;border-right:none;border-bottom:none;text-align:left}
+#modal{position:fixed;inset:0;background:rgba(8,9,11,.82);display:none;align-items:flex-start;justify-content:center;z-index:70;padding:5vh 16px;overflow:auto}
+#modal.open{display:flex}
+.mcard{width:min(620px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label,.flabel{font-size:12px;color:var(--muted);font-weight:600}
+.inp{height:44px;background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--text);padding:0 12px;font:14px Inter,system-ui,sans-serif;width:100%;min-width:0}
+textarea.inp{height:140px;padding:10px 12px;font:12px 'JetBrains Mono',monospace;resize:vertical}
+select.inp{padding-right:28px}
+.inp:focus{border-color:var(--amber);outline:none}
+.frow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.frow .inp{flex:1 1 200px}
+.mfoot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding-top:6px;border-top:1px solid var(--line)}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1A1206}
+.btn.danger{border-color:#7A3A42;color:#FFB3BC}
+.lyrow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) 70px 34px;gap:6px;align-items:center}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;min-height:44px}
+.chk input{width:20px;height:20px;accent-color:var(--amber)}
+.hint{font-size:12px;color:var(--muted);line-height:1.5;margin:0}
+#audioBadge.ok{border-color:#2F6B63;color:#7FE0D3}#audioBadge.bad{border-color:var(--rose);color:#FFB3BC;background:#3A1E22;animation:pulse 1.2s ease-in-out infinite}@keyframes pulse{50%{background:#5A2A31}}
+.dtab{width:100%;border-collapse:collapse;font-size:13px}.dtab td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}.dtab td:first-child{color:var(--muted);width:44%}.okc{color:#7FE0D3;font-weight:600}.badc{color:#FFB3BC;font-weight:600}
+.bname{display:flex;flex-direction:column;line-height:1.05}
+.bsub{font-family:Inter,sans-serif;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-top:4px}
+.btn.proj{display:flex;align-items:center;gap:8px;max-width:260px}
+.pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdirty{color:var(--amber);font-size:14px}
+#dbBtn{display:flex;align-items:center;gap:8px}#dbBtn.ok{border-color:#2F6B63;color:#7FE0D3}.ndot{width:8px;height:8px;border-radius:50%;display:inline-block}
+#hub{position:fixed;inset:0;z-index:45;background:#0B0C0F;display:flex}
+#hub[hidden]{display:none}
+.hside{width:270px;flex:0 0 270px;background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:12px}
+.hprof{display:flex;gap:12px;align-items:center;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%}
+.hprof:hover{border-color:#5A606B}
+.avatar{width:52px;height:52px;border-radius:50%;background:#2A2113;color:var(--amber);display:flex;align-items:center;justify-content:center;font:700 18px 'Space Grotesk',sans-serif;overflow:hidden;flex:0 0 auto;border:1px solid #5A4520}
+.avatar.big{width:84px;height:84px;font-size:28px}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.pmeta{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pmeta b{font-size:14px}.pmeta span{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hnav{display:flex;flex-direction:column;gap:4px}
+.hnav button{height:42px;text-align:left;padding:0 14px;border-radius:8px;background:transparent;border:1px solid transparent;font-size:14px;font-weight:600;color:var(--muted)}
+.hnav button:hover{color:var(--text);background:var(--bg)}
+.hnav button.on{color:var(--amber);background:#2A2113;border-color:#5A4520}
+.hfoot{display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--muted)}
+.hmain{flex:1;min-width:0;overflow:auto;padding:28px 32px 48px;display:flex;flex-direction:column;gap:18px}
+.hh1{font-family:'Space Grotesk',sans-serif;font-size:30px;margin:0}
+.hacts{display:flex;gap:8px;flex-wrap:wrap}
+.hcont{display:grid;grid-template-columns:1fr auto;gap:2px 16px;text-align:left;background:linear-gradient(135deg,#2A2113,#16181D);border:1px solid #5A4520;border-radius:12px;padding:16px 18px}
+.hcont b{font-size:18px}.hcont .muted{font-size:13px}.hcont .go2{grid-row:1/4;grid-column:2;align-self:center;color:var(--amber);font-weight:700}
+.hcont:hover{border-color:var(--amber)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.tgrid.big{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.tgrid.small{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.tcard{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;min-height:96px}
+.tcard:hover{border-color:#5A606B}.tcard.on{border-color:var(--amber);background:#2A2113}
+.tcolor{width:28px;height:6px;border-radius:3px}.tname{font-weight:700;font-size:14px}.tdesc{font-size:12px;color:var(--muted);line-height:1.4}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.pcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.pcard:hover{border-color:#5A606B}.pcard.cur{border-color:var(--amber)}
+.popen{display:flex;flex-direction:column;width:100%;text-align:left;background:none;border:none;padding:0}
+.pcover{height:104px;width:100%;box-sizing:border-box;position:relative;display:flex;align-items:flex-end;padding:12px}
+.pbars{display:flex;gap:3px;align-items:flex-end;height:46px}
+.pbars i{display:block;width:7px;border-radius:2px;height:100%}
+.pbars i:nth-child(3n){height:62%}.pbars i:nth-child(4n+1){height:80%}.pbars i:nth-child(5n+2){height:45%}
+.pcues{position:absolute;right:10px;top:10px;font-size:11px;font-weight:700;background:rgba(0,0,0,.45);padding:3px 8px;border-radius:20px}
+.pinfo{display:flex;flex-direction:column;gap:3px;padding:10px 12px 12px}
+.pname2{font-weight:700;font-size:14px;padding-right:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.psub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmore{position:absolute;right:8px;bottom:10px;background:var(--panel)}
+html.native .show-info{cursor:pointer}
+@media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
+#micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
+@media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="panel">
+    <div class="brand">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg>
+      <span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span>
+    </div>
+    <button class="btn" type="button" id="homeBtn" aria-label="Bosh sahifa"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></button>
+    <button type="button" class="show-info" id="showBtn" aria-label="Spektakl ma'lumotlari"><span class="lbl">Spektakl</span><span style="font-size:14px;font-weight:600;color:var(--text)" id="showName">—</span></button>
+    <div style="flex:1 1 20px"></div>
+    <button class="btn" id="dbBtn" type="button" aria-label="Ma'lumotlar bazasi va jurnal">Baza</button>
+    <button class="btn proj" id="projBtn" type="button" aria-label="Loyiha: saqlash va ochish"><span class="pname">Loyiha</span></button>
+    <button class="btn" id="installBtn" type="button">O'rnatish</button>
+    <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Tahrirlash</button>
+    <button class="btn" type="button" id="audioBadge" aria-label="Ovoz holati va tekshiruv">OVOZ: —</button>
+    <div class="clock" id="clockBox"><span class="dot"></span><span class="st" style="font-size:12px;font-weight:700;letter-spacing:.1em" id="liveTxt">TAYYOR</span><span class="mono" style="font-size:22px;font-weight:700;margin-left:6px" id="clock">00:00:00</span></div>
+    <button class="btn" id="libBtn" type="button">Ovozlar kutubxonasi</button>
+    <button class="btn panic" id="panicBtn" type="button">HAMMASINI TO'XTATISH · Esc</button>
+  </header>
+
+  <div id="editBar" class="warn">
+    <b>TAHRIRLASH REJIMI</b>
+    <span>Cue'lar yonidagi ✎ ↑ ↓, SFX tugmasini bosish — uni sozlash, atmosfera nomlari ✎ — qatlamlarni o'zgartirish. Hammasi avtomatik saqlanadi.</span>
+    <span style="flex:1"></span>
+    <button class="btn" type="button" id="showEdit">Spektakl ma'lumotlari va zaxira</button>
+  </div>
+
+  <div class="main">
+    <section class="panel col-l" aria-label="Cue ro'yxati">
+      <div class="between"><h2>Sahnalar ketma-ketligi</h2><span class="muted" style="font-size:12px" id="cueCount"></span></div>
+      <div id="cues" style="display:flex;flex-direction:column;gap:6px"></div>
+      <button type="button" class="addbtn edit-only" id="cueAdd" style="justify-content:center;align-items:center">+ Yangi cue qo'shish</button>
+      <div style="flex:1"></div>
+      <p class="muted" style="font-size:11px;margin:0;line-height:1.5">Cue ustiga bosish — uni <b>keyingi</b> qilib belgilaydi. GO — ijro etadi. ↑ ↓ — keyingini tanlash.</p>
+      <div class="row" style="gap:8px">
+        <button class="back" id="backBtn" type="button" aria-label="Keyingi cue'ni bitta orqaga surish"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
+        <button class="go" id="goBtn" type="button"><b>GO</b><span id="goNext">Keyingi: —</span></button>
+      </div>
+    </section>
+
+    <div class="col-c">
+      <section class="panel" aria-label="Joriy sahna" style="display:flex;flex-direction:column;gap:14px">
+        <div class="between" style="align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <span class="lbl" id="nowLbl">Hozir sahnada</span>
+            <h1 style="font-size:30px" id="nowName">Spektakl boshlanishini kutmoqda</h1>
+            <span class="muted" style="font-size:13px" id="nowSub">GO bosing yoki Probel</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            <span class="lbl">O'tish (fade) vaqti</span>
+            <div class="seg" id="fadeSeg" role="group" aria-label="Fade vaqti"></div>
+          </div>
+        </div>
+        <div class="between">
+          <h2 id="atmTitle">Atmosfera: —</h2>
+          <div class="row" style="gap:8px;flex-wrap:wrap">
+            <button class="btn" type="button" id="atmOff">Atmosferani so'ndirish</button>
+            <button class="btn" type="button" id="musOff">Musiqani so'ndirish</button>
+            <button class="btn" type="button" id="allOff">Sahnani so'ndirish</button>
+          </div>
+        </div>
+        <div id="layers"></div>
+        <div class="chips edit-only" id="sceneTools"></div>
+      </section>
+
+      <section class="panel" aria-label="SFX tugmalari" style="display:flex;flex-direction:column;gap:12px">
+        <div class="between"><h2>Tezkor effektlar (SFX)</h2><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span></div>
+        <div class="banks" id="banks" role="group" aria-label="SFX banklari"></div>
+        <div class="pads" id="pads"></div>
+        <div class="between">
+          <div class="legend"><span><i style="background:var(--teal)"></i>Tabiat</span><span><i style="background:var(--amber)"></i>Zarba va harakat</span><span><i style="background:var(--violet)"></i>Musiqiy</span><span><i style="background:var(--rose)"></i>Odamlar</span></div>
+          <span class="muted" style="font-size:11px">↻ belgili tugma qayta bosilsa to'xtaydi · faylni tugmaga sudrab tashlang</span>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-r">
+      <section class="panel" aria-label="Mikser" style="display:flex;flex-direction:column;gap:12px">
+        <div class="between"><h2>Mikser</h2><span class="muted" style="font-size:11px">g'ildirak ↕ · Shift — aniq · 2× bosish — 0 dB</span></div>
+        <div class="strips" id="strips"></div>
+      </section>
+      <section class="panel" aria-label="Dublaj" style="display:flex;flex-direction:column;gap:12px">
+        <div class="between"><h2>Dublaj · obraz ovozi</h2><span style="font-size:11px;font-weight:700;color:var(--rose);letter-spacing:.08em" id="dubState">FAYL YO'Q</span></div>
+        <div class="presets" id="presets"></div>
+        <div class="row" id="amtRow">
+          <label for="amt" class="muted" style="font-size:12px;width:96px">Effekt miqdori</label>
+          <input type="range" id="amt" min="0" max="100" value="60" style="accent-color:var(--rose)">
+          <span class="mono" style="font-size:12px;width:38px;text-align:right" id="amtV">60%</span>
+        </div>
+        <div class="row" style="gap:8px;flex-wrap:wrap">
+          <button class="btn" type="button" id="dubLoad">Ovoz faylini yuklash</button>
+          <button class="btn" type="button" id="dubPlay">▶ Ijro</button>
+          <button class="btn" type="button" id="dubStop">■ To'xtatish</button>
+          <button class="btn" type="button" id="micBtn" aria-pressed="false" style="display:none">🎙 Jonli mikrofon</button>
+        </div>
+        <div class="warn" id="dubWarn">Brauzer sahifasida mikrofon bloklangan, shuning uchun jonli mikrofon hozircha yo'q. Aktyorning yozib olingan ovozini yuklang — effektlar unga real vaqtda qo'llanadi.</div>
+      </section>
+    </div>
+  </div>
+
+  <section class="panel" aria-label="Hozir yangrayapti" style="display:flex;flex-direction:column;gap:10px">
+    <div class="between"><h2>Hozir yangrayapti</h2><span class="muted" style="font-size:12px" id="vCount">jim</span></div>
+    <div class="voices" id="voices"></div>
+  </section>
+</div>
+
+<div id="hub" hidden>
+  <aside class="hside">
+    <div class="brand" style="padding:4px 6px 14px"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg><span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span></div>
+    <button type="button" class="hprof" id="hubProf" aria-label="Profilni tahrirlash"></button>
+    <nav class="hnav" aria-label="Bosh sahifa bo'limlari">
+      <button type="button" data-hpage="home">Bosh sahifa</button>
+      <button type="button" data-hpage="projects">Loyihalar</button>
+      <button type="button" data-hpage="templates">Shablonlar</button>
+      <button type="button" data-hpage="trash">Savat</button>
+    </nav>
+    <div style="flex:1"></div>
+    <div class="hfoot"><span id="hubWhere"></span><button type="button" class="btn" id="hubAbout" style="height:34px;font-size:12px">Dastur haqida</button></div>
+  </aside>
+  <main class="hmain" id="hubMain"></main>
+</div>
+<aside id="lib" aria-label="Ovozlar kutubxonasi" aria-hidden="true">
+  <div class="hd between">
+    <div><h2 style="font-size:20px">Ovozlar kutubxonasi</h2><span class="muted" style="font-size:12px">Har bir ovozni o'z faylingiz bilan almashtiring (WAV, MP3, OGG, M4A)</span></div>
+    <button class="x" id="libClose" type="button" aria-label="Kutubxonani yopish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+  </div>
+  <div class="bd" id="libBody"></div>
+</aside>
+
+<div id="gate">
+  <div class="card">
+    <div class="brand">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg>
+      <span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span>
+    </div>
+    <h1>Jonli sahna ovoz pulti</h1>
+    <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
+    <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · [ ] — bank almashtirish · ↑ ↓ — keyingi cue</p>
+    <button id="start" type="button">Ovozni yoqish va boshlash</button>
+    <span class="muted" style="font-size:12px" id="gateMsg"></span>
+  </div>
+</div>
+<div id="modal"><div class="mcard" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h2 id="mTitle" style="font-size:20px"></h2><div id="mBody" style="display:flex;flex-direction:column;gap:14px"></div><div class="mfoot" id="mFoot"></div></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="fileIn" accept="audio/*" class="sr" tabindex="-1" aria-hidden="true">
+
+<script>const ASSETS=/*__ASSETS__*/;const META=/*__META__*/;</script>
+<script>
+(function(){
+'use strict';
+
+/* ---------- NATIVE (o'rnatilgan .exe ilova) adapteri ---------- */
+const NATIVE=!!(window.azNative&&window.azNative.isNative);
+const NJ=(a,b)=>a?a+'/'+b:b;
+function nFile(rel,name,abs){
+ const id=abs?{abs}:{rel};
+ return {kind:'file',name,__rel:abs?null:rel,__abs:abs||null,
+  async getFile(){const st=await azNative.stat(id);if(!st)throw new DOMException('Fayl topilmadi','NotFoundError');
+   return {name,size:st.size,lastModified:st.mtime,type:'',
+    async arrayBuffer(){const u=await azNative.read(id);return u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength);},
+    async text(){return new TextDecoder().decode(await azNative.read(id));}};},
+  async createWritable(o){const keep=o&&o.keepExistingData;let pos=null;const parts=[];
+   return {async seek(p){pos=p;},async write(d){parts.push(d);},
+    async close(){const ab=await new Blob(parts).arrayBuffer();if(keep&&pos!=null)await azNative.append(id,ab);else await azNative.write(id,ab);}};},
+  async queryPermission(){return 'granted';},async requestPermission(){return 'granted';},
+  async isSameEntry(o){return !!o&&o.__abs===this.__abs&&o.__rel===this.__rel;}};
+}
+function nDir(rel,name){
+ return {kind:'directory',name,__rel:rel,
+  async getDirectoryHandle(n,o){const r=NJ(rel,n);if(o&&o.create)await azNative.mkdir(r);else if(!(await azNative.exists({rel:r})))throw new DOMException('Topilmadi','NotFoundError');return nDir(r,n);},
+  async getFileHandle(n,o){const r=NJ(rel,n);const ex=await azNative.exists({rel:r});if(!ex){if(o&&o.create)await azNative.write({rel:r},new ArrayBuffer(0));else throw new DOMException('Topilmadi','NotFoundError');}return nFile(r,n);},
+  async *entries(){for(const e of await azNative.list(rel))yield [e.name,e.isDir?nDir(NJ(rel,e.name),e.name):nFile(NJ(rel,e.name),e.name)];},
+  async removeEntry(n){await azNative.remove({rel:NJ(rel,n)});},
+  async queryPermission(){return 'granted';},async requestPermission(){return 'granted';}};
+}
+const NATIVE_ROOT=NATIVE?nDir('','Sahna Ovozi'):null;
+if(NATIVE){
+ // Brauzer API'larini Windows/macOS fayl tizimiga ulaymiz — qolgan kod o'zgarishsiz ishlaydi
+ window.showSaveFilePicker=async o=>{const p=await azNative.saveDialog((o&&o.suggestedName)||'Loyiha.sahna');if(!p)throw new DOMException('Bekor qilindi','AbortError');return nFile(null,p.split(/[\\/]/).pop(),p);};
+ window.showOpenFilePicker=async()=>{const p=await azNative.openDialog();if(!p)throw new DOMException('Bekor qilindi','AbortError');return [nFile(null,p.split(/[\\/]/).pop(),p)];};
+ window.showDirectoryPicker=async()=>NATIVE_ROOT;
+ document.documentElement.classList.add('native');
+}
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const ICON_UP='<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"></path></svg>';
+const ICON_X='<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>';
+
+META.dub_monolog={kind:'dub',title:'Monolog: ichki ovoz',loop:false,dur:0,gain:0};
+
+const CAT={tabiat:['#4FC3B5','Tabiat'],zarba:['#F2A93B','Zarba va harakat'],musiqiy:['#A78BFA','Musiqiy'],odam:['#F27A8A','Odamlar']};
+const KEYS=[['Digit1','1'],['Digit2','2'],['Digit3','3'],['Digit4','4'],['Digit5','5'],['Digit6','6'],['Digit7','7'],['Digit8','8'],['KeyQ','Q'],['KeyW','W'],['KeyE','E'],['KeyR','R'],['KeyA','A'],['KeyS','S'],['KeyD','D'],['KeyF','F']];
+const TYPE={music:{n:'Musiqa',c:'#A78BFA'},atmos:{n:'Atmosfera',c:'#4FC3B5'},sfx:{n:'SFX',c:'#F2A93B'},dub:{n:'Dublaj',c:'#F27A8A'}};
+const GROUP_N={user:'Mening fayllarim',sfx:'SFX namunalar',atmos:'Atmosfera qatlamlari',music:'Musiqa',dub:'Dublaj'};
+const BUSES=[['atmos','Atmosfera','#4FC3B5'],['sfx','SFX','#F2A93B'],['music','Musiqa','#A78BFA'],['dub','Dublaj','#F27A8A'],['master','Master','#E8E6E1']];
+const PRESETS=[['clean','Toza','effektsiz'],['hall','Saroy zali','katta reverb'],['giant','Dev','past pitch'],['ghost','Ruh','aks-sado + shivir'],['phone','Telefon','tor polosa'],['magic','Afsun','modulyatsiya']];
+const FADES=[0,1,3,5,8];
+
+const P=(a,cat,t)=>({a,cat,t:t?1:0,title:'',g:0});
+const DEFAULT_SHOW={
+ v:1,title:'[SPEKTAKL NOMI]',act:'2-parda',
+ cues:[
+  {name:'Parda ochilishi',type:'music',ref:'mus_overture',note:''},
+  {name:'Saroy zali',type:'atmos',ref:'hall',note:''},
+  {name:'Eshik taqillashi',type:'sfx',ref:'sfx_knock',note:''},
+  {name:"Tungi o'rmon",type:'atmos',ref:'forest',note:''},
+  {name:'Momaqaldiroq',type:'sfx',ref:'sfx_thunder',note:''},
+  {name:'Monolog: ichki ovoz',type:'dub',ref:'dub_monolog',note:''},
+  {name:'Jang sahnasi',type:'music',ref:'mus_battle',note:''},
+  {name:'Tong otishi',type:'atmos',ref:'dawn',note:''}],
+ scenes:{
+  forest:{name:"Tungi o'rmon",layers:[{a:'atm_forest_wind',v:70,t:''},{a:'atm_forest_crickets',v:45,t:''},{a:'atm_forest_owl',v:40,t:''},{a:'atm_forest_leaves',v:50,t:''}]},
+  hall:{name:'Saroy zali',layers:[{a:'atm_hall_tone',v:60,t:''},{a:'atm_hall_murmur',v:55,t:''},{a:'atm_hall_steps',v:45,t:''}]},
+  dawn:{name:'Tong otishi',layers:[{a:'atm_dawn_birds',v:60,t:''},{a:'atm_dawn_breeze',v:55,t:''},{a:'atm_dawn_stream',v:45,t:''}]}},
+ banks:[
+  {name:'A · Asosiy',pads:[P('sfx_thunder','tabiat'),P('sfx_knock','zarba'),P('sfx_steps','zarba'),P('sfx_sword','zarba'),P('sfx_horse','zarba'),P('sfx_glass','zarba'),P('sfx_bell','musiqiy'),P('sfx_rain','tabiat',1),
+   P('sfx_crowd','odam',1),P('sfx_heart','odam'),P('sfx_clock','musiqiy',1),P('sfx_wind','tabiat',1),P('sfx_door','zarba'),P('sfx_applause','odam',1),P('sfx_whoosh','musiqiy'),P('sfx_drum','musiqiy')]},
+  {name:'B · Mening ovozlarim',pads:Array(16).fill(null)}]
+};
+
+let show=clone(DEFAULT_SHOW),bank=0,editing=false;
+let ctx=null,masterIn,limiter,buses={},buffers={},origBuffers={},overrides={};
+let voices=[],vid=0,scene=null,cur=-1,next=0,fadeT=3,showStart=null;
+const dub={preset:'clean',amount:.6,in:null,out:null,nodes:[]};
+
+/* ---------- utils ---------- */
+const dbToG=db=>Math.pow(10,db/20);
+const gainFor=id=>overrides[id]?0:(META[id]&&META[id].gain||0);
+const fmt=s=>{if(!isFinite(s))return '∞';s=Math.max(0,s);const m=Math.floor(s/60),x=Math.floor(s%60);return m+':'+String(x).padStart(2,'0');};
+const durOf=id=>!buffers[id]?0:(!overrides[id]&&META[id]&&META[id].loop?META[id].dur:buffers[id].duration);
+const titleOf=id=>META[id]?META[id].title:'(o\'chirilgan ovoz)';
+const padTitle=p=>p.title||titleOf(p.a);
+const layerTitle=l=>l.t||titleOf(l.a);
+let toastT;function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),3400);}
+function b64ToAB(b64){const bin=atob(b64);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer;}
+function decode(ab){return new Promise((res,rej)=>{const p=ctx.decodeAudioData(ab,res,rej);if(p&&p.then)p.then(res,rej);});}
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+/* ---------- storage (best effort) ---------- */
+const DB={db:null,
+ async open(){try{if(!window.indexedDB)return;this.db=await new Promise((res,rej)=>{const r=indexedDB.open('sahna-ovozi',1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}catch(e){this.db=null;}},
+ get(k){return new Promise(res=>{try{if(!this.db)return res(undefined);const rq=this.db.transaction('files').objectStore('files').get(k);rq.onsuccess=()=>res(rq.result);rq.onerror=()=>res(undefined);}catch(e){res(undefined);}});},
+ put(k,v){try{if(this.db)this.db.transaction('files','readwrite').objectStore('files').put(v,k);}catch(e){}},
+ del(k){try{if(this.db)this.db.transaction('files','readwrite').objectStore('files').delete(k);}catch(e){}},
+ all(){return new Promise(res=>{const out={};try{if(!this.db)return res(out);const rq=this.db.transaction('files').objectStore('files').openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){out[c.key]=c.value;c.continue();}else res(out);};rq.onerror=()=>res(out);}catch(e){res(out);}});}
+};
+let saveT;
+function saveShow(){markDirty();clearTimeout(saveT);saveT=setTimeout(()=>{const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);},150);}
+function validShow(o){return o&&Array.isArray(o.cues)&&o.scenes&&typeof o.scenes==='object'&&Array.isArray(o.banks)&&o.banks.length&&o.banks.every(b=>b&&Array.isArray(b.pads));}
+function normShow(o){o.mix=o.mix||{};o.dubfx=o.dubfx||{preset:'clean',amount:.6};if(o.fade==null)o.fade=3;o.banks.forEach(b=>{while(b.pads.length<16)b.pads.push(null);b.pads.length=16;});o.cues.forEach(c=>{c.note=c.note||'';});return o;}
+
+/* ---------- audio graph ---------- */
+function makeBus(name){
+ const b={input:ctx.createGain(),fader:ctx.createGain(),mute:ctx.createGain(),val:80,muted:false,pk:[0,0]};
+ const sp=ctx.createChannelSplitter(2);b.aL=ctx.createAnalyser();b.aR=ctx.createAnalyser();b.aL.fftSize=b.aR.fftSize=1024;
+ b.fader.connect(b.mute);b.mute.connect(sp);sp.connect(b.aL,0);sp.connect(b.aR,1);
+ if(name!=='master')b.mute.connect(masterIn);
+ return b;
+}
+function initAudio(){
+ ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+ masterIn=ctx.createGain();buses.master=makeBus('master');
+ masterIn.connect(buses.master.input);buses.master.input.connect(buses.master.fader);
+ limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-2;limiter.knee.value=0;limiter.ratio.value=20;limiter.attack.value=.002;limiter.release.value=.15;
+ buses.master.mute.disconnect();buses.master.mute.connect(limiter);
+ const sp=ctx.createChannelSplitter(2);limiter.connect(sp);sp.connect(buses.master.aL,0);sp.connect(buses.master.aR,1);limiter.connect(ctx.destination);
+ for(const n of ['atmos','sfx','music','dub'])buses[n]=makeBus(n);
+ for(const n of ['atmos','sfx','music'])buses[n].input.connect(buses[n].fader);
+ dub.in=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.out.connect(buses.dub.fader);buildDubFx();
+ for(const n in buses)applyFader(n);
+ ctx.onstatechange=()=>updateBadge();
+}
+function faderToGain(v){return v<=0?0:dbToG((v-80)*0.75);}
+function faderDb(v){if(v<=0)return '−∞';const d=(v-80)*0.75;return (d>0?'+':'')+d.toFixed(1).replace('-','−');}
+function applyFader(n){const b=buses[n];b.fader.gain.setTargetAtTime(faderToGain(b.val),ctx.currentTime,.02);b.mute.gain.setTargetAtTime(b.muted?0:1,ctx.currentTime,.01);}
+
+/* ---------- dublaj effects ---------- */
+function makeIR(t60,bright){const len=Math.floor(ctx.sampleRate*t60),b=ctx.createBuffer(2,len,ctx.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);let lpv=0;const a=Math.exp(-2*Math.PI*bright/ctx.sampleRate);for(let i=0;i<len;i++){const n=(Math.random()*2-1)*Math.exp(-6.9*i/len);lpv=lpv*a+n*(1-a);d[i]=i<ctx.sampleRate*.01?0:lpv;}}return b;}
+function makePitchShifter(ratio){
+ const node=ctx.createScriptProcessor(1024,2,2),G=2048,S=8192,buf=[new Float32Array(S),new Float32Array(S)];let w=0,p=0;const inc=(1-ratio)/G;
+ const rd=(b,pos)=>{pos=((pos%S)+S)%S;const i=pos|0,f=pos-i;return b[i]*(1-f)+b[(i+1)%S]*f;};
+ node.onaudioprocess=e=>{const ib=e.inputBuffer,ob=e.outputBuffer,n=ib.length,i0=ib.getChannelData(0),i1=ib.numberOfChannels>1?ib.getChannelData(1):i0,o0=ob.getChannelData(0),o1=ob.getChannelData(1);
+  for(let k=0;k<n;k++){buf[0][w]=i0[k];buf[1][w]=i1[k];p+=inc;if(p>=1)p-=1;if(p<0)p+=1;const p2=(p+.5)%1,d1=p*G+1,d2=p2*G+1,g1=Math.sin(Math.PI*p),g2=Math.sin(Math.PI*p2);
+   o0[k]=g1*rd(buf[0],w-d1)+g2*rd(buf[0],w-d2);o1[k]=g1*rd(buf[1],w-d1)+g2*rd(buf[1],w-d2);w=(w+1)%S;}};
+ return node;
+}
+function bq(type,f,q,g){const n=ctx.createBiquadFilter();n.type=type;n.frequency.value=f;if(q!=null)n.Q.value=q;if(g!=null)n.gain.value=g;return n;}
+const irCache={};
+function buildDubFx(){
+ dub.nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(e){}try{n.disconnect();}catch(e){}});dub.nodes=[];
+ try{dub.in.disconnect();}catch(e){}
+ const N=n=>(dub.nodes.push(n),n),dry=N(ctx.createGain()),wet=N(ctx.createGain()),a=dub.amount;
+ dub.in.connect(dry);dry.connect(dub.out);wet.connect(dub.out);
+ const ir=(k,t,b)=>irCache[k]||(irCache[k]=makeIR(t,b));
+ const chain=(...ns)=>{let prev=dub.in;ns.forEach(n=>{prev.connect(n);prev=n;});prev.connect(wet);};
+ switch(dub.preset){
+  case 'clean':dry.gain.value=1;wet.gain.value=0;break;
+  case 'hall':{const c=N(ctx.createConvolver());c.buffer=ir('hall',3.2,5000);chain(c);dry.gain.value=1-a*.35;wet.gain.value=a*1.4;break;}
+  case 'giant':{chain(N(makePitchShifter(.72)),N(bq('lowshelf',220,null,5)),N(bq('lowpass',5500,.7)));dry.gain.value=1-a;wet.gain.value=a*1.2;break;}
+  case 'ghost':{const h=N(bq('highpass',380,.7)),d=N(ctx.createDelay(1)),fb=N(ctx.createGain()),c=N(ctx.createConvolver()),ps=N(makePitchShifter(1.04));d.delayTime.value=.29;fb.gain.value=.45;c.buffer=ir('ghost',4.5,3500);
+   dub.in.connect(h);h.connect(ps);ps.connect(d);d.connect(fb);fb.connect(d);d.connect(c);ps.connect(c);c.connect(wet);dry.gain.value=1-a*.75;wet.gain.value=a*1.6;break;}
+  case 'phone':{const ws=N(ctx.createWaveShaper()),cv=new Float32Array(1024);for(let i=0;i<1024;i++){const x=i/511.5-1;cv[i]=Math.tanh(x*4)/Math.tanh(4);}ws.curve=cv;chain(N(bq('highpass',480,.8)),N(bq('lowpass',3100,.8)),ws,N(bq('peaking',1600,1,6)));dry.gain.value=1-a;wet.gain.value=a*.8;break;}
+  case 'magic':{const rg=N(ctx.createGain()),osc=N(ctx.createOscillator()),c=N(ctx.createConvolver());rg.gain.value=0;osc.frequency.value=68;osc.connect(rg.gain);osc.start();c.buffer=ir('magic',2.2,7000);
+   dub.in.connect(rg);rg.connect(wet);rg.connect(c);c.connect(wet);dry.gain.value=1-a*.8;wet.gain.value=a*1.3;break;}
+ }
+}
+
+/* ---------- jonli mikrofon (dublaj) ---------- */
+let mic=null;
+const micOk=()=>!IS_FRAME&&!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+async function toggleMic(){
+ if(!ctx)return;
+ if(mic){try{mic.src.disconnect();}catch(e){}mic.stream.getTracks().forEach(t=>t.stop());mic=null;renderMic();logEvent('Jonli mikrofon o\'chirildi');return;}
+ try{
+  const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,latency:0,channelCount:1}});
+  const src=ctx.createMediaStreamSource(st);src.connect(buses.dub.input);mic={stream:st,src,name:(st.getAudioTracks()[0]||{}).label||'Mikrofon'};
+  renderMic();logEvent('Jonli mikrofon yoqildi: '+mic.name);
+  toast('Mikrofon jonli: '+mic.name+' — akustik qaytish bo\'lmasligi uchun karnaydan uzoqroq tuting');
+ }catch(e){toast('Mikrofonga ruxsat berilmadi yoki qurilma topilmadi');}
+}
+function renderMic(){
+ const b=$('#micBtn');if(!b)return;
+ b.style.display=micOk()?'':'none';
+ b.classList.toggle('on',!!mic);b.setAttribute('aria-pressed',!!mic);
+ b.textContent=mic?'● Jonli mikrofon: YOQIQ':'🎙 Jonli mikrofon';
+ const w=$('#dubWarn');if(w)w.innerHTML=micOk()?(mic?'Mikrofon ovozi <b>Dublaj</b> kanali va tanlangan obraz effekti orqali real vaqtda zalga chiqmoqda. Quloqchin bilan nazorat qiling.':'Jonli mikrofonni yoqing — aktyor ovozi tanlangan obraz effekti bilan real vaqtda chiqadi. Yoki yozib olingan ovoz faylini yuklang.'):'Brauzer sahifasida mikrofon bloklangan, shuning uchun jonli mikrofon hozircha yo\'q. Aktyorning yozib olingan ovozini yuklang — effektlar unga real vaqtda qo\'llanadi.';
+ $('#dubState').textContent=mic?'MIC · JONLI':(buffers.dub_monolog?'FAYL TAYYOR':'FAYL YO\'Q');$('#dubState').style.color=mic?'var(--rose)':(buffers.dub_monolog?'var(--teal)':'var(--rose)');
+}
+
+/* ---------- playback ---------- */
+function play(id,bus,o){
+ o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
+ const src=ctx.createBufferSource();src.buffer=buf;const g=ctx.createGain();
+ const lvl=dbToG(gainFor(id))*(o.level==null?1:o.level),now=ctx.currentTime,fi=o.fadeIn||0;
+ if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
+ src.connect(g);g.connect(buses[bus].input);
+ const m=META[id]||{};let off=0;
+ if(o.loop){src.loop=true;if(!overrides[id]&&m.loop){src.loopStart=m.loopStart;src.loopEnd=m.loopEnd;off=m.loopStart;}}
+ src.start(now,off);
+ const v={vid:++vid,ref:id,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:buf.duration-off,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
+ voices.push(v);
+ src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
+ renderVoices();renderPadStates();return v;
+}
+function stopVoice(v,t){if(!v||v.stopping)return;t=Math.max(t||0,.02);const now=ctx.currentTime;v.stopping=true;
+ try{v.g.gain.cancelScheduledValues(now);v.g.gain.setValueAtTime(v.g.gain.value,now);v.g.gain.linearRampToValueAtTime(0,now+t);v.src.stop(now+t+.03);}catch(e){}
+ renderVoices();}
+function preview(id){const v=voices.find(x=>x.ref===id&&x.preview);if(v){stopVoice(v,.1);return;}if(!buffers[id]){toast('Bu ovozda fayl yo\'q');return;}play(id,'sfx',{title:'▶ '+titleOf(id),preview:true});}
+
+const layerGain=v=>2*Math.pow(v/100,2);
+function startScene(key,t){
+ const def=show.scenes[key];if(!def){toast('Atmosfera topilmadi');return;}
+ if(scene)scene.layers.forEach(l=>stopVoice(l.voice,t));
+ scene={key,layers:def.layers.map(l=>({a:l.a,v:l.v,t:l.t,voice:null}))};
+ scene.layers.forEach(l=>{l.voice=play(l.a,'atmos',{loop:true,fadeIn:t,level:layerGain(l.v),title:layerTitle(l)});});
+ renderScene();
+}
+function setLayerVol(i,vol){if(!scene)return;const l=scene.layers[i];l.v=vol;const v=l.voice;if(v&&!v.stopping){const tg=dbToG(gainFor(l.a))*layerGain(vol);v.g.gain.cancelScheduledValues(ctx.currentTime);v.g.gain.setTargetAtTime(tg,ctx.currentTime,.04);}
+ const out=document.getElementById('lv'+i);if(out)out.textContent=vol+'%';}
+function sceneOff(t){if(scene){scene.layers.forEach(l=>stopVoice(l.voice,t));scene=null;renderScene();}}
+function busOff(bus,t){voices.filter(v=>v.bus===bus).forEach(v=>stopVoice(v,t));}
+
+function fireCue(i){
+ const c=show.cues[i];if(!c)return;
+ if(showStart==null){showStart=performance.now();$('#clockBox').classList.add('live');$('#liveTxt').textContent='JONLI';}
+ if(c.type==='atmos')startScene(c.ref,fadeT);
+ else if(!buffers[c.ref])toast('“'+c.name+'” uchun ovoz fayli yo\'q — Tahrirlash rejimida ✎ orqali biriktiring.');
+ else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name});}
+ else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name});
+ else if(c.type==='dub')play(c.ref,'dub',{title:c.name});
+ cur=i;next=Math.min(i+1,show.cues.length);renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
+}
+function go(){if(next>=show.cues.length){toast('Cue ro\'yxati tugadi. Boshidan boshlash uchun Q1 ni tanlang.');return;}fireCue(next);}
+function panic(){if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
+
+/* ---------- files ---------- */
+let fileCb=null;
+function pickFile(cb,accept){fileCb=cb;const f=$('#fileIn');f.accept=accept||'audio/*';f.value='';f.click();}
+$('#fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(f&&fileCb){const cb=fileCb;fileCb=null;cb(f);}});
+async function readAudio(file){const ab=await file.arrayBuffer();const buf=await decode(ab.slice(0));return {ab,buf};}
+async function addUserAsset(file,title){
+ if(!ctx){toast('Avval ovozni yoqing');return null;}
+ try{const {ab,buf}=await readAudio(file);const id=uid('u_');const t=title||file.name.replace(/\.[^.]+$/,'');
+  META[id]={kind:'user',title:t,file:file.name,loop:false,gain:0,dur:buf.duration};buffers[id]=buf;Store.put(id,{name:file.name,title:t,data:ab});logEvent('Fayl qo\'shildi: '+t+' ('+file.name+')');
+  toast('Yuklandi: '+t+' ('+fmt(buf.duration)+')');return id;}
+ catch(e){toast('Faylni o\'qib bo\'lmadi: '+file.name+' — WAV yoki MP3 sinab ko\'ring');return null;}
+}
+async function replaceAsset(id,file){
+ try{const {ab,buf}=await readAudio(file);buffers[id]=buf;
+  if(META[id].kind==='user'){META[id].file=file.name;META[id].dur=buf.duration;Store.put(id,{name:file.name,title:META[id].title,data:ab});}
+  else{overrides[id]={name:file.name};Store.put(id,{name:file.name,data:ab});}logEvent('Fayl almashtirildi: '+titleOf(id)+' → '+file.name);
+  toast('“'+titleOf(id)+'” → '+file.name+' ('+fmt(buf.duration)+')');renderAll();}
+ catch(err){toast('Faylni o\'qib bo\'lmadi: '+file.name);}
+}
+function resetAsset(id){delete overrides[id];Store.del(id);if(origBuffers[id])buffers[id]=origBuffers[id];else delete buffers[id];renderAll();toast('“'+titleOf(id)+'” asl holiga qaytdi');}
+function assetUsed(id){return show.cues.some(c=>c.ref===id)||Object.values(show.scenes).some(s=>s.layers.some(l=>l.a===id))||show.banks.some(b=>b.pads.some(p=>p&&p.a===id));}
+function deleteUserAsset(id){if(assetUsed(id)){toast('Bu fayl hali cue, tugma yoki atmosferada ishlatilmoqda');return;}delete META[id];delete buffers[id];Store.del(id);renderLib();toast('Fayl o\'chirildi');}
+
+/* ---------- asset select ---------- */
+function assetOptions(sel,first){
+ const g={user:[],sfx:[],atmos:[],music:[],dub:[]};
+ for(const id in META){const k=META[id].kind;const key=k.indexOf('atmos')===0?'atmos':k;(g[key]||g.user).push(id);}
+ const order=[first,'user','sfx','atmos','music','dub'].filter((x,i,a)=>x&&a.indexOf(x)===i);
+ let h='<option value="">— tanlanmagan —</option>';
+ order.forEach(k=>{if(!g[k].length)return;h+='<optgroup label="'+GROUP_N[k]+'">'+g[k].map(id=>'<option value="'+id+'"'+(id===sel?' selected':'')+'>'+esc(titleOf(id))+(durOf(id)?' · '+fmt(durOf(id)):' · bo\'sh')+'</option>').join('')+'</optgroup>';});
+ return h;
+}
+function assetField(selId,sel,first,label){
+ return '<div class="field"><label for="'+selId+'">'+(label||'Ovoz')+'</label><div class="frow"><select class="inp" id="'+selId+'">'+assetOptions(sel,first)+'</select><button type="button" class="btn" data-mup="'+selId+'">Fayldan yuklash</button><button type="button" class="btn" data-mprev="'+selId+'" aria-label="Tinglash">▶</button></div></div>';
+}
+
+/* ---------- modal ---------- */
+let mctx=null,lastFocus=null;
+function openModal(title,body,buttons,handlers){
+ lastFocus=document.activeElement;mctx=handlers||{};
+ $('#mTitle').textContent=title;$('#mBody').innerHTML=body;
+ $('#mFoot').innerHTML=buttons.map((b,i)=>'<button type="button" class="btn '+(b.cls||'')+'" data-mbtn="'+i+'">'+esc(b.label)+'</button>').join('');
+ mctx._btns=buttons;$('#modal').classList.add('open');
+ const f=$('#mBody').querySelector('input,select,textarea');if(f)f.focus();
+}
+function closeModal(){$('#modal').classList.remove('open');mctx=null;if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+const modalOpen=()=>$('#modal').classList.contains('open');
+$('#modal').addEventListener('click',async e=>{
+ if(e.target.id==='modal'){closeModal();return;}
+ const b=e.target.closest('button');if(!b||!mctx)return;const d=b.dataset;
+ if(d.mbtn!=null){const btn=mctx._btns[+d.mbtn];const r=btn.fn&&btn.fn(b);if(r!==false)closeModal();return;}
+ if(d.mup){const selId=d.mup;pickFile(async f=>{const id=await addUserAsset(f);if(id){const s=document.getElementById(selId);if(s){s.innerHTML=assetOptions(id,'user');s.value=id;s.dispatchEvent(new Event('change',{bubbles:true}));}}});return;}
+ if(d.mprev){const s=document.getElementById(d.mprev);if(s&&s.value)preview(s.value);return;}
+ if(mctx.click)mctx.click(e,b);
+});
+$('#modal').addEventListener('change',e=>{if(mctx&&mctx.change)mctx.change(e);});
+$('#modal').addEventListener('input',e=>{if(mctx&&mctx.input)mctx.input(e);});
+const val=id=>{const el=document.getElementById(id);return el?el.value:'';};
+
+/* ---------- editors ---------- */
+function editCue(i){
+ const isNew=i==null;const c=isNew?{name:'Yangi cue',type:'sfx',ref:'',note:''}:clone(show.cues[i]);
+ const srcHtml=t=>t==='atmos'
+  ?'<div class="field"><label for="cSrc">Atmosfera</label><select class="inp" id="cSrc">'+Object.keys(show.scenes).map(k=>'<option value="'+k+'"'+(k===c.ref?' selected':'')+'>'+esc(show.scenes[k].name)+' · '+show.scenes[k].layers.length+' qatlam</option>').join('')+'</select><p class="hint">Yangi atmosfera yaratish: Tahrirlash rejimida Atmosfera panelidagi “+ Yangi atmosfera”.</p></div>'
+  :assetField('cSrc',c.ref,t==='music'?'music':(t==='dub'?'user':'sfx'));
+ const body='<div class="field"><label for="cName">Cue nomi</label><input class="inp" type="text" id="cName" value="'+esc(c.name)+'"></div>'+
+  '<div class="field"><label for="cType">Turi</label><select class="inp" id="cType">'+Object.keys(TYPE).map(k=>'<option value="'+k+'"'+(k===c.type?' selected':'')+'>'+TYPE[k].n+'</option>').join('')+'</select></div>'+
+  '<div id="cSrcBox">'+srcHtml(c.type)+'</div>'+
+  '<div class="field"><label for="cNote">Operator uchun izoh (signal)</label><input class="inp" type="text" id="cNote" placeholder="masalan: aktyor eshikka qo\'l tekkizganda" value="'+esc(c.note)+'"></div>';
+ const save=()=>{c.name=val('cName').trim()||'Nomsiz cue';c.type=val('cType');c.ref=val('cSrc');c.note=val('cNote').trim();
+  if(isNew){show.cues.push(c);if(next>=show.cues.length-1)next=show.cues.length-1;}else show.cues[i]=c;
+  saveShow();renderCues();renderNow();toast('Cue saqlandi');logEvent('Tahrir: cue “'+c.name+'” saqlandi');};
+ const btns=[{label:'Saqlash',cls:'primary',fn:save},{label:'Bekor',fn:()=>{}}];
+ if(!isNew)btns.unshift({label:'O\'chirish',cls:'danger',fn:()=>{show.cues.splice(i,1);if(i<cur)cur--;else if(i===cur)cur=-1;next=Math.min(next>i?next-1:next,show.cues.length);saveShow();renderCues();toast('Cue o\'chirildi');}});
+ openModal(isNew?'Yangi cue':'Cue Q'+(i+1)+' ni tahrirlash',body,btns,{change:e=>{if(e.target.id==='cType'){c.type=e.target.value;c.ref=e.target.value==='atmos'?Object.keys(show.scenes)[0]||'':'';$('#cSrcBox').innerHTML=srcHtml(c.type);}}});
+}
+function moveCue(i,d){const j=i+d;if(j<0||j>=show.cues.length)return;const a=show.cues;[a[i],a[j]]=[a[j],a[i]];
+ if(cur===i)cur=j;else if(cur===j)cur=i;if(next===i)next=j;else if(next===j)next=i;saveShow();renderCues();}
+
+function editPad(i){
+ const b=show.banks[bank];const p=b.pads[i]?clone(b.pads[i]):{a:'',cat:'zarba',t:0,title:'',g:0};
+ const body='<div class="field"><label for="pName">Tugma nomi</label><input class="inp" type="text" id="pName" value="'+esc(p.title)+'" placeholder="'+esc(p.a?titleOf(p.a):'masalan: Kuchuk huri')+'"></div>'+
+  assetField('pSrc',p.a,'user')+
+  '<div class="field"><label for="pCat">Toifa (rang)</label><select class="inp" id="pCat">'+Object.keys(CAT).map(k=>'<option value="'+k+'"'+(k===p.cat?' selected':'')+'>'+CAT[k][1]+'</option>').join('')+'</select></div>'+
+  '<div class="field wfield"><label for="pGain">Daraja: <span id="pGainV">'+(p.g>0?'+':'')+p.g+' dB</span></label><input type="range" id="pGain" min="-18" max="6" step="1" value="'+p.g+'" style="accent-color:var(--amber)"></div>'+
+  '<label class="chk"><input type="checkbox" id="pTog"'+(p.t?' checked':'')+'> Qayta bosilsa to\'xtasin (uzun va loop ovozlar uchun)</label>'+
+  '<label class="chk"><input type="checkbox" id="pLoop"'+(p.loop?' checked':'')+'> Takrorlansin (loop) — to\'xtatilguncha</label>'+
+  '<p class="hint">Klaviatura tugmasi: <b class="mono">'+KEYS[i][1]+'</b> · Bank: '+esc(b.name)+'</p>';
+ const save=()=>{const a=val('pSrc');if(!a){toast('Ovoz tanlang yoki fayl yuklang');return false;}
+  b.pads[i]={a,cat:val('pCat'),t:$('#pTog').checked||$('#pLoop').checked?1:0,loop:$('#pLoop').checked?1:0,title:val('pName').trim(),g:+val('pGain')};saveShow();renderPads();toast('Tugma saqlandi');logEvent('Tahrir: SFX tugmasi '+KEYS[i][1]+' saqlandi');};
+ openModal('SFX tugmasi '+KEYS[i][1],body,[{label:'Tugmani tozalash',cls:'danger',fn:()=>{b.pads[i]=null;saveShow();renderPads();}},{label:'Bekor',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:save}],
+  {input:e=>{if(e.target.id==='pGain'){const g=+e.target.value;$('#pGainV').textContent=(g>0?'+':'')+g+' dB';}}});
+}
+function editBank(isNew){
+ const b=isNew?{name:'Bank '+String.fromCharCode(65+show.banks.length),pads:Array(16).fill(null)}:show.banks[bank];
+ const body='<div class="field"><label for="bName">Bank nomi</label><input class="inp" type="text" id="bName" value="'+esc(b.name)+'"></div><p class="hint">Har bir bankda 16 ta tugma bor. Bank almashtirilganda klaviatura tugmalari (1–8, Q–R, A–F) shu bankka o\'tadi.</p>';
+ const btns=[{label:'Bekor',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:()=>{b.name=val('bName').trim()||b.name;if(isNew){show.banks.push(b);bank=show.banks.length-1;}saveShow();renderPads();}}];
+ if(!isNew&&show.banks.length>1)btns.unshift({label:'Bankni o\'chirish',cls:'danger',fn:()=>{show.banks.splice(bank,1);bank=0;saveShow();renderPads();toast('Bank o\'chirildi');}});
+ openModal(isNew?'Yangi SFX banki':'Bankni tahrirlash',body,btns);
+}
+function editScene(key){
+ const isNew=!key;const sc=isNew?{name:'Yangi atmosfera',layers:[]}:clone(show.scenes[key]);
+ const draw=()=>{$('#sLayers').innerHTML=sc.layers.length?sc.layers.map((l,i)=>'<div class="lyrow"><input class="inp" type="text" data-lt="'+i+'" value="'+esc(l.t)+'" placeholder="'+esc(titleOf(l.a))+'" aria-label="Qatlam nomi"><select class="inp" data-la="'+i+'" aria-label="Qatlam ovozi">'+assetOptions(l.a,'atmos')+'</select><input class="inp" type="number" min="0" max="100" data-lv="'+i+'" value="'+l.v+'" aria-label="Daraja foizda"><button type="button" class="ibtn" data-ldel="'+i+'" aria-label="Qatlamni olib tashlash">'+ICON_X+'</button></div>').join(''):'<div class="empty">Qatlam yo\'q. Pastdagi tugmalar bilan qo\'shing.</div>';};
+ const body='<div class="field"><label for="sName">Atmosfera nomi</label><input class="inp" type="text" id="sName" value="'+esc(sc.name)+'"></div>'+
+  '<div class="field"><span class="flabel">Qatlamlar — nom · ovoz · boshlang\'ich daraja %</span><div id="sLayers" style="display:flex;flex-direction:column;gap:6px"></div></div>'+
+  '<div class="frow"><button type="button" class="btn" id="sAdd">+ Qatlam qo\'shish</button><button type="button" class="btn" id="sUp">+ Fayldan qatlam</button></div>'+
+  '<p class="hint">Qatlamlar cheksiz takrorlanadi (loop). O\'z fayllaringiz uchun boshi va oxiri silliq ulangan loop fayl ishlating.</p>';
+ const btns=[{label:'Bekor',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:()=>{sc.name=val('sName').trim()||'Nomsiz atmosfera';sc.layers=sc.layers.filter(l=>l.a);const k=key||uid('s_');show.scenes[k]=sc;saveShow();renderScene();renderCues();logEvent('Tahrir: atmosfera “'+sc.name+'” saqlandi');toast('Atmosfera saqlandi'+(scene&&scene.key===k?' — keyingi ishga tushirishda qo\'llanadi':''));}}];
+ if(!isNew)btns.unshift({label:'O\'chirish',cls:'danger',fn:()=>{const used=show.cues.map((c,i)=>c.type==='atmos'&&c.ref===key?'Q'+(i+1):null).filter(Boolean);if(used.length){toast('Avval '+used.join(', ')+' cue\'larini o\'zgartiring');return false;}delete show.scenes[key];if(scene&&scene.key===key)sceneOff(1);saveShow();renderScene();}});
+ openModal(isNew?'Yangi atmosfera':'Atmosferani tahrirlash',body,btns,{
+  click:(e,b)=>{if(b.id==='sAdd'){sc.layers.push({a:'atm_forest_wind',v:50,t:''});draw();}
+   else if(b.id==='sUp')pickFile(async f=>{const id=await addUserAsset(f);if(id){sc.layers.push({a:id,v:60,t:''});draw();}});
+   else if(b.dataset.ldel!=null){sc.layers.splice(+b.dataset.ldel,1);draw();}},
+  change:e=>{const d=e.target.dataset;if(d.la!=null)sc.layers[+d.la].a=e.target.value;},
+  input:e=>{const d=e.target.dataset;if(d.lt!=null)sc.layers[+d.lt].t=e.target.value;else if(d.lv!=null)sc.layers[+d.lv].v=Math.max(0,Math.min(100,+e.target.value||0));}});
+ draw();
+}
+function editShow(){
+ let armed=false;
+ const body='<div class="field"><label for="shT">Spektakl nomi</label><input class="inp" type="text" id="shT" value="'+esc(show.title)+'"></div>'+
+  '<div class="field"><label for="shA">Parda / qism</label><input class="inp" type="text" id="shA" value="'+esc(show.act)+'"></div>'+
+  '<div class="field"><span class="flabel">Zaxira nusxa (cue, bank, atmosfera sozlamalari)</span><div class="frow"><button type="button" class="btn" id="shCopy">JSON nusxalash</button><button type="button" class="btn" id="shImp">JSON fayldan yuklash</button><button type="button" class="btn danger" id="shReset">Standart namunaga qaytarish</button></div>'+
+  '<p class="hint">Ovoz fayllari JSON ichiga kirmaydi — ular shu brauzerda saqlanadi. Boshqa kompyuterga ko\'chirganda fayllarni qayta yuklang.</p><textarea class="inp" id="shJson" readonly style="display:none" aria-label="Spektakl JSON"></textarea></div>';
+ openModal('Spektakl ma\'lumotlari',body,[{label:'Yopish',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:()=>{show.title=val('shT').trim()||show.title;show.act=val('shA').trim();saveShow();renderHeader();}}],{
+  click:async(e,b)=>{
+   if(b.id==='shCopy'){const s=JSON.stringify(show,null,1);const ta=$('#shJson');ta.value=s;ta.style.display='block';try{await navigator.clipboard.writeText(s);toast('JSON nusxalandi — xohlagan joyga saqlab qo\'ying');}catch(err){ta.select();toast('Matn belgilandi — Ctrl+C bilan nusxalang');}}
+   else if(b.id==='shImp')pickFile(async f=>{try{const o=JSON.parse(await f.text());if(!validShow(o))throw 0;show=normShow(o);bank=0;cur=-1;next=0;saveShow();closeModal();renderAll();toast('Spektakl yuklandi: '+show.title);}catch(err){toast('Bu fayl Sahna Ovozi JSON fayli emas');}},'.json,application/json');
+   else if(b.id==='shReset'){if(!armed){armed=true;b.textContent='Ishonchingiz komilmi? Yana bosing';return;}show=clone(DEFAULT_SHOW);bank=0;cur=-1;next=0;saveShow();closeModal();renderAll();toast('Standart namuna tiklandi');}
+  }});
+}
+
+/* ---------- rendering ---------- */
+function renderHeader(){$('#showName').textContent=show.title+(show.act?' · '+show.act:'');}
+function cueLen(c){if(c.type==='atmos'){const s=show.scenes[c.ref];return s?s.name+' · '+s.layers.length+' qatlam':'atmosfera yo\'q';}const d=durOf(c.ref);return d?fmt(d):'fayl yo\'q';}
+function renderCues(){
+ const C=show.cues;if(next>C.length)next=C.length;if(cur>=C.length)cur=-1;
+ $('#cues').innerHTML=C.length?C.map((c,i)=>{const T=TYPE[c.type]||TYPE.sfx;const st=i===cur?'live':(i===next?'next':(i<cur?'done':''));const tag=i===cur?'JONLI':(i===next?'KEYINGI':(i<cur?'TUGADI':''));
+  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span><span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
+  if(editing)return '<div class="cue editrow '+st+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
+  return '<button type="button" class="cue '+st+'" data-cue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
+ $('#cueCount').textContent=(cur+1)+' / '+C.length;
+ $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
+}
+function renderNow(){
+ const c=show.cues[cur];if(!c){$('#nowLbl').textContent='Hozir sahnada';$('#nowName').textContent='Spektakl boshlanishini kutmoqda';$('#nowSub').textContent='GO bosing yoki Probel';return;}
+ const T=TYPE[c.type];$('#nowLbl').textContent='Hozir sahnada · Q'+(cur+1);$('#nowName').textContent=c.name;
+ $('#nowSub').textContent=T.n+(c.type==='atmos'?' · cheksiz takror (loop)':(durOf(c.ref)?' · '+fmt(durOf(c.ref)):''))+(c.note?' · '+c.note:'');
+}
+function renderScene(){
+ const el=$('#layers');
+ $('#sceneTools').innerHTML='<span class="flabel" style="margin-right:4px">Atmosferalar:</span>'+Object.keys(show.scenes).map(k=>'<button type="button" class="bank" data-sedit="'+k+'">✎ '+esc(show.scenes[k].name)+'</button>').join('')+'<button type="button" class="bank" data-snew="1">+ Yangi atmosfera</button>';
+ if(!scene){$('#atmTitle').textContent='Atmosfera: —';el.innerHTML='<div class="empty">Atmosfera o\'chiq. Atmosfera cue\'sini GO qiling yoki ro\'yxatdan tanlang.</div>';return;}
+ $('#atmTitle').textContent='Atmosfera: '+(show.scenes[scene.key]?show.scenes[scene.key].name:'—');
+ el.innerHTML='<div class="layers">'+scene.layers.map((l,i)=>'<div class="layer"><div class="between"><label for="ly'+i+'">'+esc(layerTitle(l))+'</label><span class="mono" style="font-size:12px;color:var(--teal)" id="lv'+i+'">'+l.v+'%</span></div><input type="range" min="0" max="100" value="'+l.v+'" id="ly'+i+'" data-layer="'+i+'">'+(META[l.a]&&(META[l.a].kind==='user'||overrides[l.a])?'<span style="font-size:11px;color:var(--amber)">o\'z fayli</span>':'<span class="muted" style="font-size:11px">loop · '+fmt(durOf(l.a))+'</span>')+'</div>').join('')+'</div>';
+}
+function renderPads(){
+ if(bank>=show.banks.length)bank=0;
+ $('#banks').innerHTML=show.banks.map((b,i)=>'<button type="button" class="bank'+(i===bank?' on':'')+'" data-bank="'+i+'" aria-pressed="'+(i===bank)+'">'+esc(b.name)+'</button>').join('')+
+  (editing?'<button type="button" class="bank" data-bedit="1">✎ Bankni tahrirlash</button><button type="button" class="bank" data-bnew="1">+ Yangi bank</button>':'');
+ $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
+  if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
+  const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
+  return '<div class="pad" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(durOf(p.a))+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(durOf(p.a)):'fayl yo\'q')+'</span>')+'</button><button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+ renderPadStates();
+}
+function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));});}
+function hitPad(i){
+ if(!ctx)return;const p=show.banks[bank].pads[i];
+ if(editing){editPad(i);return;}
+ if(!p||!buffers[p.a]){toast('Bo\'sh tugma — faylni sudrab tashlang yoki ↑ bilan yuklang');return;}
+ const playing=voices.filter(v=>v.ref===p.a&&!v.stopping&&!v.preview);
+ if(p.t&&playing.length){playing.forEach(v=>stopVoice(v,Math.max(fadeT,.3)));return;}
+ play(p.a,'sfx',{color:(CAT[p.cat]||CAT.zarba)[0],fadeIn:p.loop||p.t?Math.min(fadeT,1.5):0,loop:!!p.loop,level:dbToG(p.g||0),title:padTitle(p)});
+ $('#lastPad').textContent=padTitle(p);logEvent('SFX '+KEYS[i][1]+' · '+padTitle(p));
+ const el=document.querySelector('.pad[data-pad="'+i+'"]');if(el){el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),140);}
+}
+async function padUpload(i,file){
+ const id=await addUserAsset(file);if(!id)return;const b=show.banks[bank];const old=b.pads[i];
+ b.pads[i]={a:id,cat:old?old.cat:'zarba',t:old?old.t:0,loop:old?old.loop:0,title:'',g:0};saveShow();renderPads();
+}
+function renderStrips(){
+ $('#strips').innerHTML=BUSES.map(([k,n,c])=>'<div class="strip"><div class="mfad"><div class="meter"><i id="mL_'+k+'" style="background:'+c+'"></i></div><div class="meter"><i id="mR_'+k+'" style="background:'+c+'"></i></div><input class="vfader" type="range" min="0" max="100" value="'+buses[k].val+'" data-bus="'+k+'" title="G\'ildirak — balandlik, Shift+g\'ildirak — aniq, 2 marta bosish — 0 dB" aria-label="'+n+' darajasi"></div><span class="db mono" id="db_'+k+'">'+faderDb(buses[k].val)+'</span><span class="nm">'+n+'</span><button type="button" class="mute'+(buses[k].muted?' on':'')+'" data-mute="'+k+'" aria-pressed="'+buses[k].muted+'" aria-label="'+n+' ovozini o\'chirish">M</button></div>').join('');
+}
+function renderPresets(){
+ $('#presets').innerHTML=PRESETS.map(([k,n,h])=>'<button type="button" class="preset'+(dub.preset===k?' on':'')+'" data-preset="'+k+'" aria-pressed="'+(dub.preset===k)+'"><span>'+n+'</span><small>'+h+'</small></button>').join('');
+ renderMic();
+}
+function renderFades(){$('#fadeSeg').innerHTML=FADES.map(f=>'<button type="button" class="'+(f===fadeT?'on':'')+'" data-fade="'+f+'" aria-pressed="'+(f===fadeT)+'">'+(f?f+' s':'Darhol')+'</button>').join('');}
+function renderVoices(){
+ const live=voices;$('#vCount').textContent=live.length?live.length+' ta ovoz':'jim';
+ if(!live.length){$('#voices').innerHTML='<div class="empty">Hozircha hech narsa yangramayapti.</div>';return;}
+ $('#voices').innerHTML=live.map(v=>'<div class="voice" style="'+(v.stopping?'opacity:.45':'')+'"><span class="c" style="background:'+v.color+'"></span><span class="t">'+esc(v.title)+'<small>'+TYPE[v.bus].n+'</small></span><div class="prog'+(v.loop?' loop':'')+'"><i id="pg'+v.vid+'" style="background:'+v.color+'"></i></div><span class="rem mono" id="rm'+v.vid+'">'+(v.loop?'loop':'')+'</span><button type="button" class="x" data-stop="'+v.vid+'" aria-label="'+esc(v.title)+' ni to\'xtatish">'+ICON_X+'</button></div>').join('');
+}
+function renderLib(){
+ const row=id=>{const m=META[id];const ov=overrides[id];const d=durOf(id);const user=m.kind==='user';
+  return '<div class="lrow"><span class="nm">'+esc(m.title)+'<small>'+(user?'fayl: '+esc(m.file||''):(ov?'o\'z fayli: '+esc(ov.name):(d?'tayyor namuna':'bo\'sh')))+(d?' · '+fmt(d):'')+(user&&!assetUsed(id)?' · ishlatilmagan':'')+'</small></span>'+(d?'<button type="button" class="btn" data-prev="'+id+'" aria-label="'+esc(m.title)+' ni tinglash">▶</button>':'')+'<button type="button" class="btn" data-repl="'+id+'">Almashtirish</button>'+(ov?'<button type="button" class="btn" data-reset="'+id+'">Asl</button>':'')+(user?'<button type="button" class="btn danger" data-udel="'+id+'">O\'chirish</button>':'')+'</div>';};
+ const g={user:[],sfx:[],atmos:[],music:[],dub:[]};for(const id in META){const k=META[id].kind;(g[k.indexOf('atmos')===0?'atmos':k]||g.user).push(id);}
+ let h='<div class="warn">Diqqat: ▶ oldindan tinglash zal karnaylariga chiqadi (brauzerda alohida quloqchin chiqishi yo\'q).</div>';
+ h+='<div class="frow"><button type="button" class="btn primary" id="libAdd">+ Kutubxonaga fayl qo\'shish</button></div>';
+ ['user','sfx','atmos','music','dub'].forEach(k=>{h+='<div class="lgroup"><h3>'+GROUP_N[k]+'</h3>'+(g[k].length?g[k].map(row).join(''):'<p class="hint">Hali fayl yo\'q.</p>')+'</div>';});
+ $('#libBody').innerHTML=h;
+}
+function renderAll(){renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();}
+function setEditing(on){editing=on;document.body.classList.toggle('editing',on);const b=$('#editBtn');b.classList.toggle('edit-on',on);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Tahrirlashni tugatish':'✎ Tahrirlash';renderCues();renderPads();}
+
+/* ---------- meters & clock loop ---------- */
+const tmp=new Float32Array(1024);
+function peakOf(an){an.getFloatTimeDomainData(tmp);let m=0;for(let i=0;i<tmp.length;i++){const a=Math.abs(tmp[i]);if(a>m)m=a;}return m;}
+function loop(){
+ if(ctx){for(const [k] of BUSES){const b=buses[k];[b.aL,b.aR].forEach((an,ch)=>{const db=20*Math.log10(peakOf(an)+1e-6);const pct=Math.max(0,Math.min(1,(db+60)/60));b.pk[ch]=Math.max(pct,b.pk[ch]-.02);const el=document.getElementById((ch?'mR_':'mL_')+k);if(el)el.style.height=(b.pk[ch]*100).toFixed(1)+'%';});}
+  const now=ctx.currentTime;for(const v of voices){if(v.loop)continue;const el=document.getElementById('pg'+v.vid),rm=document.getElementById('rm'+v.vid);const pos=now-v.start;if(el)el.style.width=Math.min(100,pos/v.dur*100)+'%';if(rm)rm.textContent='−'+fmt(v.dur-pos);}}
+ if(showStart!=null){const s=Math.floor((performance.now()-showStart)/1000);$('#clock').textContent=[s/3600|0,(s/60|0)%60,s%60].map(x=>String(x).padStart(2,'0')).join(':');}
+ requestAnimationFrame(loop);
+}
+
+
+/* ---------- audio unlock & diagnostics ---------- */
+function unlockAudio(){
+ try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+ try{const b=ctx.createBuffer(1,1,ctx.sampleRate),s=ctx.createBufferSource();s.buffer=b;s.connect(ctx.destination);s.start(0);}catch(e){}
+ // iOS silent-switch workaround: a playing <audio> element moves the page to the media channel
+ try{if(!window.__silentEl){const sr=8000,n=sr/2,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  const a=new Audio(URL.createObjectURL(new Blob([buf],{type:'audio/wav'})));a.loop=true;a.volume=0.01;a.setAttribute('playsinline','');window.__silentEl=a;}
+  const p=window.__silentEl.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}
+}
+function updateBadge(){
+ const b=$('#audioBadge');if(!b)return;
+ if(!ctx){b.textContent='OVOZ: —';b.className='btn';return;}
+ const ok=ctx.state==='running';b.className='btn '+(ok?'ok':'bad');
+ b.textContent=ok?'OVOZ ✓':'OVOZ O\'CHIQ — bosing';
+}
+function wake(){if(!ctx)return;if(ctx.state!=='running'){unlockAudio();ctx.resume().then(updateBadge,updateBadge);}}
+['pointerdown','keydown','touchend'].forEach(ev=>document.addEventListener(ev,wake,true));
+function beep(){
+ if(!ctx)return;wake();const o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime;o.frequency.value=1000;
+ g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(.3,now+.02);g.gain.setValueAtTime(.3,now+.9);g.gain.linearRampToValueAtTime(0,now+1);
+ o.connect(g);g.connect(masterIn);o.start(now);o.stop(now+1.05);
+}
+async function measure(){
+ const t0=ctx.currentTime,p0=performance.now();await new Promise(r=>setTimeout(r,400));
+ const dt=ctx.currentTime-t0,dp=(performance.now()-p0)/1000;return {moving:dt>0.2,dt,dp};
+}
+async function runDiag(auto){
+ const rows=[];const R=(k,v,ok)=>rows.push('<tr><td>'+k+'</td><td class="'+(ok===true?'okc':ok===false?'badc':'')+'">'+v+'</td></tr>');
+ if(!ctx){toast('Avval “Ovozni yoqish va boshlash” tugmasini bosing');return;}
+ const st=ctx.state;R('Audio dvigatel holati',st==='running'?'ishlayapti (running)':st+' — brauzer ovozni to\'xtatib qo\'ygan',st==='running');
+ const m=await measure();R('Audio soat yurayaptimi',m.moving?'ha ('+m.dt.toFixed(2)+' s / '+m.dp.toFixed(2)+' s)':'YO\'Q — ovoz chiqishi to\'xtagan',m.moving);
+ let pol='aniqlanmadi';try{if(navigator.getAutoplayPolicy)pol=navigator.getAutoplayPolicy('audiocontext');}catch(e){}
+ R('Brauzerning avtoijro siyosati',pol==='allowed'?'ruxsat berilgan':pol==='disallowed'?'TAQIQLANGAN — sahifa ichida bosish kerak':pol,pol==='allowed'?true:pol==='disallowed'?false:null);
+ let fp='aniqlanmadi';try{if(document.featurePolicy)fp=document.featurePolicy.allowsFeature('autoplay')?'ruxsat bor':'ruxsat YO\'Q (ramka cheklovi)';}catch(e){}
+ R('Ramka (iframe) autoplay ruxsati',fp+' (bosish bilan yoqilsa muammo emas)',null);
+ R('Namuna chastotasi',ctx.sampleRate+' Hz',null);
+ R('Kechikish',((ctx.baseLatency||0)*1000).toFixed(0)+' ms'+(ctx.outputLatency?' + '+(ctx.outputLatency*1000).toFixed(0)+' ms':''),null);
+ R('Yuklangan ovozlar',Object.keys(buffers).length+' ta',Object.keys(buffers).length>0);
+ const mut=BUSES.filter(([k])=>buses[k].muted||buses[k].val===0).map(b=>b[1]);
+ R('Mikser',mut.length?'O\'chirilgan kanal: '+mut.join(', '):'barcha kanallar ochiq',!mut.length);
+ R('Hozir yangrayotgan',voices.length+' ta',null);
+ const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document);
+ let verdict;
+ if(st!=='running'||!m.moving)verdict='<b>Sabab: brauzer audio dvigatelni to\'xtatib qo\'ygan.</b> Pastdagi “Sinov signali” tugmasini bosing — bosish ovozni qayta yoqadi. Yordam bermasa, sahifani to\'liq ekranda (Share yoki artifact havolasini alohida oynada) oching va qaytadan “Ovozni yoqish” ni bosing.';
+ else if(mut.length)verdict='<b>Sabab: mikserda kanal o\'chirilgan yoki fader pastda.</b> M tugmasini o\'chiring yoki faderni ko\'taring.';
+ else verdict='Audio dvigatel ishlayapti. “Sinov signali”ni bosing va <b>Master</b> indikatoriga qarang: <br>• Indikator sakrasa, lekin eshitilmasa — muammo kompyuterda: brauzer vkladkasi ovozi o\'chirilgan (vkladkada karnay belgisi), Windows ovoz mikserida brauzer past, yoki boshqa chiqish qurilmasi (HDMI, Bluetooth, ovoz kartasi) tanlangan.'+(ios?'<br>• iPhone/iPad: yon tomondagi ovozsiz rejim (silent) tugmasini o\'chiring.':'');
+ openModal('Ovoz tekshiruvi',(auto?'<div class="warn">Brauzer ovozni yoqishga ruxsat bermadi. Quyidagi natijaga qarang.</div>':'')+'<table class="dtab">'+rows.join('')+'</table><div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)">'+verdict+'</div><p class="hint">Master indikatori sinov paytida: <span class="mono" id="dPk">—</span></p>',
+  [{label:'Sinov signali (1 kHz)',cls:'primary',fn:()=>{beep();let n=0;const iv=setInterval(()=>{const pk=peakOf(buses.master.aL);const el=document.getElementById('dPk');if(el)el.textContent=pk>0.01?'sakrayapti ✓ ('+(20*Math.log10(pk)).toFixed(1)+' dB) — dastur ovoz chiqaryapti':'jim';if(++n>12)clearInterval(iv);},100);setTimeout(updateBadge,300);return false;}},
+   {label:'Qayta tekshirish',fn:()=>{setTimeout(()=>runDiag(false),50);}},{label:'Yopish',fn:()=>{}}]);
+}
+
+
+/* ---------- mouse wheel on faders & sliders ---------- */
+let wheelAcc=0,wheelEl=null;
+function wheelTarget(t){
+ if(!t||!t.closest)return null;
+ if(t.matches&&t.matches('input[type=range]'))return t;
+ const box=t.closest('.strip,.layer,#amtRow,.wfield');
+ return box?box.querySelector('input[type=range]'):null;
+}
+document.addEventListener('wheel',e=>{
+ if(e.ctrlKey)return; // brauzer zoom
+ const r=wheelTarget(e.target);if(!r||r.disabled)return;
+ e.preventDefault();
+ if(wheelEl!==r){wheelEl=r;wheelAcc=0;}
+ const raw=e.deltaY||e.deltaX; // Shift+g'ildirak ba'zan deltaX beradi
+ const d=e.deltaMode===1?raw*33:(e.deltaMode===2?raw*400:raw);
+ wheelAcc+=d;if(Math.abs(wheelAcc)<100)return;
+ const notches=Math.trunc(wheelAcc/100);wheelAcc-=notches*100;
+ const step=(+r.step||1)*(e.shiftKey?1:(r.max-r.min>30?2:1));
+ const v=Math.max(+r.min,Math.min(+r.max,+r.value-notches*step));
+ if(v!==+r.value){r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));}
+},{passive:false});
+document.addEventListener('dblclick',e=>{
+ const r=e.target.closest&&e.target.closest('.vfader');if(!r)return;
+ r.value=80;r.dispatchEvent(new Event('input',{bubbles:true}));toast('Fader 0 dB ga qaytdi');
+});
+
+
+
+/* ---------- minimal ZIP (store) ---------- */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zipBuild(files){
+ const enc=new TextEncoder(),parts=[],cen=[];let off=0;
+ const d=new Date(),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate(),tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1);
+ for(const f of files){const nm=enc.encode(f.name),u=f.data,crc=crc32(u);
+  const lh=new DataView(new ArrayBuffer(30));lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);lh.setUint16(10,tm,true);lh.setUint16(12,dt,true);lh.setUint32(14,crc,true);lh.setUint32(18,u.length,true);lh.setUint32(22,u.length,true);lh.setUint16(26,nm.length,true);lh.setUint16(28,0,true);
+  parts.push(new Uint8Array(lh.buffer),nm,u);
+  const ch=new DataView(new ArrayBuffer(46));ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,0,true);ch.setUint16(12,tm,true);ch.setUint16(14,dt,true);ch.setUint32(16,crc,true);ch.setUint32(20,u.length,true);ch.setUint32(24,u.length,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);
+  cen.push(new Uint8Array(ch.buffer),nm);off+=30+nm.length+u.length;}
+ const csize=cen.reduce((a,b)=>a+b.length,0),e=new DataView(new ArrayBuffer(22));
+ e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,csize,true);e.setUint32(16,off,true);
+ return new Blob([...parts,...cen,new Uint8Array(e.buffer)],{type:'application/zip'});
+}
+async function zipRead(ab){
+ const v=new DataView(ab),u=new Uint8Array(ab),dec=new TextDecoder();let eo=-1;
+ for(let i=ab.byteLength-22;i>=Math.max(0,ab.byteLength-65557);i--){if(v.getUint32(i,true)===0x06054b50){eo=i;break;}}
+ if(eo<0)return null;
+ const n=v.getUint16(eo+10,true);let p=v.getUint32(eo+16,true);const out={};
+ for(let k=0;k<n;k++){if(v.getUint32(p,true)!==0x02014b50)break;
+  const method=v.getUint16(p+10,true),csz=v.getUint32(p+20,true),nl=v.getUint16(p+28,true),xl=v.getUint16(p+30,true),cl=v.getUint16(p+32,true),lo=v.getUint32(p+42,true);
+  const name=dec.decode(u.subarray(p+46,p+46+nl));p+=46+nl+xl+cl;
+  const ds=lo+30+v.getUint16(lo+26,true)+v.getUint16(lo+28,true);let data=u.slice(ds,ds+csz);
+  if(method===8){const st=new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));data=new Uint8Array(await new Response(st).arrayBuffer());}
+  else if(method!==0)throw new Error('Arxiv siqish usuli qo\'llab-quvvatlanmaydi');
+  out[name]=data;}
+ return out;
+}
+
+
+/* ---------- STORE: brauzer bazasi yoki Documents/Sahna Ovozi papkasi ---------- */
+const FSUP=('showDirectoryPicker' in window);
+const ROOT_NAME='Sahna Ovozi';
+const FS={root:null,dirs:{},state:{},index:{assets:{}},q:Promise.resolve(),lastBackup:0,busy:0,
+ run(fn){this.busy++;updateDbBadge();const p=this.q.then(fn).catch(e=>{console.warn('FS',e);toast('Papkaga yozishda xato: '+(e&&e.message||e));}).finally(()=>{this.busy--;updateDbBadge();});this.q=p;return p;},
+ async readText(dir,name){const f=await (await dir.getFileHandle(name)).getFile();return await f.text();},
+ async write(dir,name,data){const h=await dir.getFileHandle(name,{create:true});const w=await h.createWritable();await w.write(data);await w.close();},
+ async init(root){
+  this.root=root;for(const n of ['ovozlar','loyihalar','zaxira','savat'])this.dirs[n]=await root.getDirectoryHandle(n,{create:true});
+  try{this.index=JSON.parse(await this.readText(this.dirs.ovozlar,'index.json'));if(!this.index.assets)this.index={assets:{}};}catch(e){this.index={assets:{}};}
+  try{this.state=JSON.parse(await this.readText(root,'baza.json'));}catch(e){this.state={};}
+ },
+ hasData(){return !!(this.state&&this.state.show);},
+ bazaJson(){return JSON.stringify({app:'Sahna Ovozi',brand:'Azimxodjayev Music',version:1,updated:new Date().toISOString(),proj:this.state.proj||null,show:this.state.show||null},null,1);},
+ saveBaza(){clearTimeout(this._bt);this._bt=setTimeout(()=>this.run(async()=>{
+  const txt=this.bazaJson();await this.write(this.root,'baza.json',txt);
+  if(Date.now()-this.lastBackup>10*60*1000){this.lastBackup=Date.now();await this.backup(txt);}
+ }),400);},
+ async backup(txt){
+  const d=new Date(),p=n=>String(n).padStart(2,'0'),nm='baza-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.json';
+  await this.write(this.dirs.zaxira,nm,txt||this.bazaJson());
+  const names=[];for await (const [n] of this.dirs.zaxira.entries())if(/^baza-.*\.json$/.test(n))names.push(n);
+  names.sort();while(names.length>30){try{await this.dirs.zaxira.removeEntry(names.shift());}catch(e){}}
+ },
+ putAsset(k,v){const ext=((v.name||'').match(/\.([a-z0-9]{2,4})$/i)||[0,'bin'])[1].toLowerCase(),file=k+'.'+ext,old=this.index.assets[k];
+  this.index.assets[k]={kind:k.indexOf('u_')===0?'user':'override',name:v.name,title:v.title||null,file};
+  const data=v.data.slice?v.data.slice(0):v.data;
+  return this.run(async()=>{if(old&&old.file!==file){try{await this.dirs.ovozlar.removeEntry(old.file);}catch(e){}}await this.write(this.dirs.ovozlar,file,data);await this.write(this.dirs.ovozlar,'index.json',JSON.stringify(this.index,null,1));});},
+ delAsset(k){const old=this.index.assets[k];if(!old)return;delete this.index.assets[k];
+  return this.run(async()=>{try{await this.dirs.ovozlar.removeEntry(old.file);}catch(e){}await this.write(this.dirs.ovozlar,'index.json',JSON.stringify(this.index,null,1));});},
+ async readAssets(out){for(const k in this.index.assets){const a=this.index.assets[k];try{const f=await (await this.dirs.ovozlar.getFileHandle(a.file)).getFile();out[k]={name:a.name,title:a.title,data:await f.arrayBuffer()};}catch(e){}}return out;},
+ log(line){if(!this.root)return;this.run(async()=>{const h=await this.root.getFileHandle('jurnal.txt',{create:true});const f=await h.getFile();const w=await h.createWritable({keepExistingData:true});await w.seek(f.size);await w.write(line+'\n');await w.close();});},
+ async tail(n){try{const t=await this.readText(this.root,'jurnal.txt');return t.trimEnd().split('\n').slice(-n);}catch(e){return [];}}
+};
+const Store={
+ mode:'browser',
+ put(k,v){
+  if(this.mode==='folder'){
+   if(k==='__show'){FS.state.show=typeof v==='string'?JSON.parse(v):v;FS.saveBaza();return;}
+   if(k==='__proj'){FS.state.proj={name:v.name,dirty:!!v.dirty,pathAbs:v.pathAbs||null,pathRel:v.pathRel||null};FS.saveBaza();DB.put(k,v);return;}
+   if(k.indexOf('__')===0){DB.put(k,v);return;}
+   FS.putAsset(k,v);return;}
+  DB.put(k,v);
+ },
+ del(k){if(this.mode==='folder'&&k.indexOf('__')!==0){FS.delAsset(k);return;}DB.del(k);},
+ async all(){
+  if(this.mode!=='folder')return DB.all();
+  const out={};const idb=await DB.all();for(const k in idb)if(k.indexOf('__')===0)out[k]=idb[k];
+  await FS.readAssets(out);
+  if(FS.state.show)out.__show=FS.state.show;
+  out.__proj=Object.assign({},idb.__proj||{},FS.state.proj||{});
+  if(FS.state.proj&&idb.__proj&&idb.__proj.handle&&!out.__proj.handle)out.__proj.handle=idb.__proj.handle;
+  return out;
+ }
+};
+let logRing=[];
+function logEvent(txt){
+ const d=new Date(),p=n=>String(n).padStart(2,'0');
+ const line=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' | '+txt;
+ if(Store.mode==='folder')FS.log(line);
+ else{logRing.push(line);if(logRing.length>500)logRing=logRing.slice(-500);clearTimeout(logEvent._t);logEvent._t=setTimeout(()=>DB.put('__log',logRing),800);}
+}
+function updateDbBadge(){
+ const b=$('#dbBtn');if(!b)return;const on=navigator.onLine;
+ const where=Store.mode==='folder'?'Documents':'Brauzer';
+ b.innerHTML='<span class="ndot" style="background:'+(on?'#4FC3B5':'#9AA0A8')+'" title="'+(on?'Onlayn':'Oflayn')+'"></span>Baza: '+where+(FS.busy?' <span class="muted">· yozilmoqda…</span>':(Store.mode==='folder'?' ✓':''));
+ b.classList.toggle('ok',Store.mode==='folder');
+}
+window.addEventListener('online',()=>{updateDbBadge();toast('Internet tiklandi');});
+window.addEventListener('offline',()=>{updateDbBadge();toast('Internet uzildi — pult oflayn ishlashda davom etadi');});
+
+async function hydrate(saved){
+ // joriy o'z fayllarni tozalab, berilgan bazadan tiklash
+ for(const id of Object.keys(META))if(META[id].kind==='user'){delete META[id];delete buffers[id];}
+ for(const id of Object.keys(overrides)){delete overrides[id];if(origBuffers[id])buffers[id]=origBuffers[id];else delete buffers[id];}
+ let n=0;
+ for(const id in saved){
+  if(id.indexOf('__')===0)continue;const s=saved[id];if(!s||!s.data)continue;
+  try{const buf=await decode(s.data.slice(0));
+   if(id.indexOf('u_')===0){META[id]={kind:'user',title:s.title||s.name,file:s.name,loop:false,gain:0,dur:buf.duration};buffers[id]=buf;n++;}
+   else if(META[id]){buffers[id]=buf;overrides[id]={name:s.name};n++;}}catch(e){}
+ }
+ let raw=saved.__show;if(!raw&&Store.mode!=='folder'){try{raw=localStorage.getItem('sahnaOvozi.show');}catch(e){}}
+ if(raw){try{const o=typeof raw==='string'?JSON.parse(raw):raw;if(validShow(o))show=normShow(o);}catch(e){}}
+ if(saved.__proj){const P=saved.__proj;proj.name=P.name||proj.name;proj.handle=P.handle||null;proj.dirty=!!P.dirty;
+  if(NATIVE&&P.pathAbs)proj.handle=nFile(null,P.pathAbs.split(/[\\/]/).pop(),P.pathAbs);
+  else if(NATIVE&&P.pathRel)proj.handle=nFile(P.pathRel,P.pathRel.split('/').pop());
+  else if(Store.mode==='folder'&&P.pathRel&&FS.root){try{const parts=P.pathRel.split('/');let d=FS.root;for(const x of parts.slice(0,-1))d=await d.getDirectoryHandle(x);proj.handle=await d.getFileHandle(parts.pop());}catch(e){}}}
+ normShow(show);bank=0;cur=-1;next=0;scene=null;
+ return n;
+}
+async function connectFolder(root,choice){
+ await FS.init(root);
+ if(choice==='load'||(choice==null&&FS.hasData())){
+  Store.mode='folder';panic();projLoading=true;try{const n=await hydrate(await Store.all());applyMix();renderAll();renderProj();toast('Baza papkadan tiklandi: '+n+' ta o\'z fayli');}finally{projLoading=false;}
+ }else{
+  // joriy brauzer ishini papkaga ko'chirish
+  const cur=await DB.all();Store.mode='folder';
+  for(const k in cur){if(k.indexOf('__')===0)continue;const v=cur[k];if(v&&v.data&&(META[k]&&(META[k].kind==='user'||overrides[k])))FS.putAsset(k,v);}
+  FS.state.show=clone(show);FS.state.proj={name:proj.name,dirty:proj.dirty};
+  await FS.run(async()=>{await FS.write(FS.root,'baza.json',FS.bazaJson());await FS.write(FS.root,'O\'QING.txt','SAHNA OVOZI — Azimxodjayev Music\nBu papka ilovaning ma\'lumotlar bazasi.\n\nbaza.json      — joriy holat (cue, banklar, atmosferalar, mikser)\novozlar/       — siz yuklagan barcha ovoz fayllari + index.json\nloyihalar/     — Ctrl+S bilan saqlangan .sahna loyihalar\nzaxira/        — har 10 daqiqada avtomatik zaxira (oxirgi 30 tasi)\njurnal.txt     — barcha amallar jurnali (GO, SFX, tahrirlar, saqlashlar)\n\nPapkani o\'chirmang va nomini o\'zgartirmang. Boshqa kompyuterga ko\'chirish uchun\nbutun papkani nusxalab, ilovada "Baza" -> "Papkani ulash" orqali tanlang.\n');await FS.backup();if(logRing.length){const h=await FS.root.getFileHandle('jurnal.txt',{create:true});const f=await h.getFile();const w=await h.createWritable({keepExistingData:true});await w.seek(f.size);await w.write(logRing.join('\n')+'\n');await w.close();}});
+  toast('Joriy ish Documents/'+ROOT_NAME+' papkasiga ko\'chirildi');
+ }
+ await DB.put('__dir',root);updateDbBadge();logEvent('Baza ulandi: '+root.name);
+}
+async function pickFolder(){
+ if(!FSUP||IS_FRAME){dbMenu();return;}
+ let picked;try{picked=await window.showDirectoryPicker({id:'sahna-ovozi-baza',mode:'readwrite',startIn:'documents'});}catch(e){if(e&&e.name!=='AbortError')toast('Papkani tanlab bo\'lmadi: '+e.message);return;}
+ const root=picked.name===ROOT_NAME?picked:await picked.getDirectoryHandle(ROOT_NAME,{create:true});
+ await FS.init(root);
+ if(FS.hasData()){
+  const sh=FS.state.show||{};
+  openModal('Papkada baza topildi','<p class="hint" style="font-size:14px;color:var(--text)">“'+esc(root.name)+'” papkasida avvalgi ish bor: <b>'+esc(sh.title||'spektakl')+'</b> · '+((sh.cues||[]).length)+' ta cue · '+Object.keys(FS.index.assets).length+' ta ovoz fayli.</p><p class="hint">Papkadagi ishni ochasizmi yoki hozirgi ishni papkaga yozasizmi? (Papkadagi eski holat baribir zaxira/ ga saqlanadi.)</p>',
+   [{label:'Bekor',fn:()=>{}},{label:'Hozirgi ishni yozish',cls:'danger',fn:()=>{FS.run(()=>FS.backup()).then(()=>connectFolder(root,'write'));}},{label:'Papkadagini ochish',cls:'primary',fn:()=>{connectFolder(root,'load');}}]);
+ }else await connectFolder(root,'write');
+}
+async function disconnectFolder(){
+ const o={};try{await FS.readAssets(o);}catch(e){}
+ Store.mode='browser';FS.root=null;DB.del('__dir');
+ for(const k in o)DB.put(k,o[k]);
+ const s=JSON.stringify(show);DB.put('__show',s);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}
+ updateDbBadge();toast('Papka uzildi — endi brauzer bazasida ishlaydi');logEvent('Baza uzildi');
+}
+async function dbMenu(){
+ const fol=Store.mode==='folder';const lines=fol?await FS.tail(40):(logRing.slice(-40));
+ const sup=FSUP&&!IS_FRAME;
+ let body='<table class="dtab"><tr><td>Ishlash rejimi</td><td>'+(NATIVE?'O\'rnatilgan dastur (.exe)':isStandalone()?'O\'rnatilgan ilova':'Brauzer (onlayn)')+' · '+(navigator.onLine?'<span class="okc">onlayn</span>':'<span class="muted">oflayn</span>')+'</td></tr>'+
+  '<tr><td>Ma\'lumotlar bazasi</td><td class="'+(fol?'okc':'')+'">'+(fol?(NATIVE?'Hujjatlar / Sahna Ovozi':'Documents / '+esc(FS.root.name)+' papkasi'):'Brauzer xotirasi (shu brauzerda)')+'</td></tr>'+
+  (fol?'<tr><td>Ovoz fayllari</td><td>'+Object.keys(FS.index.assets).length+' ta · ovozlar/</td></tr><tr><td>Zaxira</td><td>har 10 daqiqada · zaxira/ (oxirgi 30)</td></tr>':'')+'</table>';
+ if(NATIVE)body+='<div class="frow"><button type="button" class="btn" id="dbBackup">Hozir zaxira olish</button><button type="button" class="btn" id="dbDocs">Papkani ochish</button></div><p class="hint">O\'rnatilgan dasturda baza avtomatik: Hujjatlar / Sahna Ovozi. Ruxsat so\'ralmaydi.</p>';
+ else if(sup)body+=fol?'<div class="frow"><button type="button" class="btn" id="dbBackup">Hozir zaxira olish</button><button type="button" class="btn" id="dbOther">Boshqa papkani ulash</button><button type="button" class="btn danger" id="dbOff">Papkani uzish</button></div>'
+  :'<div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)"><b>Documents ichida baza yaratish:</b> tugmani bosing, ochilgan oynada <b>Documents</b> papkasini tanlab “Ruxsat berish”ni bosing. Ilova uning ichida <b>Sahna Ovozi</b> papkasini yaratadi va barcha ishni o\'sha yerga yozadi.</div><div class="frow"><button type="button" class="btn primary" id="dbPick">Documents ichida baza yaratish</button></div>';
+ else body+='<div class="warn">'+(IS_FRAME?'Bu sahifa Claude ichida ochilgan — bu yerdan kompyuter papkalariga yozib bo\'lmaydi. Documents bazasi <b>kompyuterga o\'rnatilgan ilovada</b> (Chrome yoki Edge) ishlaydi.':'Bu qurilma yoki brauzer papkaga to\'g\'ridan-to\'g\'ri yozishni qo\'llamaydi (telefonlar, Safari, Firefox). Ish ilovaning himoyalangan doimiy xotirasida saqlanadi; loyihani Ctrl+S bilan .sahna fayl qilib “Fayllar/Documents”ga saqlab qo\'ying.')+'</div>';
+ body+='<div class="field"><span class="flabel">Jurnal (oxirgi amallar)'+(fol?' · jurnal.txt':'')+'</span><textarea class="inp" readonly style="height:180px" aria-label="Jurnal">'+esc(lines.slice().reverse().join('\n'))+'</textarea></div>';
+ openModal('Ma\'lumotlar bazasi',body,[{label:'Yopish',fn:()=>{}}],{click:(e,b)=>{
+  if(b.id==='dbPick'||b.id==='dbOther'){closeModal();pickFolder();}
+  else if(b.id==='dbOff'){closeModal();disconnectFolder();}
+  else if(b.id==='dbDocs'){azNative.openDocs();}
+  else if(b.id==='dbBackup'){FS.run(()=>FS.backup()).then(()=>toast('Zaxira olindi: zaxira/ papkasida'));}
+ }});
+}
+
+/* ---------- project files (.sahna) ---------- */
+const IS_FRAME=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
+const CAN_FS=!IS_FRAME&&'showSaveFilePicker' in window;
+const MAGIC='SAHNAOVOZI\u00001';
+const proj={name:'Nomsiz loyiha',handle:null,dirty:false};
+let projLoading=false;
+function markDirty(){if(projLoading)return;if(!proj.dirty){proj.dirty=true;renderProj();storeProj();}}
+function storeProj(){const h=proj.handle;const fake=h&&(h.__abs||h.__rel);
+ Store.put('__proj',{name:proj.name,dirty:proj.dirty,handle:fake?null:h,pathAbs:h&&h.__abs||null,pathRel:h&&h.__rel||null});}
+function renderProj(){
+ const b=$('#projBtn');if(b)b.innerHTML='<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="pname">'+esc(proj.name)+'</span>'+(proj.dirty?'<span class="pdirty" title="Saqlanmagan o\'zgarishlar">●</span>':'');
+ document.title=(proj.dirty?'● ':'')+proj.name+' — Sahna Ovozi';
+}
+function storeMix(k){show.mix[k]={v:buses[k].val,m:buses[k].muted};saveShow();}
+function applyMix(){
+ for(const [k] of BUSES){const m=show.mix&&show.mix[k];buses[k].val=m?m.v:80;buses[k].muted=m?!!m.m:false;applyFader(k);}
+ const d=show.dubfx||{};dub.preset=d.preset||'clean';dub.amount=d.amount==null?.6:d.amount;buildDubFx();
+ fadeT=show.fade==null?3:show.fade;
+ const a=$('#amt');if(a){a.value=Math.round(dub.amount*100);$('#amtV').textContent=a.value+'%';}
+ renderStrips();renderPresets();renderFades();
+}
+function usedAssets(){
+ const ids=new Set();show.cues.forEach(c=>{if(c.type!=='atmos'&&c.ref)ids.add(c.ref);});
+ Object.values(show.scenes).forEach(s=>s.layers.forEach(l=>ids.add(l.a)));
+ show.banks.forEach(b=>b.pads.forEach(p=>{if(p)ids.add(p.a);}));
+ ids.add('dub_monolog');
+ return [...ids].filter(id=>META[id]&&(META[id].kind==='user'||overrides[id]));
+}
+async function buildProject(){
+ const saved=await Store.all();const files=[],list=[];
+ for(const id of usedAssets()){const sv=saved[id];if(!sv||!sv.data)continue;const ext=((sv.name||'').match(/\.([a-z0-9]{2,4})$/i)||[0,'bin'])[1].toLowerCase();
+  const path='audio/'+id+'.'+ext;list.push({id,kind:META[id].kind==='user'?'user':'override',title:META[id].title,name:sv.name,path});files.push({name:path,data:new Uint8Array(sv.data)});}
+ const head={app:'Sahna Ovozi',brand:'Azimxodjayev Music',format:'sahna-zip',version:2,saved:new Date().toISOString(),name:proj.name,show,assets:list};
+ files.unshift({name:'loyiha.json',data:new TextEncoder().encode(JSON.stringify(head,null,1))});
+ return zipBuild(files);
+}
+async function loadProjectBuffer(ab,name,handle){
+ const u=new Uint8Array(ab),mg=new TextEncoder().encode(MAGIC);let head,getData;
+ if(mg.every((b,i)=>u[i]===b)){const hl=new DataView(ab,mg.length,4).getUint32(0,true),hs=mg.length+4;head=JSON.parse(new TextDecoder().decode(u.subarray(hs,hs+hl)));const base=hs+hl;getData=a=>ab.slice(base+a.offset,base+a.offset+a.length);}
+ else{let z=null;try{z=await zipRead(ab);}catch(e){throw new Error('Arxivni o\'qib bo\'lmadi: '+e.message);}
+  if(!z||!z['loyiha.json'])throw new Error('Bu fayl Sahna Ovozi loyihasi emas');
+  head=JSON.parse(new TextDecoder().decode(z['loyiha.json']));getData=a=>{const d=z[a.path];if(!d)throw 0;return d.buffer.slice(d.byteOffset,d.byteOffset+d.byteLength);};}
+ if(!validShow(head.show))throw new Error('Loyiha ichidagi ma\'lumot buzilgan');
+ panic();projLoading=true;
+ try{
+  for(const id of Object.keys(overrides)){if(!head.assets.some(a=>a.id===id)){delete overrides[id];Store.del(id);if(origBuffers[id])buffers[id]=origBuffers[id];else delete buffers[id];}}
+  let bad=0;
+  for(const a of head.assets){
+   try{const data=getData(a);const buf=await decode(data.slice(0));buffers[a.id]=buf;
+    if(a.kind==='user'){META[a.id]={kind:'user',title:a.title,file:a.name,loop:false,gain:0,dur:buf.duration};Store.put(a.id,{name:a.name,title:a.title,data});}
+    else if(META[a.id]){overrides[a.id]={name:a.name};Store.put(a.id,{name:a.name,data});}}catch(e){bad++;}}
+  show=normShow(head.show);bank=0;cur=-1;next=0;scene=null;
+  const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);
+  applyMix();renderAll();
+  proj.name=(name||head.name||'Loyiha').replace(/(\.sahna)?(\.zip)?$/i,'');proj.handle=handle||null;proj.dirty=false;renderProj();storeProj();
+  logEvent('Loyiha ochildi: '+proj.name);toast('Ochildi: '+proj.name+' · '+head.assets.length+' ta o\'z fayli'+(bad?' ('+bad+' tasi o\'qilmadi)':''));
+ }finally{projLoading=false;}
+}
+async function verifyPerm(h,write){try{const o={mode:write?'readwrite':'read'};if(await h.queryPermission(o)==='granted')return true;return await h.requestPermission(o)==='granted';}catch(e){return false;}}
+async function addRecent(h){if(!h)return;const all=await DB.all();let r=(all.__recent||[]).filter(x=>x.name!==h.name);r.unshift({name:h.name,handle:h,at:Date.now()});DB.put('__recent',r.slice(0,8));}
+const FT=[{description:'Sahna Ovozi loyihasi',accept:{'application/x-sahna-ovozi':['.sahna'],'application/zip':['.zip']}}];
+async function saveProject(as){
+ if(!ctx)return;
+ toast('Saqlanmoqda…');let blob;try{blob=await buildProject();}catch(e){toast('Loyihani tayyorlab bo\'lmadi: '+e.message);return;}
+ if(IS_FRAME){
+  let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){}
+  if(!dl){projFrameNote();return;}
+  const nm=(as||proj.name==='Nomsiz loyiha')?(show.title.replace(/[\[\]]/g,'').trim()||'Loyiha'):proj.name;
+  try{await dl.save({filename:nm+'.sahna.zip',data:blob});proj.name=nm;proj.dirty=false;renderProj();storeProj();toast('Saqlandi: '+nm+'.sahna.zip — ilovada yoki shu yerda “Ochish” bilan qayta oching');}
+  catch(e){const c=e&&e.code;toast(c==='declined'?'Saqlash bekor qilindi':(c==='rate_limited'?'Biroz kuting va qayta urinib ko\'ring':'Bu yerda saqlab bo\'lmadi'));if(c==='unavailable'||c==='not_granted')projFrameNote();}
+  return;}
+ if(CAN_FS){
+  try{let h=as?null:proj.handle;
+   if(!h)h=await window.showSaveFilePicker({...(Store.mode==='folder'?{startIn:FS.dirs.loyihalar}:{}),suggestedName:(proj.name==='Nomsiz loyiha'?show.title.replace(/[\[\]]/g,'').trim()||'Loyiha':proj.name)+'.sahna',types:FT});
+   if(!(await verifyPerm(h,true))){toast('Faylga yozishga ruxsat berilmadi');return;}
+   const w=await h.createWritable();await w.write(blob);await w.close();
+   proj.handle=h;proj.name=h.name.replace(/\.sahna$/i,'');proj.dirty=false;renderProj();storeProj();if(!NATIVE)addRecent(h);if(typeof metaCache!=='undefined')metaCache.data=null;
+   toast('Saqlandi: '+h.name+' ('+(blob.size/1048576).toFixed(1)+' MB)');logEvent('Loyiha saqlandi: '+h.name);if(Store.mode==='folder')FS.run(()=>FS.backup());return;
+  }catch(e){if(e&&e.name==='AbortError')return;}
+ }
+ const nm=(as||proj.name==='Nomsiz loyiha')?(show.title.replace(/[\[\]]/g,'').trim()||'Loyiha'):proj.name;
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm+'.sahna';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+ proj.name=nm;proj.dirty=false;renderProj();storeProj();toast('Yuklab olindi: '+nm+'.sahna — “Yuklanmalar” papkasida');
+}
+async function openProject(){
+ if(!ctx)return;
+ if(IS_FRAME){pickFile(f=>openFile(f,null),'.sahna,.zip,application/zip');return;}
+ if('showOpenFilePicker' in window){
+  try{const [h]=await window.showOpenFilePicker({...(Store.mode==='folder'?{startIn:FS.dirs.loyihalar}:{}),types:FT,multiple:false});await openFile(await h.getFile(),h);addRecent(h);}catch(e){if(e&&e.name!=='AbortError')toast('Ochib bo\'lmadi: '+e.message);}
+  return;}
+ pickFile(f=>openFile(f,null),'.sahna,.zip,application/zip');
+}
+async function openFile(f,h){try{await loadProjectBuffer(await f.arrayBuffer(),f.name,h);}catch(e){toast(e.message||'Faylni ochib bo\'lmadi');}}
+async function openRecent(i){const all=await DB.all();const r=(all.__recent||[])[i];if(!r)return;
+ if(!(await verifyPerm(r.handle,false))){toast('Faylga kirishga ruxsat berilmadi');return;}
+ try{await openFile(await r.handle.getFile(),r.handle);addRecent(r.handle);}catch(e){toast('Fayl topilmadi — ko\'chirilgan yoki o\'chirilgan bo\'lishi mumkin');}}
+function newProject(demo){panic();projLoading=true;
+ show=demo?clone(DEFAULT_SHOW):normShow({v:1,title:'Yangi spektakl',act:'1-parda',cues:[],scenes:{},banks:[{name:'A · Asosiy',pads:Array(16).fill(null)}],mix:{},dubfx:{preset:'clean',amount:.6},fade:3});
+ normShow(show);bank=0;cur=-1;next=0;const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);
+ applyMix();renderAll();projLoading=false;proj.name='Nomsiz loyiha';proj.handle=null;proj.dirty=false;renderProj();storeProj();
+ toast(demo?'Namuna loyiha ochildi':'Bo\'sh loyiha ochildi — ✎ Tahrirlash bilan to\'ldiring');if(!demo&&!editing)setEditing(true);}
+function guardDirty(fn){
+ if(!proj.dirty){fn();return;}
+ openModal('Saqlanmagan o\'zgarishlar',"<p class=\"hint\" style=\"font-size:14px;color:var(--text)\">“"+esc(proj.name)+"” loyihasida faylga saqlanmagan o'zgarishlar bor. Davom etishdan oldin saqlaysizmi?</p>",
+  [{label:'Bekor',fn:()=>{}},{label:'Saqlamasdan davom etish',cls:'danger',fn:()=>{setTimeout(fn,30);}},{label:'Saqlash',cls:'primary',fn:()=>{saveProject(false).then(()=>{if(!proj.dirty)fn();});}}]);
+}
+function projFrameNote(){
+ openModal('Faylga saqlash',"<p class=\"hint\" style=\"font-size:14px;color:var(--text)\">Bu sahifa Claude ichidagi himoyalangan oynada ochilgan — bu yerda brauzer faylni kompyuterga yozishga ruxsat bermaydi.</p><p class=\"hint\">Loyihani <b>.sahna</b> fayl qilib saqlash, Ctrl+S va so'nggi loyihalar <b>o'rnatilgan ilovada</b> to'liq ishlaydi. Bu yerda esa ishingiz shu brauzerda avtomatik saqlanib turadi.</p>",[{label:'Tushunarli',cls:'primary',fn:()=>{}}]);
+}
+async function projMenu(){
+ const all=await DB.all();const rec=all.__recent||[];
+ const body='<div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)"><b>'+esc(proj.name)+'</b> · '+(proj.dirty?'<span class="badc">saqlanmagan o\'zgarishlar bor</span>':'<span class="okc">faylga saqlangan</span>')+'<br><span class="muted" style="font-size:12px">Avtomatik zaxira: shu brauzerda doim saqlanadi. Fayl (.sahna) — ovozlar bilan birga to\'liq loyiha.</span></div>'+
+  '<div class="frow"><button type="button" class="btn primary" id="pjSave">Saqlash · Ctrl+S</button><button type="button" class="btn" id="pjSaveAs">Boshqacha saqlash · Ctrl+Shift+S</button><button type="button" class="btn" id="pjOpen">Ochish · Ctrl+O</button></div>'+
+  '<div class="frow"><button type="button" class="btn" id="pjNew">Yangi bo\'sh loyiha</button><button type="button" class="btn" id="pjDemo">Namuna loyiha</button></div>'+
+  (Store.mode==='folder'?await (async()=>{const L=[];try{for await (const [n,h] of FS.dirs.loyihalar.entries())if(h.kind==='file'&&/\.sahna(\.zip)?$/i.test(n))L.push(n);}catch(e){}L.sort();window.__fl=L;return L.length?'<div class="field"><span class="flabel">Documents / Sahna Ovozi / loyihalar</span>'+L.map((n,i)=>'<button type="button" class="btn" style="justify-content:flex-start" data-floj="'+i+'">'+esc(n)+'</button>').join('')+'</div>':'';})():'')+
+  (rec.length&&CAN_FS?'<div class="field"><span class="flabel">So\'nggi loyihalar</span>'+rec.map((r,i)=>'<button type="button" class="btn" style="justify-content:flex-start;text-align:left" data-recent="'+i+'">'+esc(r.name)+' <span class="muted" style="font-weight:500;margin-left:8px">'+new Date(r.at).toLocaleString('uz-UZ')+'</span></button>').join('')+'</div>':'')+
+  '<p class="hint">Loyiha fayli ichida: cue ro\'yxati, SFX banklar, atmosferalar, mikser va dublaj sozlamalari hamda siz yuklagan barcha ovoz fayllari. Faylni boshqa kompyuter yoki telefonga ko\'chirib, xuddi shu holatda ochish mumkin.</p>';
+ openModal('Loyiha',body,[{label:'Yopish',fn:()=>{}}],{click:(e,b)=>{
+  if(b.id==='pjSave'){closeModal();saveProject(false);}
+  else if(b.id==='pjSaveAs'){closeModal();saveProject(true);}
+  else if(b.id==='pjOpen'){closeModal();guardDirty(openProject);}
+  else if(b.id==='pjNew'){closeModal();guardDirty(()=>newProject(false));}
+  else if(b.id==='pjDemo'){closeModal();guardDirty(()=>newProject(true));}
+  else if(b.dataset.floj!=null){const n=window.__fl[+b.dataset.floj];closeModal();guardDirty(async()=>{const h=await FS.dirs.loyihalar.getFileHandle(n);await openFile(await h.getFile(),h);addRecent(h);});}
+  else if(b.dataset.recent!=null){const i=+b.dataset.recent;closeModal();guardDirty(()=>openRecent(i));}
+ }});
+}
+window.addEventListener('beforeunload',e=>{if(proj.dirty&&!IS_FRAME&&!NATIVE&&ctx){e.preventDefault();e.returnValue='';}});
+let launchFile=null;
+if('launchQueue' in window){try{window.launchQueue.setConsumer(async p=>{if(!p.files||!p.files.length)return;const h=p.files[0];if(ctx){await openFile(await h.getFile(),h);addRecent(h);}else launchFile=h;});}catch(e){}}
+
+/* ---------- install (PWA) ---------- */
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;});
+window.addEventListener('appinstalled',()=>{installEvt=null;toast('Sahna Ovozi ilova sifatida o\'rnatildi');renderInstall();});
+const isStandalone=()=>window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches)||navigator.standalone===true;
+function renderInstall(){const b=$('#installBtn');if(b)b.style.display=(NATIVE||isStandalone())?'none':'';}
+async function installApp(){
+ if(installEvt){installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;return;}
+ const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document),android=/Android/.test(ua);
+ let how=IS_FRAME?'<p class="hint" style="font-size:14px;color:var(--text)">Bu sahifa Claude ichida ochilgan, bu yerdan o\'rnatib bo\'lmaydi. Chatdagi <b>ilova paketi</b>ni (sahna-ovozi-ilova.zip) internetga joylang va o\'sha manzildan o\'rnating — yo\'riqnoma paket ichida.</p>':'';
+ how+=ios?'<p class="hint"><b>iPhone / iPad (Safari):</b> pastdagi “Ulashish” (□↑) tugmasi → “Bosh ekranga qo\'shish” (Add to Home Screen) → “Qo\'shish”.</p>'
+  :android?'<p class="hint"><b>Android (Chrome):</b> yuqori o\'ng burchakdagi ⋮ menyu → “Ilovani o\'rnatish” (Install app).</p>'
+  :'<p class="hint"><b>Kompyuter (Chrome / Edge):</b> manzil satrining o\'ng tomonidagi “O\'rnatish” belgisi (⊕ yoki monitor belgisi) yoki ⋮ menyu → “Sahna Ovozi’ni o\'rnatish”.</p>';
+ openModal('Ilova sifatida o\'rnatish',how,[{label:'Tushunarli',cls:'primary',fn:()=>{}}]);
+}
+if('serviceWorker' in navigator&&!IS_FRAME&&!NATIVE&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+
+
+/* ---------- BOSH SAHIFA (Hub) — AZ MUS uslubida ---------- */
+const APP_VERSION=(window.azNative&&window.azNative.version)||'1.0.0';
+let hubPage='home',hubQuery='',hubSort='date',profile={name:'Operator',role:'Zvuk operatori',theater:'',avatar:'',custom:false};
+const metaCache={data:null,t:null};
+const bankFromDefault=()=>clone(DEFAULT_SHOW.banks[0]);
+const emptyBank=n=>({name:n||'A · Asosiy',pads:Array(16).fill(null)});
+const C_=(name,type,ref,note)=>({name,type,ref,note:note||''});
+const TPL=[
+ {id:'bosh',name:'Bo\'sh loyiha',desc:'Toza varaq: cue, bank va atmosferalarni o\'zingiz qurasiz',color:'#3A3F48',
+  make:()=>({cues:[],scenes:{},banks:[emptyBank()]})},
+ {id:'namuna',name:'Namuna spektakl',desc:'8 cue, 3 atmosfera, 16 SFX — tayyor misol',color:'#F2A93B',
+  make:()=>{const s=clone(DEFAULT_SHOW);return {cues:s.cues,scenes:s.scenes,banks:s.banks};}},
+ {id:'drama',name:'Dramatik spektakl',desc:'Uchinchi qo\'ng\'iroqdan final olqishlarigacha',color:'#A78BFA',
+  make:()=>({cues:[C_('Uchinchi qo\'ng\'iroq','sfx','sfx_bell','zal chiroqlari o\'chishidan oldin'),C_('Parda ochilishi','music','mus_overture'),C_('1-ko\'rinish: saroy','atmos','hall'),C_('Eshik taqillashi','sfx','sfx_knock'),C_('2-ko\'rinish: tungi o\'rmon','atmos','forest'),C_('Momaqaldiroq','sfx','sfx_thunder'),C_('Ichki ovoz','dub','dub_monolog'),C_('Jang sahnasi','music','mus_battle'),C_('Tong otishi','atmos','dawn'),C_('Final olqishlar','sfx','sfx_applause')],scenes:clone(DEFAULT_SHOW.scenes),banks:[bankFromDefault(),emptyBank('B · Spektakl ovozlari')]})},
+ {id:'ertak',name:'Bolalar ertagi',desc:'Sehr, o\'rmon, tong, ot va qarsaklar',color:'#4FC3B5',
+  make:()=>({cues:[C_('Sehrli boshlanish','sfx','sfx_whoosh'),C_('Sehrli o\'rmon','atmos','forest'),C_('Ot chopib keldi','sfx','sfx_horse'),C_('Saroy bayrami','atmos','hall'),C_('Qo\'ng\'iroq chalindi','sfx','sfx_bell'),C_('Yangi tong','atmos','dawn'),C_('Qarsaklar','sfx','sfx_applause')],scenes:clone(DEFAULT_SHOW.scenes),banks:[bankFromDefault()]})},
+ {id:'konsert',name:'Konsert / tadbir',desc:'Qo\'ng\'iroq, kirish musiqasi, boshlovchi, olqishlar',color:'#F27A8A',
+  make:()=>({cues:[C_('Birinchi qo\'ng\'iroq','sfx','sfx_bell'),C_('Zal fon shovqini','sfx','sfx_crowd'),C_('Kirish musiqasi','music','mus_overture'),C_('Boshlovchi chiqishi','sfx','sfx_applause'),C_('Tanaffus musiqasi','music','mus_battle'),C_('Final olqishlar','sfx','sfx_applause')],scenes:{},banks:[bankFromDefault()]})},
+ {id:'dublaj',name:'Dublaj seansi',desc:'Lavhalar ro\'yxati va obraz ovozlari effektlari',color:'#7FA7F5',
+  make:()=>({cues:[C_('Lavha 1','dub','dub_monolog','fayl yuklang'),C_('Lavha 2','dub',''),C_('Lavha 3','dub','')],scenes:{},banks:[emptyBank('A · Dublaj ovozlari')]})}
+];
+function makeShowFromTpl(id,title,act){const t=TPL.find(x=>x.id===id)||TPL[0];const p=t.make();
+ return normShow({v:1,title:title||'Yangi spektakl',act:act||'',cues:p.cues,scenes:p.scenes,banks:p.banks,mix:{},dubfx:{preset:'clean',amount:.6},fade:3});}
+
+/* --- profil --- */
+async function loadProfile(){
+ let p=null;if(Store.mode==='folder'){try{p=JSON.parse(await FS.readText(FS.root,'profil.json'));}catch(e){}}
+ if(!p)p=await DB.get('__profile');if(p)profile=Object.assign(profile,p);
+}
+function saveProfile(){DB.put('__profile',profile);if(Store.mode==='folder')FS.run(()=>FS.write(FS.root,'profil.json',JSON.stringify(profile,null,1)));}
+function initials(n){return (n||'?').split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('')||'?';}
+function editProfile(){
+ const body='<div class="frow" style="align-items:center"><div class="avatar big" id="pfAv">'+(profile.avatar?'<img src="'+profile.avatar+'" alt="">':esc(initials(profile.name)))+'</div><div class="frow"><button type="button" class="btn" id="pfImg">Rasm qo\'yish</button>'+(profile.avatar?'<button type="button" class="btn" id="pfImgDel">Rasmni olib tashlash</button>':'')+'</div></div>'+
+  '<div class="field"><label for="pfN">Ism</label><input class="inp" type="text" id="pfN" value="'+esc(profile.name)+'"></div>'+
+  '<div class="field"><label for="pfR">Kasb</label><input class="inp" type="text" id="pfR" value="'+esc(profile.role)+'" placeholder="Zvuk operatori, ovoz rejissyori…"></div>'+
+  '<div class="field"><label for="pfT">Teatr / jamoa</label><input class="inp" type="text" id="pfT" value="'+esc(profile.theater)+'" placeholder="masalan: Yosh tomoshabinlar teatri"></div>';
+ let av=profile.avatar;
+ openModal('Profil',body,[{label:'Bekor',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:()=>{profile.name=val('pfN').trim()||profile.name;profile.custom=true;profile.role=val('pfR').trim();profile.theater=val('pfT').trim();profile.avatar=av;saveProfile();renderHub();}}],
+  {click:(e,b)=>{if(b.id==='pfImg')pickFile(async f=>{try{av=await shrinkImage(f,160);$('#pfAv').innerHTML='<img src="'+av+'" alt="">';}catch(err){toast('Rasmni o\'qib bo\'lmadi');}},'image/*');
+   else if(b.id==='pfImgDel'){av='';$('#pfAv').textContent=initials(val('pfN'));}}});
+}
+function shrinkImage(file,size){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');const s=Math.min(img.width,img.height);g.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);res(c.toDataURL('image/jpeg',.85));URL.revokeObjectURL(img.src);};img.onerror=rej;img.src=URL.createObjectURL(file);});}
+
+/* --- loyihalar papkasi --- */
+const hasProjDir=()=>Store.mode==='folder'&&FS.dirs&&FS.dirs.loyihalar;
+async function readMetaCache(){if(metaCache.data)return metaCache.data;try{metaCache.data=JSON.parse(await FS.readText(FS.dirs.loyihalar,'.meta.json'));}catch(e){metaCache.data={};}return metaCache.data;}
+function writeMetaCache(){clearTimeout(metaCache.t);metaCache.t=setTimeout(()=>FS.run(()=>FS.write(FS.dirs.loyihalar,'.meta.json',JSON.stringify(metaCache.data))),500);}
+async function headOf(ab){
+ const u=new Uint8Array(ab),mg=new TextEncoder().encode(MAGIC);
+ if(mg.every((b,i)=>u[i]===b)){const hl=new DataView(ab,mg.length,4).getUint32(0,true),hs=mg.length+4;return JSON.parse(new TextDecoder().decode(u.subarray(hs,hs+hl)));}
+ const z=await zipRead(ab);return z&&z['loyiha.json']?JSON.parse(new TextDecoder().decode(z['loyiha.json'])):null;
+}
+async function listProjects(dir){
+ const out=[];const cache=dir===FS.dirs.loyihalar?await readMetaCache():{};let changed=false;
+ for await (const [n,h] of dir.entries()){
+  if(h.kind!=='file'||!/\.sahna(\.zip)?$/i.test(n))continue;
+  let f;try{f=await h.getFile();}catch(e){continue;}
+  let m=cache[n];
+  if(!m||m.size!==f.size||m.mtime!==f.lastModified){
+   m={size:f.size,mtime:f.lastModified,title:'',act:'',cues:0,sounds:0,types:[]};
+   try{const hd=await headOf(await f.arrayBuffer());if(hd&&hd.show){m.title=hd.show.title||'';m.act=hd.show.act||'';m.cues=(hd.show.cues||[]).length;m.types=(hd.show.cues||[]).slice(0,24).map(c=>c.type);m.sounds=(hd.assets||[]).length;}}catch(e){m.bad=1;}
+   if(dir===FS.dirs.loyihalar){cache[n]=m;changed=true;}
+  }
+  out.push(Object.assign({file:n,name:n.replace(/(\.sahna)?(\.zip)?$/i,''),handle:h},m));
+ }
+ if(changed)writeMetaCache();
+ return out;
+}
+async function uniqueName(dir,base){let n=base+'.sahna',i=2;while(true){try{await dir.getFileHandle(n);n=base+' ('+(i++)+').sahna';}catch(e){return n;}}}
+async function copyFile(fromDir,name,toDir,newName){const f=await (await fromDir.getFileHandle(name)).getFile();await FS.write(toDir,newName,await f.arrayBuffer());}
+async function moveFile(fromDir,name,toDir,newName){await copyFile(fromDir,name,toDir,newName);await fromDir.removeEntry(name);}
+
+/* --- ko'rsatish --- */
+function hueOf(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h%360;}
+function coverHtml(p){
+ const h=hueOf(p.name);const bars=(p.types||[]).map(t=>'<i style="background:'+(TYPE[t]||TYPE.sfx).c+'"></i>').join('');
+ return '<div class="pcover" style="background:linear-gradient(135deg,hsl('+h+' 38% 20%),hsl('+((h+40)%360)+' 30% 11%))"><div class="pbars">'+(bars||'<i style="background:#3A3F48"></i>')+'</div><span class="pcues">'+(p.cues||0)+' cue</span></div>';
+}
+function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';}
+function fmtDate(t){try{return new Date(t).toLocaleString('uz-UZ',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function projCard(p,trash){
+ return '<div class="pcard'+(proj.name===p.name&&!trash?' cur':'')+'">'+
+  '<button type="button" class="popen" data-'+(trash?'trest':'popen')+'="'+esc(p.file)+'" aria-label="'+esc(p.name)+(trash?' — tiklash':' — ochish')+'">'+coverHtml(p)+
+  '<span class="pinfo"><span class="pname2">'+esc(p.name)+'</span><span class="psub">'+esc([p.title,p.act].filter(Boolean).join(' · ')||'—')+'</span><span class="psub">'+p.sounds+' o\'z ovozi · '+fmtSize(p.size)+' · '+fmtDate(p.mtime)+'</span></span></button>'+
+  '<button type="button" class="ibtn pmore" data-'+(trash?'tmore':'pmore')+'="'+esc(p.file)+'" aria-label="'+esc(p.name)+' — amallar">⋯</button></div>';
+}
+function tplCard(t){return '<button type="button" class="tcard" data-tpl="'+t.id+'"><span class="tcolor" style="background:'+t.color+'"></span><span class="tname">'+esc(t.name)+'</span><span class="tdesc">'+esc(t.desc)+'</span></button>';}
+async function renderHub(){
+ const H=$('#hub');if(!H||H.hidden)return;
+ $('#hubProf').innerHTML='<div class="avatar">'+(profile.avatar?'<img src="'+profile.avatar+'" alt="">':esc(initials(profile.name)))+'</div><div class="pmeta"><b>'+esc(profile.name)+'</b><span>'+esc(profile.role||'')+'</span>'+(profile.theater?'<span>'+esc(profile.theater)+'</span>':'')+'</div>';
+ document.querySelectorAll('[data-hpage]').forEach(b=>b.classList.toggle('on',b.dataset.hpage===hubPage));
+ $('#hubWhere').textContent=Store.mode==='folder'?(NATIVE?'Saqlanadi: Hujjatlar / Sahna Ovozi':'Saqlanadi: '+FS.root.name+' papkasi'):'Saqlanadi: shu brauzer xotirasi';
+ const M=$('#hubMain');
+ const curBlock='<button type="button" class="hcont" id="hubCont"><span class="lbl">Joriy ish</span><b>'+esc(proj.name)+(proj.dirty?' ●':'')+'</b><span class="muted">'+esc(show.title)+(show.act?' · '+esc(show.act):'')+' · '+show.cues.length+' cue</span><span class="go2">Davom ettirish →</span></button>';
+ const actions='<div class="hacts"><button type="button" class="btn primary" id="hubNew">+ Yangi loyiha'+(NATIVE?' · Ctrl+N':'')+'</button><button type="button" class="btn" id="hubOpen">Loyihani ochish · Ctrl+O</button>'+(NATIVE?'<button type="button" class="btn" id="hubDocs">Hujjatlar papkasini ochish</button>':'')+'</div>';
+ const noDir='<div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)">Loyiha kartalari Hujjatlar papkasidagi baza ulanganda ko\'rinadi. <button type="button" class="btn" id="hubDb" style="margin-left:8px">Baza</button></div>';
+ if(hubPage==='home'){
+  let recent='';
+  if(hasProjDir()){const L=(await listProjects(FS.dirs.loyihalar)).sort((a,b)=>b.mtime-a.mtime).slice(0,8);recent='<div class="between"><h2>So\'nggi loyihalar</h2>'+(L.length?'<button type="button" class="btn" data-hpage="projects">Hammasi →</button>':'')+'</div>'+(L.length?'<div class="pgrid">'+L.map(p=>projCard(p)).join('')+'</div>':'<div class="empty">Hali saqlangan loyiha yo\'q. “+ Yangi loyiha” bilan boshlang.</div>');}
+  else recent=noDir;
+  M.innerHTML='<h1 class="hh1">Xush kelibsiz'+(profile.custom?', '+esc(profile.name.split(' ')[0]):'')+'</h1>'+actions+curBlock+'<div class="between"><h2>Shablonlar</h2><button type="button" class="btn" data-hpage="templates">Hammasi →</button></div><div class="tgrid">'+TPL.map(tplCard).join('')+'</div>'+recent;
+ }else if(hubPage==='projects'){
+  if(!hasProjDir()){M.innerHTML='<h1 class="hh1">Loyihalar</h1>'+actions+noDir;return;}
+  let L=await listProjects(FS.dirs.loyihalar);const q=hubQuery.toLowerCase();if(q)L=L.filter(p=>(p.name+' '+p.title+' '+p.act).toLowerCase().includes(q));
+  L.sort(hubSort==='name'?(a,b)=>a.name.localeCompare(b.name):hubSort==='size'?(a,b)=>b.size-a.size:(a,b)=>b.mtime-a.mtime);
+  M.innerHTML='<h1 class="hh1">Loyihalar</h1>'+actions+'<div class="frow"><input class="inp" type="search" id="hubQ" placeholder="Qidirish: nom, spektakl, parda" value="'+esc(hubQuery)+'" aria-label="Loyihalarni qidirish" style="max-width:420px"><select class="inp" id="hubSort" aria-label="Saralash" style="max-width:220px"><option value="date"'+(hubSort==='date'?' selected':'')+'>Oxirgi o\'zgargan</option><option value="name"'+(hubSort==='name'?' selected':'')+'>Nomi bo\'yicha</option><option value="size"'+(hubSort==='size'?' selected':'')+'>Hajmi bo\'yicha</option></select></div>'+
+   (L.length?'<div class="pgrid">'+L.map(p=>projCard(p)).join('')+'</div>':'<div class="empty">'+(q?'Hech narsa topilmadi':'Hali loyiha yo\'q')+'</div>');
+  const qi=$('#hubQ');if(qi&&document.activeElement!==qi&&hubQuery){qi.focus();qi.setSelectionRange(qi.value.length,qi.value.length);}
+ }else if(hubPage==='templates'){
+  M.innerHTML='<h1 class="hh1">Shablonlar</h1><p class="hint" style="font-size:14px">Shablon — tayyor cue ketma-ketligi, SFX bank va atmosferalar. Tanlang, nom bering — loyiha yaratiladi.</p><div class="tgrid big">'+TPL.map(tplCard).join('')+'</div>';
+ }else if(hubPage==='trash'){
+  if(!hasProjDir()){M.innerHTML='<h1 class="hh1">Savat</h1>'+noDir;return;}
+  const L=(await listProjects(FS.dirs.savat)).sort((a,b)=>b.mtime-a.mtime);
+  M.innerHTML='<div class="between"><h1 class="hh1">Savat</h1>'+(L.length?'<button type="button" class="btn danger" id="hubEmpty">Savatni bo\'shatish</button>':'')+'</div><p class="hint">O\'chirilgan loyihalar shu yerda turadi: kartani bosib tiklang yoki butunlay o\'chiring.</p>'+(L.length?'<div class="pgrid">'+L.map(p=>projCard(p,true)).join('')+'</div>':'<div class="empty">Savat bo\'sh</div>');
+ }
+}
+function showHub(page){if(page)hubPage=page;const H=$('#hub');H.hidden=false;document.body.classList.add('hub-open');renderHub();}
+function hideHub(){$('#hub').hidden=true;document.body.classList.remove('hub-open');}
+function newProjectDialog(tplId){
+ let sel=tplId||'namuna';
+ const body='<div class="field"><label for="npN">Loyiha nomi</label><input class="inp" type="text" id="npN" value="'+esc('Yangi spektakl')+'"></div>'+
+  '<div class="frow"><div class="field" style="flex:2 1 220px"><label for="npT">Spektakl nomi</label><input class="inp" type="text" id="npT" placeholder="masalan: Hamlet"></div><div class="field" style="flex:1 1 120px"><label for="npA">Parda / qism</label><input class="inp" type="text" id="npA" value="1-parda"></div></div>'+
+  '<div class="field"><span class="flabel">Shablon</span><div class="tgrid small" id="npTpl">'+TPL.map(t=>'<button type="button" class="tcard'+(t.id===sel?' on':'')+'" data-nptpl="'+t.id+'" aria-pressed="'+(t.id===sel)+'"><span class="tcolor" style="background:'+t.color+'"></span><span class="tname">'+esc(t.name)+'</span><span class="tdesc">'+esc(t.desc)+'</span></button>').join('')+'</div></div>'+
+  '<p class="hint">'+(hasProjDir()?(NATIVE?'Saqlanadi: Hujjatlar / Sahna Ovozi / loyihalar':'Saqlanadi: '+esc(FS.root.name)+' / loyihalar'):'Loyiha shu brauzerda ochiladi; faylga Ctrl+S bilan saqlaysiz.')+'</p>';
+ openModal('Yangi loyiha',body,[{label:'Bekor',fn:()=>{}},{label:'Yaratish',cls:'primary',fn:()=>{const n=val('npN').trim()||'Yangi spektakl',t=val('npT').trim()||n,a=val('npA').trim();guardDirty(()=>createProject(sel,n,t,a));}}],
+  {click:(e,b)=>{if(b.dataset.nptpl){sel=b.dataset.nptpl;document.querySelectorAll('[data-nptpl]').forEach(x=>{x.classList.toggle('on',x.dataset.nptpl===sel);x.setAttribute('aria-pressed',x.dataset.nptpl===sel);});}}});
+}
+async function createProject(tplId,name,title,act){
+ panic();projLoading=true;
+ try{
+  show=makeShowFromTpl(tplId,title,act);bank=0;cur=-1;next=0;
+  const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);
+  applyMix();renderAll();
+  proj.name=name.replace(/[\\/:*?"<>|]/g,'-');proj.handle=null;proj.dirty=true;
+ }finally{projLoading=false;}
+ hideHub();if(!show.cues.length&&!editing)setEditing(true);
+ if(hasProjDir()){try{const fn=await uniqueName(FS.dirs.loyihalar,proj.name);proj.name=fn.replace(/\.sahna$/,'');proj.handle=await FS.dirs.loyihalar.getFileHandle(fn,{create:true});await saveProject(false);}catch(e){toast('Loyihani yaratib bo\'lmadi: '+e.message);}}
+ renderProj();storeProj();logEvent('Yangi loyiha: '+proj.name+' (shablon: '+tplId+')');
+}
+async function openProjectFile(dir,file){
+ try{const h=await dir.getFileHandle(file);await openFile(await h.getFile(),h);hideHub();}catch(e){toast('Ochib bo\'lmadi: '+(e.message||e));}
+}
+function projActions(file){
+ const nm=file.replace(/(\.sahna)?(\.zip)?$/i,'');
+ const body='<div style="display:flex;flex-direction:column;gap:8px"><button type="button" class="btn" id="paOpen">Ochish</button><button type="button" class="btn" id="paRen">Nomini o\'zgartirish</button><button type="button" class="btn" id="paDup">Nusxa olish</button>'+(NATIVE?'<button type="button" class="btn" id="paShow">Papkada ko\'rsatish</button>':'')+'<button type="button" class="btn danger" id="paDel">Savatga tashlash</button></div>';
+ openModal(nm,body,[{label:'Yopish',fn:()=>{}}],{click:async(e,b)=>{
+  if(b.id==='paOpen'){closeModal();guardDirty(()=>openProjectFile(FS.dirs.loyihalar,file));}
+  else if(b.id==='paRen'){closeModal();openModal('Nomini o\'zgartirish','<div class="field"><label for="rnN">Yangi nom</label><input class="inp" type="text" id="rnN" value="'+esc(nm)+'"></div>',[{label:'Bekor',fn:()=>{}},{label:'Saqlash',cls:'primary',fn:()=>{const nn=val('rnN').trim().replace(/[\\/:*?"<>|]/g,'-');if(!nn||nn===nm)return;FS.run(async()=>{const target=await uniqueName(FS.dirs.loyihalar,nn);await moveFile(FS.dirs.loyihalar,file,FS.dirs.loyihalar,target);if(proj.name===nm){proj.name=target.replace(/\.sahna$/,'');proj.handle=await FS.dirs.loyihalar.getFileHandle(target);renderProj();storeProj();}logEvent('Loyiha nomi: '+nm+' → '+target);}).then(()=>renderHub());}}]);}
+  else if(b.id==='paDup'){closeModal();FS.run(async()=>{const t=await uniqueName(FS.dirs.loyihalar,nm+' nusxa');await copyFile(FS.dirs.loyihalar,file,FS.dirs.loyihalar,t);toast('Nusxa: '+t);}).then(()=>renderHub());}
+  else if(b.id==='paShow'){azNative.reveal({rel:'loyihalar/'+file});}
+  else if(b.id==='paDel'){closeModal();if(proj.name===nm&&proj.handle){proj.handle=null;storeProj();}FS.run(async()=>{const t=await uniqueName(FS.dirs.savat,nm);await moveFile(FS.dirs.loyihalar,file,FS.dirs.savat,t);logEvent('Savatga: '+file);toast('Savatga tashlandi: '+nm);}).then(()=>renderHub());}
+ }});
+}
+function trashActions(file){
+ const nm=file.replace(/(\.sahna)?(\.zip)?$/i,'');
+ openModal(nm,'<p class="hint">Bu loyiha savatda.</p>',[{label:'Butunlay o\'chirish',cls:'danger',fn:()=>{FS.run(async()=>{await FS.dirs.savat.removeEntry(file);logEvent('Butunlay o\'chirildi: '+file);}).then(()=>renderHub());}},{label:'Yopish',fn:()=>{}},{label:'Tiklash',cls:'primary',fn:()=>{restoreTrash(file);}}]);
+}
+function restoreTrash(file){const nm=file.replace(/(\.sahna)?(\.zip)?$/i,'');FS.run(async()=>{const t=await uniqueName(FS.dirs.loyihalar,nm);await moveFile(FS.dirs.savat,file,FS.dirs.loyihalar,t);logEvent('Tiklandi: '+t);toast('Tiklandi: '+nm);}).then(()=>renderHub());}
+function aboutApp(){
+ openModal('Sahna Ovozi haqida','<div class="brand" style="font-size:22px"><svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg><span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span></div><table class="dtab"><tr><td>Versiya</td><td>'+esc(APP_VERSION)+'</td></tr><tr><td>Rejim</td><td>'+(NATIVE?'O\'rnatilgan dastur (Windows / macOS)':isStandalone()?'O\'rnatilgan veb-ilova':'Brauzer')+'</td></tr><tr><td>Baza</td><td>'+(Store.mode==='folder'?(NATIVE?'Hujjatlar / Sahna Ovozi':esc(FS.root.name)):'brauzer xotirasi')+'</td></tr></table><p class="hint">Teatr va dublaj uchun jonli ovoz pulti: cue, SFX banklar, atmosfera qatlamlari, mikser va obraz ovozi effektlari.</p>',[{label:'Yopish',cls:'primary',fn:()=>{}}]);
+}
+document.addEventListener('click',e=>{
+ const H=$('#hub');if(!H||H.hidden||!H.contains(e.target))return;
+ const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+ if(d.hpage){hubPage=d.hpage;renderHub();}
+ else if(b.id==='hubNew')newProjectDialog();
+ else if(b.id==='hubOpen')guardDirty(()=>openProject().then(()=>{if(!proj.dirty)hideHub();}));
+ else if(b.id==='hubCont')hideHub();
+ else if(b.id==='hubDocs')azNative.openDocs();
+ else if(b.id==='hubDb')dbMenu();
+ else if(b.id==='hubProfEdit'||b.closest('#hubProf'))editProfile();
+ else if(b.id==='hubEmpty')FS.run(async()=>{const L=[];for await (const [n] of FS.dirs.savat.entries())L.push(n);for(const n of L)await FS.dirs.savat.removeEntry(n);logEvent('Savat bo\'shatildi');}).then(()=>renderHub());
+ else if(b.id==='hubAbout')aboutApp();
+ else if(d.tpl)newProjectDialog(d.tpl);
+ else if(d.popen)guardDirty(()=>openProjectFile(FS.dirs.loyihalar,d.popen));
+ else if(d.pmore)projActions(d.pmore);
+ else if(d.trest)trashActions(d.trest);
+ else if(d.tmore)trashActions(d.tmore);
+},true);
+document.addEventListener('input',e=>{if(e.target.id==='hubQ'){hubQuery=e.target.value;clearTimeout(renderHub._t);renderHub._t=setTimeout(renderHub,200);}});
+document.addEventListener('change',e=>{if(e.target.id==='hubSort'){hubSort=e.target.value;renderHub();}});
+document.addEventListener('contextmenu',e=>{const c=e.target.closest&&e.target.closest('.pcard');if(!c||!$('#hub').contains(c))return;e.preventDefault();const b=c.querySelector('[data-pmore],[data-tmore]');if(b)b.click();});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+ if(e.target.closest('#modal'))return;
+ const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.cue!=null){next=+d.cue;renderCues();}
+ else if(d.cedit!=null)editCue(+d.cedit);
+ else if(d.cmove){const [i,dd]=d.cmove.split(',').map(Number);moveCue(i,dd);}
+ else if(d.hit!=null)hitPad(+d.hit);
+ else if(d.up!=null){const i=+d.up;pickFile(f=>padUpload(i,f));}
+ else if(d.bank!=null){bank=+d.bank;renderPads();}
+ else if(d.bedit)editBank(false);
+ else if(d.bnew)editBank(true);
+ else if(d.sedit)editScene(d.sedit);
+ else if(d.snew)editScene(null);
+ else if(d.fade!=null){fadeT=+d.fade;show.fade=fadeT;saveShow();renderFades();}
+ else if(d.mute){const b=buses[d.mute];b.muted=!b.muted;applyFader(d.mute);storeMix(d.mute);t.classList.toggle('on',b.muted);t.setAttribute('aria-pressed',b.muted);}
+ else if(d.preset){dub.preset=d.preset;show.dubfx={preset:dub.preset,amount:dub.amount};saveShow();buildDubFx();renderPresets();}
+ else if(d.stop){const v=voices.find(x=>x.vid===+d.stop);if(v){stopVoice(v,.3);if(scene)scene.layers.forEach(l=>{if(l.voice===v)l.voice=null;});}}
+ else if(d.prev)preview(d.prev);
+ else if(d.repl){const id=d.repl;pickFile(f=>replaceAsset(id,f));}
+ else if(d.reset)resetAsset(d.reset);
+ else if(d.udel)deleteUserAsset(d.udel);
+ else if(t.id==='libAdd')pickFile(async f=>{if(await addUserAsset(f))renderLib();});
+});
+document.addEventListener('input',e=>{
+ if(e.target.closest('#modal'))return;
+ const t=e.target;
+ if(t.dataset.layer!=null)setLayerVol(+t.dataset.layer,+t.value);
+ else if(t.dataset.bus){const k=t.dataset.bus;buses[k].val=+t.value;applyFader(k);$('#db_'+k).textContent=faderDb(+t.value);storeMix(k);}
+ else if(t.id==='amt'){dub.amount=t.value/100;$('#amtV').textContent=t.value+'%';buildDubFx();show.dubfx={preset:dub.preset,amount:dub.amount};saveShow();}
+});
+$('#goBtn').addEventListener('click',e=>{e.stopPropagation();go();});
+$('#homeBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)showHub('home');});
+if(NATIVE){
+ azNative.onMenu(cmd=>{if(!ctx)return;if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
+  ({home:()=>showHub('home'),new:()=>newProjectDialog(),open:()=>guardDirty(()=>openProject().then(()=>{if(!proj.dirty)hideHub();})),save:()=>saveProject(false),saveas:()=>saveProject(true),
+    edit:()=>{hideHub();setEditing(!editing);},lib:()=>{hideHub();$('#libBtn').click();},diag:()=>runDiag(false),db:()=>dbMenu(),go:()=>go(),panic:()=>panic(),about:()=>aboutApp(),profile:()=>editProfile(),
+    projects:()=>showHub('projects'),trash:()=>showHub('trash')}[cmd]||(()=>{}))();});
+ azNative.onOpenFile(p=>{if(!ctx){window.__launchPath=p;return;}guardDirty(async()=>{const h=nFile(null,p.split(/[\\/]/).pop(),p);await openFile(await h.getFile(),h);hideHub();});});
+ azNative.onCloseRequest(()=>{if(!proj.dirty){azNative.closeNow();return;}guardDirty(()=>azNative.closeNow());});
+}
+$('#dbBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)dbMenu();});
+$('#projBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)projMenu();});
+$('#installBtn').addEventListener('click',e=>{e.stopPropagation();installApp();});
+$('#audioBadge').addEventListener('click',e=>{e.stopPropagation();runDiag(false);});
+$('#backBtn').addEventListener('click',e=>{e.stopPropagation();next=Math.max(0,next-1);renderCues();});
+$('#panicBtn').addEventListener('click',e=>{e.stopPropagation();panic();});
+$('#editBtn').addEventListener('click',e=>{e.stopPropagation();setEditing(!editing);});
+$('#showBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)editShow();});
+$('#showEdit').addEventListener('click',e=>{e.stopPropagation();editShow();});
+$('#cueAdd').addEventListener('click',e=>{e.stopPropagation();editCue(null);});
+$('#atmOff').addEventListener('click',()=>sceneOff(Math.max(fadeT,.05)));
+$('#musOff').addEventListener('click',()=>busOff('music',Math.max(fadeT,.05)));
+$('#allOff').addEventListener('click',()=>{sceneOff(Math.max(fadeT,.05));['music','sfx','dub'].forEach(b=>busOff(b,Math.max(fadeT,.05)));});
+$('#dubLoad').addEventListener('click',()=>pickFile(f=>replaceAsset('dub_monolog',f)));
+$('#dubPlay').addEventListener('click',()=>{if(!buffers.dub_monolog){toast('Avval ovoz faylini yuklang');return;}play('dub_monolog','dub',{title:'Monolog: ichki ovoz'});});
+$('#dubStop').addEventListener('click',()=>busOff('dub',.3));
+$('#micBtn').addEventListener('click',e=>{e.stopPropagation();toggleMic();});
+$('#libBtn').addEventListener('click',e=>{e.stopPropagation();renderLib();$('#lib').classList.add('open');$('#lib').setAttribute('aria-hidden','false');$('#libClose').focus();});
+$('#libClose').addEventListener('click',e=>{e.stopPropagation();$('#lib').classList.remove('open');$('#lib').setAttribute('aria-hidden','true');$('#libBtn').focus();});
+
+const KEYPAD={};KEYS.forEach(([code],i)=>KEYPAD[code]=i);
+const typing=t=>t&&(t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!/^(range|checkbox|button)$/.test(t.type)));
+document.addEventListener('keydown',e=>{
+ if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
+ if(!ctx||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(!$('#hub').hidden){if(e.code==='Escape'&&!modalOpen()&&ctx){e.preventDefault();hideHub();}return;}
+ if(modalOpen()){if(e.code==='Escape'){e.preventDefault();closeModal();}return;}
+ if(typing(e.target))return;
+ if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
+ if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
+ if(e.target.type==='range'&&/^Arrow/.test(e.code))return;
+ if(e.code==='ArrowDown'){e.preventDefault();next=Math.min(show.cues.length-1,next+1);renderCues();return;}
+ if(e.code==='ArrowUp'){e.preventDefault();next=Math.max(0,next-1);renderCues();return;}
+ if(e.code==='BracketLeft'||e.code==='BracketRight'){e.preventDefault();bank=(bank+(e.code==='BracketRight'?1:-1)+show.banks.length)%show.banks.length;renderPads();return;}
+ if(KEYPAD[e.code]!=null&&!e.repeat&&!editing){e.preventDefault();hitPad(KEYPAD[e.code]);}
+});
+document.addEventListener('keyup',e=>{if(ctx&&e.code==='Space'&&!typing(e.target)&&!modalOpen())e.preventDefault();},true);
+
+/* drag & drop onto pads */
+document.addEventListener('dragover',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p){e.preventDefault();p.classList.add('drag');}});
+document.addEventListener('dragleave',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p)p.classList.remove('drag');});
+document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest('.pad');if(!p)return;e.preventDefault();p.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)padUpload(+p.dataset.pad,f);});
+
+/* ---------- start ---------- */
+async function boot(){
+ if(boot._on)return;boot._on=1;
+ const SP=(i,t,p)=>{if(NATIVE)try{azNative.splash(i,t,p);}catch(e){}};
+ const btn=$('#start');btn.disabled=true;btn.textContent='Ovozlar yuklanmoqda…';
+ try{
+  SP(0,'Audio tizim ishga tushmoqda',0.08);
+  initAudio();unlockAudio();
+  const resumeP=ctx.state!=='running'?Promise.race([ctx.resume(),new Promise(r=>setTimeout(r,1500))]).catch(()=>{}):null;
+  await DB.open();
+  // Documents bazasi: ruxsatni shu bosish ichida so'raymiz
+  let dir=null;
+  if(NATIVE)dir=NATIVE_ROOT;
+  else if(FSUP&&!IS_FRAME){try{const h=await DB.get('__dir');if(h){let st=await h.queryPermission({mode:'readwrite'});if(st!=='granted')st=await h.requestPermission({mode:'readwrite'});if(st==='granted')dir=h;else toast('Documents papkasiga ruxsat berilmadi — brauzer bazasida ishlayapti');}}catch(e){}}
+  if(resumeP)await resumeP;
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+  SP(1,'Ovoz kutubxonasi yuklanmoqda',0.2);
+  const ids=Object.keys(ASSETS);let done=0;
+  await Promise.all(ids.map(async id=>{const b=await decode(b64ToAB(ASSETS[id]));buffers[id]=origBuffers[id]=b;done++;$('#gateMsg').textContent=done+' / '+ids.length+' ovoz tayyor';SP(1,done+' / '+ids.length+' ovoz tayyor',0.2+0.45*done/ids.length);}));
+  if(dir){try{await FS.init(dir);Store.mode='folder';}catch(e){Store.mode='browser';toast('Papkani o\'qib bo\'lmadi — brauzer bazasida ishlayapti');}}
+  if(Store.mode==='browser'){const lg=await DB.get('__log');if(Array.isArray(lg))logRing=lg;}
+  $('#gateMsg').textContent='Baza tiklanmoqda…';SP(2,NATIVE?'Hujjatlar / Sahna Ovozi bazasi':'Ma\'lumotlar bazasi',0.72);
+  const nUser=await hydrate(await Store.all());
+  SP(3,'Loyihalar va profil',0.86);await loadProfile();
+  renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
+  SP(4,'Sahna oynasi',1);
+  $('#gate').remove();$('#goBtn').focus();requestAnimationFrame(loop);updateBadge();
+  setTimeout(()=>{if(ctx.state!=='running')runDiag(true);},600);
+  logEvent('Ilova ochildi · '+(NATIVE?'o\'rnatilgan dastur v'+APP_VERSION:isStandalone()?'o\'rnatilgan ilova':'brauzer')+' · baza: '+(Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer'));
+  let opened=false;
+  if(launchFile){const h=launchFile;launchFile=null;await openFile(await h.getFile(),h);addRecent(h);opened=true;}
+  if(NATIVE){const lp=window.__launchPath||await azNative.takeLaunchFile();if(lp){const h=nFile(null,lp.split(/[\\/]/).pop(),lp);try{await openFile(await h.getFile(),h);opened=true;}catch(e){}}}
+  if(!opened)showHub('home');
+  if(NATIVE)azNative.ready();
+  const where=Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer xotirasi';
+  toast('Tayyor · baza: '+where+(nUser?' · '+nUser+' ta o\'z fayli tiklandi':''));
+  if(Store.mode==='browser'&&FSUP&&!IS_FRAME&&isStandalone()&&!(await DB.get('__dirAsked'))){DB.put('__dirAsked',1);setTimeout(dbMenu,900);}
+ }catch(err){boot._on=0;if(NATIVE)try{azNative.ready();}catch(e){}btn.disabled=false;btn.textContent='Qayta urinish';$('#gateMsg').textContent='Ovozni yoqib bo\'lmadi: '+(err&&err.message||err);}
+}
+$('#start').addEventListener('click',boot);
+if(NATIVE){window.addEventListener('DOMContentLoaded',()=>boot());if(document.readyState!=='loading')setTimeout(boot,0);}
+renderFades();renderHeader();renderInstall();
+})();
+</script>
+</body>
+</html>

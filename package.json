@@ -1,0 +1,20 @@
+{
+  "name": "sahna-ovozi",
+  "productName": "Sahna Ovozi",
+  "version": "1.0.0",
+  "description": "Sahna Ovozi — teatr va dublaj uchun jonli ovoz pulti (Azimxodjayev Music)",
+  "author": "Azimxodjayev Music",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:web": "python3 tools/build.py",
+    "pack:win": "electron-packager . \"Sahna Ovozi\" --platform=win32 --arch=x64 --icon=Resources/icon.ico --out=build --overwrite --asar --prune=true --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-copyright=\"Azimxodjayev Music\" --win32metadata.CompanyName=\"Azimxodjayev Music\" --win32metadata.FileDescription=\"Sahna Ovozi\" --win32metadata.ProductName=\"Sahna Ovozi\"",
+    "pack:mac": "electron-packager . \"Sahna Ovozi\" --platform=darwin --arch=universal --icon=Resources/icon.png --out=build --overwrite --asar --prune=true --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-bundle-id=com.azimxodjayevmusic.sahnaovozi --extend-info=installer/macos/extend-info.plist"
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.3.6",
+    "electron": "^33.4.11"
+  }
+}

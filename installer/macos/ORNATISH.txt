@@ -1,0 +1,9 @@
+SAHNA OVOZI — macOS (Intel + Apple Silicon) · Azimxodjayev Music
+
+1. Sahna-Ovozi-macOS.zip ni oching.
+2. "Sahna Ovozi.app" ni Applications (Dasturlar) papkasiga sudrab tashlang.
+3. Birinchi ochishda: dastur ustida o'ng tugma -> "Open" (Ochish) -> "Open".
+   (Dastur Apple tomonidan imzolanmagan, shuning uchun bir marta shunday ochiladi.)
+4. Mikrofon so'ralsa — "Ruxsat berish" (jonli dublaj uchun).
+
+Baza: Hujjatlar (Documents) / Sahna Ovozi

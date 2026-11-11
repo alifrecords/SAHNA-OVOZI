@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'">
+<title>Sahna Ovozi</title>
+<style>
+@font-face{font-family:Inter;src:url(../app/fonts/InterRegular.otf);font-weight:400}
+@font-face{font-family:Inter;src:url(../app/fonts/InterSemiBold.otf);font-weight:600}
+@font-face{font-family:Inter;src:url(../app/fonts/InterBold.otf);font-weight:700}
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;font-family:Inter,system-ui,sans-serif;color:#E8E6E1;-webkit-user-select:none;user-select:none;-webkit-app-region:drag}
+.box{position:absolute;inset:0;border-radius:14px;overflow:hidden;background:#07070a;box-shadow:0 0 0 1px #262A31 inset}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.logo{position:absolute;left:56px;top:62px;display:flex;align-items:center;gap:16px}
+.logo svg{width:56px;height:56px}
+.t1{font-size:38px;font-weight:700;letter-spacing:.06em}
+.t2{font-size:12px;font-weight:600;letter-spacing:.32em;color:#F2A93B;margin-top:6px}
+.tag{position:absolute;left:58px;top:150px;font-size:13px;color:#9AA0A8;max-width:330px;line-height:1.55}
+.steps{position:absolute;left:58px;bottom:96px;display:flex;flex-direction:column;gap:7px}
+.st{font-size:11px;font-weight:600;letter-spacing:.14em;color:#4A4F57;display:flex;align-items:center;gap:10px}
+.st i{width:7px;height:7px;border-radius:50%;background:#2A2E35;display:inline-block}
+.st.on{color:#E8E6E1}.st.on i{background:#F2A93B;box-shadow:0 0 10px #F2A93B}
+.st.done{color:#7FE0D3}.st.done i{background:#4FC3B5}
+.bar{position:absolute;left:58px;right:58px;bottom:56px;height:4px;background:#1C1F25;border-radius:2px;overflow:hidden}
+.bar b{display:block;height:100%;width:2%;background:linear-gradient(90deg,#F2A93B,#FFD08A);border-radius:2px;transition:width .25s ease}
+.status{position:absolute;left:58px;bottom:24px;font-size:12px;color:#9AA0A8}
+.ver{position:absolute;right:58px;bottom:24px;font-size:11px;color:#5A606B;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="box">
+  <canvas id="c" aria-hidden="true"></canvas>
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg>
+    <div><div class="t1">SAHNA OVOZI</div><div class="t2">AZIMXODJAYEV MUSIC</div></div>
+  </div>
+  <div class="tag">Teatr va dublaj uchun jonli ovoz pulti — cue, SFX, atmosfera, mikser va obraz ovozlari</div>
+  <div class="steps" id="steps"></div>
+  <div class="bar"><b id="bar"></b></div>
+  <div class="status" id="status">Ishga tushmoqda…</div>
+  <div class="ver" id="ver"></div>
+</div>
+<script>
+const STEPS=['AUDIO TIZIM','OVOZ KUTUBXONASI','MA\'LUMOTLAR BAZASI','LOYIHALAR VA PROFIL','SAHNA OYNASI'];
+const stepsEl=document.getElementById('steps');
+stepsEl.innerHTML=STEPS.map((s,i)=>'<div class="st" id="s'+i+'"><i></i>'+s+'</div>').join('');
+document.getElementById('ver').textContent='VERSIYA '+(new URLSearchParams(location.search).get('v')||'');
+let cur=-1;
+function setStep(i,text,prog){
+  STEPS.forEach((_,k)=>{const e=document.getElementById('s'+k);e.className='st'+(k<i?' done':k===i?' on':'');});
+  if(text)document.getElementById('status').textContent=text;
+  if(prog!=null)document.getElementById('bar').style.width=Math.max(2,Math.min(100,prog*100))+'%';
+  cur=i;
+}
+setStep(0,'Ishga tushmoqda…',0.03);
+if(window.splashBridge)splashBridge.onProgress(s=>setStep(s.step,s.text,s.prog));
+// to'lqin san'ati (AZ MUS splash'idagi kabi, amber rangda)
+const c=document.getElementById('c'),g=c.getContext('2d');let ph=0;
+function draw(){
+  const W=c.width=c.clientWidth*devicePixelRatio,H=c.height=c.clientHeight*devicePixelRatio,s=devicePixelRatio;
+  g.clearRect(0,0,W,H);
+  const gr=g.createRadialGradient(W-190*s,170*s,0,W-190*s,170*s,330*s);gr.addColorStop(0,'rgba(242,169,59,.30)');gr.addColorStop(1,'rgba(242,169,59,0)');
+  g.fillStyle=gr;g.fillRect(0,0,W,H);
+  for(let k=0;k<46;k++){
+    const t=k/45;g.beginPath();
+    for(let x=440*s;x<=W+10;x+=3*s){
+      const u=(x-440*s)/(W-440*s);
+      const env=Math.sin(Math.PI*Math.min(1,u*1.15))*(0.35+0.65*Math.exp(-Math.pow((u-.55)/.3,2)));
+      const y=H*.56+Math.sin(u*11+t*5.2+ph)*58*s*env*(.4+t*.8)+Math.sin(u*27+t*9+ph*1.7)*10*s*env+(t-.5)*70*s*env;
+      if(x===440*s)g.moveTo(x,y);else g.lineTo(x,y);
+    }
+    const a=.05+.5*Math.pow(1-Math.abs(t-.5)*2,2.2);
+    g.strokeStyle=k%7===0?'rgba(255,255,255,'+(a*.7)+')':'rgba(242,169,59,'+a+')';g.lineWidth=(k%7===0?1.1:.8)*s;g.stroke();
+  }
+  for(let i=0;i<64;i++){const h=(4+Math.abs(Math.sin(i*.37+ph*.3)*Math.cos(i*.13))*34+(i%5===0?10:0))*s;g.fillStyle='rgba(242,169,59,'+(.08+h/s/260)+')';g.fillRect((470+i*6.3)*s,H-120*s-h,3*s,h);}
+  ph+=.035;requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
