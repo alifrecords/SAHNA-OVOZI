@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   APP_VERSION: 1.2.0
 
@@ -33,6 +37,8 @@ jobs:
 
   macos:
     runs-on: macos-15
+    timeout-minutes: 60
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -51,6 +57,8 @@ jobs:
 
   release:
     needs: [ windows, macos ]
+    # macOS kechiksa yoki bekor bo'lsa ham Windows Setup.exe Release'ga chiqadi
+    if: ${{ always() && needs.windows.result == 'success' }}
     runs-on: ubuntu-latest
     permissions: { contents: write }
     steps:
@@ -65,6 +73,7 @@ jobs:
             Sahna Ovozi — teatr va dublaj uchun jonli ovoz pulti (Azimxodjayev Music)
             Windows: Sahna-Ovozi-Windows.zip ichidagi Sahna-Ovozi-${{ env.APP_VERSION }}-Setup.exe ni ishga tushiring
             macOS: Sahna-Ovozi-macOS.zip (Intel + Apple Silicon) — ORNATISH.txt ni o'qing
+          fail_on_unmatched_files: false
           files: |
             Sahna-Ovozi-Windows.zip
             Sahna-Ovozi-macOS/Sahna-Ovozi-macOS.zip
