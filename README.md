@@ -3,6 +3,17 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.3.0: AZ BEAT uslubidagi sample brauzer · avtosaqlash · ish joyi saqlanadi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sample brauzer | SFX tugmalari ostida: tanlangan tugma (bosilgani), **◀ ▶** — guruhdagi oldingi/keyingi sample (yuklanadi va darhol eshittiriladi), "3 / 16 · guruh", guruh tanlash, ▶ Tinglash, ✂ Kesish, Gain; klaviaturada **← →** |
+| To'lqin | Tanlangan sample to'lqini, S (boshi) / E (oxiri) belgilari va oq ijro chizig'i — AZ MUS · AZ BEAT kabi |
+| Papkadan sample'lar | Kompyuterdagi butun papkani tanlash — barcha audio (300 tagacha) papka nomidagi guruhga qo'shiladi; ◀ ▶ bilan ketma-ket tinglab tanlanadi |
+| Avtosaqlash | Cubase kabi: loyiha fayli har 1 / 2 / 5 / 10 daqiqada avtomatik saqlanadi (Loyiha menyusida yoqish va oraliq); nusxalar `zaxira/loyihalar` da (oxirgi 10 ta); bir martalik ovoz yangrayotganda kutadi |
+| Ish joyi | Qaysi cue JONLI / KEYINGI, qaysi bank ochiq — bazada va loyiha faylida saqlanadi; boshqa kompyuterda ochilganda shu joydan davom etadi |
+| Boshqa kompyuter | Loyiha fayliga tugmalarda ishlatilgan guruhlarning barcha sample'lari ham kiradi — u yerda ham ◀ ▶ ishlaydi |
+
 ## 1.2.0: masshtab (zoom) · klaviaturadan daraja · cue'larni sudrash
 
 | Bo'lim | Nima qilindi |

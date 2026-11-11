@@ -271,6 +271,26 @@ header .brand svg{width:24px;height:24px}
 .cue{position:relative}
 .cue .cg{position:absolute;right:10px;bottom:6px;font-size:10px;font-weight:700;color:#1A1206;background:var(--amber);border-radius:10px;padding:1px 6px}
 
+.pad.sel .hit{box-shadow:0 0 0 2px var(--teal) inset}
+.sbox{display:flex;flex-direction:column;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.sbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sbar .ibtn{width:34px;height:34px;font-size:12px}
+.sbpad{display:flex;align-items:center;gap:8px;font-size:13px;min-width:0}
+.sbpad .key{font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:1px 6px}
+.sbpad b{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#sbGroup{height:34px;max-width:210px;font-size:12px}
+.sbinfo{font-size:11px}
+.swv{position:relative;height:74px;border-radius:8px;background:#0B0C0F;overflow:hidden;border:1px solid var(--line)}
+.swb{position:absolute;inset:6px 4px;display:flex;align-items:center;gap:1px}
+.swb i{flex:1;background:var(--c);opacity:.7;border-radius:1px}
+.swm{position:absolute;top:0;bottom:0;background:rgba(0,0,0,.6)}
+.sws,.swe2{position:absolute;top:0;bottom:0;width:2px;font-size:9px;font-weight:800;padding-left:4px;line-height:14px}
+.sws{background:#4FC3B5;color:#4FC3B5}.swe2{background:#F27A8A;color:#F27A8A;transform:translateX(-2px)}
+.swe2{text-indent:-12px}
+.swph{position:absolute;top:0;bottom:0;width:2px;background:#fff}
+.swe{height:74px;border:1px dashed var(--line2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;padding:0 12px}
+.sbgain{display:flex;align-items:center;gap:10px;font-size:12px}
+.sbgain input{max-width:220px}
 @media (max-width:640px){.faders{grid-template-columns:1fr}}
 @media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
 </style>
@@ -344,6 +364,7 @@ header .brand svg{width:24px;height:24px}
         <div class="between"><h2>Tezkor effektlar (SFX)</h2><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span></div>
         <div class="banks" id="banks" role="group" aria-label="SFX banklari"></div>
         <div class="pads" id="pads"></div>
+        <div class="sbox" id="sbox" aria-label="Tanlangan SFX tugmasi: sample brauzeri"></div>
         <div class="between">
           <div class="legend"><span><i style="background:var(--teal)"></i>Tabiat</span><span><i style="background:var(--amber)"></i>Zarba va harakat</span><span><i style="background:var(--violet)"></i>Musiqiy</span><span><i style="background:var(--rose)"></i>Odamlar</span></div>
           <span class="muted" style="font-size:11px">↻ belgili tugma qayta bosilsa to'xtaydi · faylni tugmaga sudrab tashlang</span>
@@ -413,13 +434,14 @@ header .brand svg{width:24px;height:24px}
     <h1>Jonli sahna ovoz pulti</h1>
     <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
     <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
-    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Ctrl + g'ildirak — masshtab</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Ctrl + g'ildirak — masshtab</p>
     <button id="start" type="button">Ovozni yoqish va boshlash</button>
     <span class="muted" style="font-size:12px" id="gateMsg"></span>
   </div>
 </div>
 <div id="modal"><div class="mcard" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h2 id="mTitle" style="font-size:20px"></h2><div id="mBody" style="display:flex;flex-direction:column;gap:14px"></div><div class="mfoot" id="mFoot"></div></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="dirIn" webkitdirectory multiple class="sr" tabindex="-1" aria-hidden="true">
 <input type="file" id="fileIn" accept="audio/*" class="sr" tabindex="-1" aria-hidden="true">
 
 <script>const ASSETS=/*__ASSETS__*/;const META=/*__META__*/;</script>
@@ -525,7 +547,7 @@ const DB={db:null,
  all(){return new Promise(res=>{const out={};try{if(!this.db)return res(out);const rq=this.db.transaction('files').objectStore('files').openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){out[c.key]=c.value;c.continue();}else res(out);};rq.onerror=()=>res(out);}catch(e){res(out);}});}
 };
 let saveT;
-function saveShow(){markDirty();clearTimeout(saveT);saveT=setTimeout(()=>{const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);},150);}
+function saveShow(){markDirty();show.pos={cur,next,bank};clearTimeout(saveT);saveT=setTimeout(()=>{const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);},150);}
 function validShow(o){return o&&Array.isArray(o.cues)&&o.scenes&&typeof o.scenes==='object'&&Array.isArray(o.banks)&&o.banks.length&&o.banks.every(b=>b&&Array.isArray(b.pads));}
 function normShow(o){o.mix=o.mix||{};o.dubfx=o.dubfx||{preset:'clean',amount:.6};if(o.fade==null)o.fade=3;o.banks.forEach(b=>{while(b.pads.length<16)b.pads.push(null);b.pads.length=16;});o.cues.forEach(c=>{c.note=c.note||'';});return o;}
 
@@ -743,6 +765,81 @@ async function trimBake(){
  toast('Yangi ovoz kutubxonaga qo\'shildi: '+name);
 }
 
+/* ---------- SFX sample brauzeri (AZ MUS · AZ BEAT kabi) ---------- */
+let selPad=0,sbInfo='',lastGroup='sfx',pvVoice=null;
+function groupOf(id){const m=META[id];if(!m)return null;if(m.kind==='user')return 'u:'+(m.group||'Mening fayllarim');if(m.kind.indexOf('atmos')===0)return 'atmos';return m.kind;}
+function groupName(g){return !g?'—':g.indexOf('u:')===0?g.slice(2):({sfx:'SFX namunalar',music:'Musiqa',atmos:'Atmosfera qatlamlari',dub:'Dublaj'}[g]||g);}
+function groupList(){const s=new Set();for(const id in META){const g=groupOf(id);if(g&&g!=='dub'&&buffers[id])s.add(g);}return [...s].sort((a,b)=>((a.indexOf('u:')===0?0:1)-(b.indexOf('u:')===0?0:1))||a.localeCompare(b));}
+function groupAssets(g){return Object.keys(META).filter(id=>groupOf(id)===g&&buffers[id]).sort((a,b)=>titleOf(a).localeCompare(titleOf(b),undefined,{numeric:true}));}
+function setPadAsset(i,id,audition){const b=show.banks[bank];const o=b.pads[i];b.pads[i]={a:id,cat:o?o.cat:'zarba',t:o?o.t:0,loop:o?o.loop:0,title:'',g:o?o.g||0:0};lastGroup=groupOf(id)||lastGroup;saveShow();renderPads();if(audition)padPreview(i);}
+function browsePad(dir,g){
+ const p=show.banks[bank].pads[selPad];g=g||(p&&groupOf(p.a))||lastGroup;let L=groupAssets(g);
+ if(!L.length){g=groupList()[0];L=groupAssets(g);}if(!L.length)return;
+ let i=(p&&groupOf(p.a)===g)?L.indexOf(p.a):-1;i=i<0?(dir>=0?0:L.length-1):(i+dir+L.length)%L.length;
+ setPadAsset(selPad,L[i],true);sbInfo=(i+1)+' / '+L.length+' · '+groupName(g);renderSB();
+ logEvent('SFX '+KEYS[selPad][1]+' sample: '+titleOf(L[i]));
+}
+function padPreview(i){const p=show.banks[bank].pads[i];if(!p||!buffers[p.a]||!ctx)return;if(pvVoice)stopVoice(pvVoice,.04);pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:p.trim,color:(CAT[p.cat]||CAT.zarba)[0]});}
+function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();}
+function renderSB(){
+ const box=$('#sbox');if(!box)return;const b=show.banks[bank];if(!b)return;const p=b.pads[selPad];
+ const g=p?groupOf(p.a):lastGroup,gl=groupList();
+ let info=sbInfo;if(!info&&p){const L=groupAssets(g);const k=L.indexOf(p.a);info=k>=0?(k+1)+' / '+L.length+' · '+groupName(g):groupName(g);}
+ const buf=p&&buffers[p.a];
+ let wave='<div class="swe">Bo\'sh tugma — ◀ ▶ bilan sample tanlang, faylni sudrab tashlang yoki “Papkadan sample\'lar”</div>';
+ if(buf){const m=META[p.a]||{};const loopAsset=!overrides[p.a]&&m.loop;const dur=loopAsset?m.dur:buf.duration,base=loopAsset?m.loopStart:0;
+  const N=180,pk=peaksOf(buf,N),a0=Math.floor(base/buf.duration*N),z0=Math.max(a0+1,Math.floor((base+dur)/buf.duration*N)),sl=Array.from(pk).slice(a0,z0);
+  let bars='';for(let i=0;i<N;i++){const v=sl[Math.floor(i/N*sl.length)]||0;bars+='<i style="height:'+Math.max(2,Math.round(v*100))+'%"></i>';}
+  const s=p.trim?p.trim.s/dur*100:0,e=p.trim?p.trim.e/dur*100:100;
+  wave='<div class="swv" style="--c:'+(CAT[p.cat]||CAT.zarba)[0]+'"><div class="swb">'+bars+'</div><span class="swm" style="left:0;width:'+s+'%"></span><span class="swm" style="left:'+e+'%;right:0"></span><span class="sws" style="left:'+s+'%">S</span><span class="swe2" style="left:'+e+'%">E</span><span class="swph" id="sbPh" hidden></span></div>';
+  box.dataset.dur=dur;}
+ box.innerHTML='<div class="sbar"><button type="button" class="ibtn" id="sbPrev" aria-label="Oldingi sample (←)">◀</button><button type="button" class="ibtn" id="sbNext" aria-label="Keyingi sample (→)">▶</button>'+
+  '<span class="sbpad"><span class="key mono">'+KEYS[selPad][1]+'</span> <b>'+(p?esc(padTitle(p)):'Bo\'sh')+'</b></span>'+
+  '<select class="inp" id="sbGroup" aria-label="Sample guruhi">'+gl.map(x=>'<option value="'+esc(x)+'"'+(x===g?' selected':'')+'>'+esc(groupName(x))+'</option>').join('')+'</select>'+
+  '<span class="muted sbinfo mono">'+esc(info)+(p&&buf?' · '+fmtT(p.trim?trimLen(p.trim):+box.dataset.dur)+(p.trim?' ✂':''):'')+'</span><span style="flex:1"></span>'+
+  '<button type="button" class="btn sm" id="sbPlay"'+(buf?'':' disabled')+'>▶ Tinglash</button><button type="button" class="btn sm" id="sbTrim"'+(buf?'':' disabled')+'>✂ Kesish</button><button type="button" class="btn sm" id="sbFolder">Papkadan sample\'lar</button></div>'+
+  wave+
+  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="muted" style="font-size:11px;margin-left:auto">← → — sample almashtirish · tugmani bosish — tanlash</span></div>':'');
+}
+async function importFolder(files){
+ const L=[...files].filter(f=>/\.(wav|mp3|ogg|oga|flac|m4a|aac|aif|aiff|opus|webm)$/i.test(f.name)).sort((a,b)=>(a.webkitRelativePath||a.name).localeCompare(b.webkitRelativePath||b.name,undefined,{numeric:true}));
+ if(!L.length){toast('Papkada audio fayl topilmadi');return;}
+ const MAX=300;if(L.length>MAX)toast('Birinchi '+MAX+' ta fayl olinadi ('+L.length+' tadan)');
+ const grp=((L[0].webkitRelativePath||'').split('/')[0])||'Mening sample\'larim';let first=null,n=0;
+ for(const f of L.slice(0,MAX)){const id=await addUserAsset(f,null,grp,true);if(id){n++;if(!first)first=id;}if(n%10===0)toast('Yuklanmoqda: '+n+' / '+Math.min(L.length,MAX));}
+ if(first){lastGroup='u:'+grp;setPadAsset(selPad,first,true);sbInfo='1 / '+n+' · '+grp;renderSB();renderLib();}
+ toast('“'+grp+'” guruhiga '+n+' ta sample qo\'shildi — ◀ ▶ bilan almashtiring');logEvent('Papkadan sample\'lar: '+grp+' ('+n+' ta)');
+}
+$('#dirIn').addEventListener('change',e=>{const fs=e.target.files;if(fs&&fs.length)importFolder(fs);e.target.value='';});
+document.addEventListener('click',e=>{
+ const t=e.target.closest&&e.target.closest('#sbox button');if(!t)return;
+ if(t.id==='sbPrev')browsePad(-1);else if(t.id==='sbNext')browsePad(1);
+ else if(t.id==='sbPlay')padPreview(selPad);
+ else if(t.id==='sbTrim')editPad(selPad);
+ else if(t.id==='sbFolder'){if(!ctx)return;$('#dirIn').click();}
+});
+document.addEventListener('change',e=>{if(e.target.id==='sbGroup'){sbInfo='';browsePad(0,e.target.value);}});
+document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks[bank].pads[selPad];if(!p)return;p.g=+e.target.value;$('#sbGv').textContent=dbStr(p.g);saveShow();}});
+
+/* ---------- avtosaqlash (Cubase kabi) ---------- */
+const AUTOSAVE={on:true,min:2};let lastAuto=Date.now(),lastAutoAt=null;
+async function loadSettings(){const s=await DB.get('__settings');if(s&&s.autosave)Object.assign(AUTOSAVE,s.autosave);}
+function saveSettings(){DB.put('__settings',{autosave:AUTOSAVE});}
+setInterval(()=>{
+ if(!AUTOSAVE.on||!ctx||!proj.dirty||!proj.handle||IS_FRAME)return;
+ if(Date.now()-lastAuto<AUTOSAVE.min*60000)return;
+ if(voices.some(v=>!v.stopping&&!v.preview&&!v.loop))return; // bir martalik ovoz yangrayotganda kutamiz
+ lastAuto=Date.now();saveProject(false,{silent:true});
+},10000);
+function savePos(){show.pos={cur,next,bank};clearTimeout(savePos._t);savePos._t=setTimeout(()=>{const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);},800);}
+function restorePos(){const p=show.pos;if(!p)return;const n=show.cues.length;cur=Math.max(-1,Math.min(n-1,p.cur==null?-1:p.cur));next=Math.max(0,Math.min(n,p.next==null?0:p.next));bank=Math.max(0,Math.min(show.banks.length-1,p.bank||0));}
+async function projBackup(blob,name){
+ if(Store.mode!=='folder'||!FS.dirs.zaxira)return;
+ try{const d=await FS.dirs.zaxira.getDirectoryHandle('loyihalar',{create:true});const t=new Date(),p=x=>String(x).padStart(2,'0');
+  const safe=name.replace(/[\\/:*?"<>|]/g,'-');await FS.write(d,safe+'-'+t.getFullYear()+p(t.getMonth()+1)+p(t.getDate())+'-'+p(t.getHours())+p(t.getMinutes())+'.sahna',blob);
+  const L=[];for await (const [n] of d.entries())if(n.indexOf(safe+'-')===0)L.push(n);L.sort();while(L.length>10){try{await d.removeEntry(L.shift());}catch(e){}}}catch(e){}
+}
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
@@ -792,7 +889,7 @@ function fireCue(i){
  else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c});}
  else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c});
  else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c});
- cur=i;next=Math.min(i+1,show.cues.length);renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
+ cur=i;next=Math.min(i+1,show.cues.length);savePos();renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
 }
 const dbStr=d=>(d>0?'+':d<0?'−':'')+Math.abs(d).toFixed(Number.isInteger(d)?0:1)+' dB';
 function applyCueGain(c){if(!ctx)return;const k=dbToG(c.g||0),n=ctx.currentTime;voices.forEach(v=>{if(v.cue===c&&!v.stopping){v.g.gain.cancelScheduledValues(n);v.g.gain.setTargetAtTime(v.lvl0*k,n,.03);}});}
@@ -833,11 +930,10 @@ let fileCb=null;
 function pickFile(cb,accept){fileCb=cb;const f=$('#fileIn');f.accept=accept||'audio/*';f.value='';f.click();}
 $('#fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(f&&fileCb){const cb=fileCb;fileCb=null;cb(f);}});
 async function readAudio(file){const ab=await file.arrayBuffer();const buf=await decode(ab.slice(0));return {ab,buf};}
-async function addUserAsset(file,title){
+async function addUserAsset(file,title,group,quiet){
  if(!ctx){toast('Avval ovozni yoqing');return null;}
  try{const {ab,buf}=await readAudio(file);const id=uid('u_');const t=title||file.name.replace(/\.[^.]+$/,'');
-  META[id]={kind:'user',title:t,file:file.name,loop:false,gain:0,dur:buf.duration};buffers[id]=buf;Store.put(id,{name:file.name,title:t,data:ab});logEvent('Fayl qo\'shildi: '+t+' ('+file.name+')');
-  toast('Yuklandi: '+t+' ('+fmt(buf.duration)+')');return id;}
+  META[id]={kind:'user',title:t,file:file.name,loop:false,gain:0,dur:buf.duration,group:group||null};buffers[id]=buf;Store.put(id,{name:file.name,title:t,data:ab,group:group||null});if(!quiet){logEvent('Fayl qo\'shildi: '+t+' ('+file.name+')');toast('Yuklandi: '+t+' ('+fmt(buf.duration)+')');}return id;}
  catch(e){toast('Faylni o\'qib bo\'lmadi: '+file.name+' — WAV yoki MP3 sinab ko\'ring');return null;}
 }
 async function replaceAsset(id,file){
@@ -996,11 +1092,11 @@ function renderPads(){
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
   return '<div class="pad" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
- renderPadStates();
+ renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
 }
 function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));});}
 function hitPad(i){
- if(!ctx)return;const p=show.banks[bank].pads[i];
+ if(!ctx)return;const p=show.banks[bank].pads[i];selectPad(i);
  if(editing){editPad(i);return;}
  if(!p||!buffers[p.a]){toast('Bo\'sh tugma — faylni sudrab tashlang yoki ↑ bilan yuklang');return;}
  const playing=voices.filter(v=>v.ref===p.a&&!v.stopping&&!v.preview);
@@ -1044,6 +1140,7 @@ function peakOf(an){an.getFloatTimeDomainData(tmp);let m=0;for(let i=0;i<tmp.len
 function loop(){
  if(ctx){for(const [k] of BUSES){const b=buses[k];[b.aL,b.aR].forEach((an,ch)=>{const db=20*Math.log10(peakOf(an)+1e-6);const pct=Math.max(0,Math.min(1,(db+60)/60));b.pk[ch]=Math.max(pct,b.pk[ch]-.02);const el=document.getElementById((ch?'mR_':'mL_')+k);if(el)el.style.height=(b.pk[ch]*100).toFixed(1)+'%';});}
   const now=ctx.currentTime;for(const v of voices){if(v.loop)continue;const el=document.getElementById('pg'+v.vid),rm=document.getElementById('rm'+v.vid);const pos=now-v.start;if(el)el.style.width=Math.min(100,pos/v.dur*100)+'%';if(rm)rm.textContent='−'+fmt(v.dur-pos);}}
+ if(ctx){const ph=document.getElementById('sbPh');if(ph){const p=show.banks[bank]&&show.banks[bank].pads[selPad];const v=p&&[...voices].reverse().find(x=>x.ref===p.a&&!x.stopping);const D=+$('#sbox').dataset.dur||0;if(v&&D){let el=ctx.currentTime-v.start;const tl=p.trim?trimLen(p.trim):D;if(v.loop)el=el%tl;const pos=((p.trim?p.trim.s:0)+el)/D;ph.hidden=pos>1;ph.style.left=Math.min(100,pos*100)+'%';}else ph.hidden=true;}}
  if(showStart!=null){const s=Math.floor((performance.now()-showStart)/1000);$('#clock').textContent=[s/3600|0,(s/60|0)%60,s%60].map(x=>String(x).padStart(2,'0')).join(':');}
  requestAnimationFrame(loop);
 }
@@ -1186,12 +1283,12 @@ const FS={root:null,dirs:{},state:{},index:{assets:{}},q:Promise.resolve(),lastB
   names.sort();while(names.length>30){try{await this.dirs.zaxira.removeEntry(names.shift());}catch(e){}}
  },
  putAsset(k,v){const ext=((v.name||'').match(/\.([a-z0-9]{2,4})$/i)||[0,'bin'])[1].toLowerCase(),file=k+'.'+ext,old=this.index.assets[k];
-  this.index.assets[k]={kind:k.indexOf('u_')===0?'user':'override',name:v.name,title:v.title||null,file};
+  this.index.assets[k]={kind:k.indexOf('u_')===0?'user':'override',name:v.name,title:v.title||null,group:v.group||null,file};
   const data=v.data.slice?v.data.slice(0):v.data;
   return this.run(async()=>{if(old&&old.file!==file){try{await this.dirs.ovozlar.removeEntry(old.file);}catch(e){}}await this.write(this.dirs.ovozlar,file,data);await this.write(this.dirs.ovozlar,'index.json',JSON.stringify(this.index,null,1));});},
  delAsset(k){const old=this.index.assets[k];if(!old)return;delete this.index.assets[k];
   return this.run(async()=>{try{await this.dirs.ovozlar.removeEntry(old.file);}catch(e){}await this.write(this.dirs.ovozlar,'index.json',JSON.stringify(this.index,null,1));});},
- async readAssets(out){for(const k in this.index.assets){const a=this.index.assets[k];try{const f=await (await this.dirs.ovozlar.getFileHandle(a.file)).getFile();out[k]={name:a.name,title:a.title,data:await f.arrayBuffer()};}catch(e){}}return out;},
+ async readAssets(out){for(const k in this.index.assets){const a=this.index.assets[k];try{const f=await (await this.dirs.ovozlar.getFileHandle(a.file)).getFile();out[k]={name:a.name,title:a.title,group:a.group||null,data:await f.arrayBuffer()};}catch(e){}}return out;},
  log(line){if(!this.root)return;this.run(async()=>{const h=await this.root.getFileHandle('jurnal.txt',{create:true});const f=await h.getFile();const w=await h.createWritable({keepExistingData:true});await w.seek(f.size);await w.write(line+'\n');await w.close();});},
  async tail(n){try{const t=await this.readText(this.root,'jurnal.txt');return t.trimEnd().split('\n').slice(-n);}catch(e){return [];}}
 };
@@ -1240,7 +1337,7 @@ async function hydrate(saved){
  for(const id in saved){
   if(id.indexOf('__')===0)continue;const s=saved[id];if(!s||!s.data)continue;
   try{const buf=await decode(s.data.slice(0));
-   if(id.indexOf('u_')===0){META[id]={kind:'user',title:s.title||s.name,file:s.name,loop:false,gain:0,dur:buf.duration};buffers[id]=buf;n++;}
+   if(id.indexOf('u_')===0){META[id]={kind:'user',title:s.title||s.name,file:s.name,loop:false,gain:0,dur:buf.duration,group:s.group||null};buffers[id]=buf;n++;}
    else if(META[id]){buffers[id]=buf;overrides[id]={name:s.name};n++;}}catch(e){}
  }
  let raw=saved.__show;if(!raw&&Store.mode!=='folder'){try{raw=localStorage.getItem('sahnaOvozi.show');}catch(e){}}
@@ -1249,7 +1346,7 @@ async function hydrate(saved){
   if(NATIVE&&P.pathAbs)proj.handle=nFile(null,P.pathAbs.split(/[\\/]/).pop(),P.pathAbs);
   else if(NATIVE&&P.pathRel)proj.handle=nFile(P.pathRel,P.pathRel.split('/').pop());
   else if(Store.mode==='folder'&&P.pathRel&&FS.root){try{const parts=P.pathRel.split('/');let d=FS.root;for(const x of parts.slice(0,-1))d=await d.getDirectoryHandle(x);proj.handle=await d.getFileHandle(parts.pop());}catch(e){}}}
- normShow(show);bank=0;cur=-1;next=0;scene=null;
+ normShow(show);bank=0;cur=-1;next=0;scene=null;restorePos();
  return n;
 }
 async function connectFolder(root,choice){
@@ -1329,12 +1426,15 @@ function usedAssets(){
  Object.values(show.scenes).forEach(s=>s.layers.forEach(l=>ids.add(l.a)));
  show.banks.forEach(b=>b.pads.forEach(p=>{if(p)ids.add(p.a);}));
  ids.add('dub_monolog');
+ // tugmalarda ishlatilgan guruhlarning barcha sample'lari ham (boshqa kompyuterda ◀ ▶ bilan almashtirish uchun)
+ const groups=new Set([...ids].map(id=>META[id]&&META[id].kind==='user'&&META[id].group).filter(Boolean));
+ for(const id in META)if(META[id].kind==='user'&&groups.has(META[id].group))ids.add(id);
  return [...ids].filter(id=>META[id]&&(META[id].kind==='user'||overrides[id]));
 }
 async function buildProject(){
  const saved=await Store.all();const files=[],list=[];
  for(const id of usedAssets()){const sv=saved[id];if(!sv||!sv.data)continue;const ext=((sv.name||'').match(/\.([a-z0-9]{2,4})$/i)||[0,'bin'])[1].toLowerCase();
-  const path='audio/'+id+'.'+ext;list.push({id,kind:META[id].kind==='user'?'user':'override',title:META[id].title,name:sv.name,path});files.push({name:path,data:new Uint8Array(sv.data)});}
+  const path='audio/'+id+'.'+ext;list.push({id,kind:META[id].kind==='user'?'user':'override',title:META[id].title,group:META[id].group||null,name:sv.name,path});files.push({name:path,data:new Uint8Array(sv.data)});}
  const head={app:'Sahna Ovozi',brand:'Azimxodjayev Music',format:'sahna-zip',version:2,saved:new Date().toISOString(),name:proj.name,show,assets:list};
  files.unshift({name:'loyiha.json',data:new TextEncoder().encode(JSON.stringify(head,null,1))});
  return zipBuild(files);
@@ -1352,9 +1452,9 @@ async function loadProjectBuffer(ab,name,handle){
   let bad=0;
   for(const a of head.assets){
    try{const data=getData(a);const buf=await decode(data.slice(0));buffers[a.id]=buf;
-    if(a.kind==='user'){META[a.id]={kind:'user',title:a.title,file:a.name,loop:false,gain:0,dur:buf.duration};Store.put(a.id,{name:a.name,title:a.title,data});}
+    if(a.kind==='user'){META[a.id]={kind:'user',title:a.title,file:a.name,loop:false,gain:0,dur:buf.duration,group:a.group||null};Store.put(a.id,{name:a.name,title:a.title,data,group:a.group||null});}
     else if(META[a.id]){overrides[a.id]={name:a.name};Store.put(a.id,{name:a.name,data});}}catch(e){bad++;}}
-  show=normShow(head.show);bank=0;cur=-1;next=0;scene=null;
+  show=normShow(head.show);bank=0;cur=-1;next=0;scene=null;restorePos();
   const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);
   applyMix();renderAll();
   proj.name=(name||head.name||'Loyiha').replace(/(\.sahna)?(\.zip)?$/i,'');proj.handle=handle||null;proj.dirty=false;renderProj();storeProj();
@@ -1364,9 +1464,9 @@ async function loadProjectBuffer(ab,name,handle){
 async function verifyPerm(h,write){try{const o={mode:write?'readwrite':'read'};if(await h.queryPermission(o)==='granted')return true;return await h.requestPermission(o)==='granted';}catch(e){return false;}}
 async function addRecent(h){if(!h)return;const all=await DB.all();let r=(all.__recent||[]).filter(x=>x.name!==h.name);r.unshift({name:h.name,handle:h,at:Date.now()});DB.put('__recent',r.slice(0,8));}
 const FT=[{description:'Sahna Ovozi loyihasi',accept:{'application/x-sahna-ovozi':['.sahna'],'application/zip':['.zip']}}];
-async function saveProject(as){
- if(!ctx)return;
- toast('Saqlanmoqda…');let blob;try{blob=await buildProject();}catch(e){toast('Loyihani tayyorlab bo\'lmadi: '+e.message);return;}
+async function saveProject(as,opt){
+ if(!ctx)return;const silent=opt&&opt.silent;
+ if(!silent)toast('Saqlanmoqda…');let blob;try{blob=await buildProject();}catch(e){toast('Loyihani tayyorlab bo\'lmadi: '+e.message);return;}
  if(IS_FRAME){
   let dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){}
   if(!dl){projFrameNote();return;}
@@ -1376,13 +1476,18 @@ async function saveProject(as){
   return;}
  if(CAN_FS){
   try{let h=as?null:proj.handle;
+   if(silent){if(!h)return;try{if(h.queryPermission&&await h.queryPermission({mode:'readwrite'})!=='granted')return;}catch(e){return;}}
    if(!h)h=await window.showSaveFilePicker({...(Store.mode==='folder'?{startIn:FS.dirs.loyihalar}:{}),suggestedName:(proj.name==='Nomsiz loyiha'?show.title.replace(/[\[\]]/g,'').trim()||'Loyiha':proj.name)+'.sahna',types:FT});
    if(!(await verifyPerm(h,true))){toast('Faylga yozishga ruxsat berilmadi');return;}
    const w=await h.createWritable();await w.write(blob);await w.close();
    proj.handle=h;proj.name=h.name.replace(/\.sahna$/i,'');proj.dirty=false;renderProj();storeProj();if(!NATIVE)addRecent(h);if(typeof metaCache!=='undefined')metaCache.data=null;
-   toast('Saqlandi: '+h.name+' ('+(blob.size/1048576).toFixed(1)+' MB)');logEvent('Loyiha saqlandi: '+h.name);if(Store.mode==='folder')FS.run(()=>FS.backup());return;
-  }catch(e){if(e&&e.name==='AbortError')return;}
+   lastAutoAt=new Date();lastAuto=Date.now();
+   if(silent){toast('Avtosaqlandi · '+h.name+' · '+lastAutoAt.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'}));logEvent('Avtosaqlash: '+h.name);}
+   else{toast('Saqlandi: '+h.name+' ('+(blob.size/1048576).toFixed(1)+' MB)');logEvent('Loyiha saqlandi: '+h.name);}
+   if(Store.mode==='folder'){FS.run(()=>FS.backup());FS.run(()=>projBackup(blob,proj.name));}return;
+  }catch(e){if(e&&e.name==='AbortError')return;if(silent)return;}
  }
+ if(silent)return;
  const nm=(as||proj.name==='Nomsiz loyiha')?(show.title.replace(/[\[\]]/g,'').trim()||'Loyiha'):proj.name;
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm+'.sahna';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
  proj.name=nm;proj.dirty=false;renderProj();storeProj();toast('Yuklab olindi: '+nm+'.sahna — “Yuklanmalar” papkasida');
@@ -1419,8 +1524,10 @@ async function projMenu(){
   (NATIVE||isStandalone()?'':'<div class="frow"><button type="button" class="btn" id="pjInstall">⤓ Ilova sifatida o\'rnatish (PC / telefon)</button></div>')+'<div class="frow"><button type="button" class="btn" id="pjNew">Yangi bo\'sh loyiha</button><button type="button" class="btn" id="pjDemo">Namuna loyiha</button></div>'+
   (Store.mode==='folder'?await (async()=>{const L=[];try{for await (const [n,h] of FS.dirs.loyihalar.entries())if(h.kind==='file'&&/\.sahna(\.zip)?$/i.test(n))L.push(n);}catch(e){}L.sort();window.__fl=L;return L.length?'<div class="field"><span class="flabel">Documents / Sahna Ovozi / loyihalar</span>'+L.map((n,i)=>'<button type="button" class="btn" style="justify-content:flex-start" data-floj="'+i+'">'+esc(n)+'</button>').join('')+'</div>':'';})():'')+
   (rec.length&&CAN_FS?'<div class="field"><span class="flabel">So\'nggi loyihalar</span>'+rec.map((r,i)=>'<button type="button" class="btn" style="justify-content:flex-start;text-align:left" data-recent="'+i+'">'+esc(r.name)+' <span class="muted" style="font-weight:500;margin-left:8px">'+new Date(r.at).toLocaleString('uz-UZ')+'</span></button>').join('')+'</div>':'')+
+  '<div class="field"><span class="flabel">Avtosaqlash (Cubase kabi)</span><div class="frow"><label class="chk" style="min-height:36px"><input type="checkbox" id="asOn"'+(AUTOSAVE.on?' checked':'')+'> Loyiha faylini avtomatik saqlash</label><select class="inp" id="asMin" style="max-width:170px" aria-label="Avtosaqlash oralig\'i">'+[1,2,5,10].map(m=>'<option value="'+m+'"'+(AUTOSAVE.min===m?' selected':'')+'>har '+m+' daqiqada</option>').join('')+'</select></div><p class="hint">'+(proj.handle?(lastAutoAt?'Oxirgi avtosaqlash: '+lastAutoAt.toLocaleTimeString('uz-UZ'):'Loyiha fayli ulangan — o\'zgarish bo\'lsa avtomatik saqlanadi'):'Avtosaqlash loyiha bir marta Ctrl+S bilan faylga saqlangandan keyin ishlaydi')+(Store.mode==='folder'?' · nusxalar: zaxira/loyihalar (oxirgi 10 ta)':'')+'. Joriy holat (cue, banklar, mikser, ish joyi) esa har o\'zgarishda bazaga yoziladi.</p></div>'+
+  '<p class="hint"><b>Boshqa kompyuterda davom ettirish:</b> .sahna faylni fleshka, Telegram yoki bulut orqali ko\'chiring va u yerda “Ochish” — barcha ovozlar, kesishlar, darajalar va qaysi cue\'da to\'xtaganingiz bilan ochiladi.</p>'+
   '<p class="hint">Loyiha fayli ichida: cue ro\'yxati, SFX banklar, atmosferalar, mikser va dublaj sozlamalari hamda siz yuklagan barcha ovoz fayllari. Faylni boshqa kompyuter yoki telefonga ko\'chirib, xuddi shu holatda ochish mumkin.</p>';
- openModal('Loyiha',body,[{label:'Yopish',fn:()=>{}}],{click:(e,b)=>{
+ openModal('Loyiha',body,[{label:'Yopish',fn:()=>{}}],{change:e=>{if(e.target.id==='asOn'){AUTOSAVE.on=e.target.checked;saveSettings();}else if(e.target.id==='asMin'){AUTOSAVE.min=+e.target.value;saveSettings();}},click:(e,b)=>{
   if(b.id==='pjSave'){closeModal();saveProject(false);}
   else if(b.id==='pjSaveAs'){closeModal();saveProject(true);}
   else if(b.id==='pjOpen'){closeModal();guardDirty(openProject);}
@@ -1713,6 +1820,7 @@ document.addEventListener('keydown',e=>{
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
  if(e.target.type==='range'&&/^Arrow/.test(e.code))return;
+ if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&!e.repeat){e.preventDefault();browsePad(e.code==='ArrowRight'?1:-1);return;}
  if(e.code==='ArrowDown'){e.preventDefault();next=Math.min(show.cues.length-1,next+1);renderCues();return;}
  if(e.code==='ArrowUp'){e.preventDefault();next=Math.max(0,next-1);renderCues();return;}
  if(e.code==='BracketLeft'||e.code==='BracketRight'){e.preventDefault();bank=(bank+(e.code==='BracketRight'?1:-1)+show.banks.length)%show.banks.length;renderPads();return;}
@@ -1748,7 +1856,7 @@ async function boot(){
   if(Store.mode==='browser'){const lg=await DB.get('__log');if(Array.isArray(lg))logRing=lg;}
   $('#gateMsg').textContent='Baza tiklanmoqda…';SP(2,NATIVE?'Hujjatlar / Sahna Ovozi bazasi':'Ma\'lumotlar bazasi',0.72);
   const nUser=await hydrate(await Store.all());
-  SP(3,'Loyihalar va profil',0.86);await loadProfile();
+  SP(3,'Loyihalar va profil',0.86);await loadProfile();await loadSettings();
   renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
   SP(4,'Sahna oynasi',1);
   $('#gate').remove();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
