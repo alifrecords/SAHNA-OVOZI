@@ -3,6 +3,19 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.1.0: audio kesish (AZ-Playlist mexanizmi)
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Qayerda | Cue muharriri (✎) va SFX tugmasi muharriri: "Ovoz" tanlangach to'lqin chiqadi |
+| Tanlash | To'lqin ustida sariq oyna: chap/o'ng chetini sudrash — boshi/oxiri, o'rtasini sudrash — parchani surish, to'lqinga bosish — o'sha joyga ko'chirish |
+| Eshittirish | Chetini sudraganda o'sha joy eshittiriladi (oxiridan 3 s oldin / boshidan 3 s); "▶ Parchani tinglash", "Butun fayl", oq ijro chizig'i |
+| Aniqlik | Boshi va oxiri uchun −1s / −0.1 / +0.1 / +1s |
+| Fade | Fade-in 0–5 s, Fade-out 0–8 s (oynada uchburchak bilan ko'rinadi), sichqoncha g'ildiragi bilan ham |
+| Asl fayl | O'zgarmaydi: kesish cue/tugma sozlamasi sifatida saqlanadi (loyiha faylida ham), loop tugmalar kesilgan oraliqni takrorlaydi |
+| Yangi ovoz | "Yangi ovoz qilib saqlash" — kesilgan parcha fade'lar bilan WAV qilib kutubxonaga qo'shiladi va tanlanadi |
+| Belgi | Cue qatorida "✂ 0:07.8–0:19.3", tugmada "✂" |
+
 ## 1.0.0: birinchi o'rnatiladigan versiya
 
 | Bo'lim | Nima bor |
