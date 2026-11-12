@@ -291,6 +291,32 @@ header .brand svg{width:24px;height:24px}
 .swe{height:74px;border:1px dashed var(--line2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted);text-align:center;padding:0 12px}
 .sbgain{display:flex;align-items:center;gap:10px;font-size:12px}
 .sbgain input{max-width:220px}
+.pctl{position:absolute;right:42px;bottom:8px;display:flex;gap:4px}
+.pad .hit{min-height:104px}
+.pad .hit>span:last-child{min-height:30px;display:flex;align-items:center}
+.pctl button{width:30px;height:30px;padding:0;border-radius:6px;background:#16181D;border:1px solid var(--line2);color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center}
+.pctl button:hover{color:var(--text);border-color:#5A606B}
+.pad.paused .hit{border-color:#7FA7F5;background:#141B29}
+.pad.paused [data-ppause]{color:#7FA7F5;border-color:#7FA7F5}
+.pad .pg{position:absolute;right:8px;top:30px;font-size:10px;font-weight:700;color:var(--amber);pointer-events:none}
+.pad .pv{position:absolute;right:8px;top:44px;font-size:9px;font-weight:800;color:#0E0F12;background:#7FA7F5;border-radius:4px;padding:0 4px;pointer-events:none}
+.cue .cv{position:absolute;right:10px;top:6px;font-size:9px;font-weight:800;color:#0E0F12;background:#7FA7F5;border-radius:4px;padding:0 4px}
+.azvh{display:flex;flex-direction:column}
+.azvlogo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;letter-spacing:.08em;color:#7FA7F5}
+#azvTgt button{flex:1}
+#azvTgt button.on{background:#141B29;color:#7FA7F5}
+.azalg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.azalg button{height:30px;border-radius:6px;background:var(--bg);border:1px solid var(--line2);font-size:11px;font-weight:600;color:var(--muted)}
+.azalg button.on{border-color:#7FA7F5;color:#7FA7F5;background:#141B29}
+.azsl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.azk{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted)}
+.azk span{display:flex;justify-content:space-between}.azk b{color:var(--text);font-weight:600}
+.azk input{accent-color:#7FA7F5;height:20px}
+.azviz{position:relative;height:46px;border-radius:8px;background:#0B0C0F;border:1px solid var(--line);overflow:hidden}
+.azviz svg{position:absolute;inset:0;width:100%;height:100%}
+.azviz span{position:absolute;right:8px;top:4px;font-size:10px;color:#9AA0A8}
+.swv{cursor:crosshair;touch-action:none}
+
 @media (max-width:640px){.faders{grid-template-columns:1fr}}
 @media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
 </style>
@@ -393,6 +419,13 @@ header .brand svg{width:24px;height:24px}
         </div>
         <div class="warn" id="dubWarn">Brauzer sahifasida mikrofon bloklangan, shuning uchun jonli mikrofon hozircha yo'q. Aktyorning yozib olingan ovozini yuklang — effektlar unga real vaqtda qo'llanadi.</div>
       </section>
+      <section class="panel" aria-label="AZ VERB" id="azvPanel" style="display:flex;flex-direction:column;gap:10px">
+        <div class="between"><div class="azvh"><span class="azvlogo">AZ VERB</span><span class="bsub" style="margin:0">Azimxodjayev Music</span></div><label class="chk" style="min-height:30px;font-size:13px"><input type="checkbox" id="azvOn"> Yoqiq</label></div>
+        <div class="seg" id="azvTgt" role="group" aria-label="Qaysi ovoz uchun"><button type="button" data-azt="dub">Dublaj</button><button type="button" data-azt="pad">SFX tugma</button><button type="button" data-azt="cue">Cue</button></div>
+        <div class="muted" style="font-size:12px" id="azvName"></div>
+        <div id="azvBody" style="display:flex;flex-direction:column;gap:10px"></div>
+      </section>
+
     </div>
   </div>
 
@@ -568,7 +601,7 @@ function initAudio(){
  const sp=ctx.createChannelSplitter(2);limiter.connect(sp);sp.connect(buses.master.aL,0);sp.connect(buses.master.aR,1);limiter.connect(ctx.destination);
  for(const n of ['atmos','sfx','music','dub'])buses[n]=makeBus(n);
  for(const n of ['atmos','sfx','music'])buses[n].input.connect(buses[n].fader);
- dub.in=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.out.connect(buses.dub.fader);buildDubFx();
+ dub.in=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.verbIns=makeVerb(dub.out,buses.dub.fader,null);buildDubFx();
  for(const n in buses)applyFader(n);
  ctx.onstatechange=()=>updateBadge();
 }
@@ -779,8 +812,9 @@ function browsePad(dir,g){
  setPadAsset(selPad,L[i],true);sbInfo=(i+1)+' / '+L.length+' · '+groupName(g);renderSB();
  logEvent('SFX '+KEYS[selPad][1]+' sample: '+titleOf(L[i]));
 }
-function padPreview(i){const p=show.banks[bank].pads[i];if(!p||!buffers[p.a]||!ctx)return;if(pvVoice)stopVoice(pvVoice,.04);pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:p.trim,color:(CAT[p.cat]||CAT.zarba)[0]});}
-function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();}
+function padPreview(i){const p=show.banks[bank].pads[i];if(!p||!buffers[p.a]||!ctx)return;if(pvVoice)stopVoice(pvVoice,.04);pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:p.trim,verb:p.verb,color:(CAT[p.cat]||CAT.zarba)[0]});}
+function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();if(azvTarget==='pad')azvRefresh();}
+function azvRefresh(){const a=document.activeElement;if(a&&a.dataset&&a.dataset.azk)return;renderAzv();}
 function renderSB(){
  const box=$('#sbox');if(!box)return;const b=show.banks[bank];if(!b)return;const p=b.pads[selPad];
  const g=p?groupOf(p.a):lastGroup,gl=groupList();
@@ -791,7 +825,7 @@ function renderSB(){
   const N=180,pk=peaksOf(buf,N),a0=Math.floor(base/buf.duration*N),z0=Math.max(a0+1,Math.floor((base+dur)/buf.duration*N)),sl=Array.from(pk).slice(a0,z0);
   let bars='';for(let i=0;i<N;i++){const v=sl[Math.floor(i/N*sl.length)]||0;bars+='<i style="height:'+Math.max(2,Math.round(v*100))+'%"></i>';}
   const s=p.trim?p.trim.s/dur*100:0,e=p.trim?p.trim.e/dur*100:100;
-  wave='<div class="swv" style="--c:'+(CAT[p.cat]||CAT.zarba)[0]+'"><div class="swb">'+bars+'</div><span class="swm" style="left:0;width:'+s+'%"></span><span class="swm" style="left:'+e+'%;right:0"></span><span class="sws" style="left:'+s+'%">S</span><span class="swe2" style="left:'+e+'%">E</span><span class="swph" id="sbPh" hidden></span></div>';
+  wave='<div class="swv" style="--c:'+(CAT[p.cat]||CAT.zarba)[0]+'"><div class="swb">'+bars+'</div><span class="swm" id="sbM1" style="left:0;width:'+s+'%"></span><span class="swm" id="sbM2" style="left:'+e+'%;right:0"></span><span class="sws" id="sbS" style="left:'+s+'%">S</span><span class="swe2" id="sbE" style="left:'+e+'%">E</span><span class="swph" id="sbPh" hidden></span></div>';
   box.dataset.dur=dur;}
  box.innerHTML='<div class="sbar"><button type="button" class="ibtn" id="sbPrev" aria-label="Oldingi sample (←)">◀</button><button type="button" class="ibtn" id="sbNext" aria-label="Keyingi sample (→)">▶</button>'+
   '<span class="sbpad"><span class="key mono">'+KEYS[selPad][1]+'</span> <b>'+(p?esc(padTitle(p)):'Bo\'sh')+'</b></span>'+
@@ -799,7 +833,7 @@ function renderSB(){
   '<span class="muted sbinfo mono">'+esc(info)+(p&&buf?' · '+fmtT(p.trim?trimLen(p.trim):+box.dataset.dur)+(p.trim?' ✂':''):'')+'</span><span style="flex:1"></span>'+
   '<button type="button" class="btn sm" id="sbPlay"'+(buf?'':' disabled')+'>▶ Tinglash</button><button type="button" class="btn sm" id="sbTrim"'+(buf?'':' disabled')+'>✂ Kesish</button><button type="button" class="btn sm" id="sbFolder">Papkadan sample\'lar</button></div>'+
   wave+
-  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="muted" style="font-size:11px;margin-left:auto">← → — sample almashtirish · tugmani bosish — tanlash</span></div>':'');
+  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="mono acc" id="sbSel" style="font-size:11px">'+(p.trim?fmtT(p.trim.s)+' — '+fmtT(p.trim.e)+' · '+fmtT(trimLen(p.trim)):'')+'</span><span class="muted" style="font-size:11px;margin-left:auto">to\'lqinda sudrang — joyni belgilash · bosing — o\'sha joydan tinglash · 2× — butun fayl · ← → — sample</span></div>':'');
 }
 async function importFolder(files){
  const L=[...files].filter(f=>/\.(wav|mp3|ogg|oga|flac|m4a|aac|aif|aiff|opus|webm)$/i.test(f.name)).sort((a,b)=>(a.webkitRelativePath||a.name).localeCompare(b.webkitRelativePath||b.name,undefined,{numeric:true}));
@@ -819,7 +853,7 @@ document.addEventListener('click',e=>{
  else if(t.id==='sbFolder'){if(!ctx)return;$('#dirIn').click();}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sbGroup'){sbInfo='';browsePad(0,e.target.value);}});
-document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks[bank].pads[selPad];if(!p)return;p.g=+e.target.value;$('#sbGv').textContent=dbStr(p.g);saveShow();}});
+document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks[bank].pads[selPad];if(!p)return;p.g=+e.target.value;$('#sbGv').textContent=dbStr(p.g);applyPadGain(p);saveShow();const t=document.querySelector('.pad[data-pad="'+selPad+'"] .pg');if(t)t.textContent=p.g?dbStr(p.g):'';}});
 
 /* ---------- avtosaqlash (Cubase kabi) ---------- */
 const AUTOSAVE={on:true,min:2};let lastAuto=Date.now(),lastAutoAt=null;
@@ -840,31 +874,218 @@ async function projBackup(blob,name){
   const L=[];for await (const [n] of d.entries())if(n.indexOf(safe+'-')===0)L.push(n);L.sort();while(L.length>10){try{await d.removeEntry(L.shift());}catch(e){}}}catch(e){}
 }
 
+
+/* ---------- AZ VERB (Azimxodjayev Music) — D-Verb asosidagi AZ VERB plaginining veb dvigateli ---------- */
+const AZV_ALGOS=['Hall','Church','Plate','Room I','Room II','Ambient','NonLin'];
+// AZ VERB shapeFor(): erLevel, erSpread, hfRatio, sizeLo, sizeHi, trim
+const AZV_SHAPE=[[.42,1.10,.62,.85,2.0,1.27],[.48,1.70,.52,1.30,2.7,1.28],[0,0,.80,.55,1.2,1.03],[.75,.50,.70,.25,.62,.70],[.58,.70,.65,.42,.95,.88],[.10,1.20,.58,.70,1.5,1.45],[0,0,1.0,.40,.80,1.44]];
+const AZV_PRESETS=[ // AZ VERB zavod presetlari: name, cat, algo, size, decay, diff, damp, lc, hc, width, mix, crystal, pre(ms)
+ ['Warm Plate — Pop Lead','VOCAL',2,.50,2.40,.78,6200,180,15600,1.06,.32,.40,24],['Dark Plate — Modern Pop','VOCAL',2,.45,1.80,.80,5200,220,14300,1.04,.20,.25,30],
+ ['Crystal Plate — Airy Pop','VOCAL',2,.40,1.50,.85,9500,300,18000,1.09,.18,.70,20],['Sand Hall — Ballad','VOCAL',0,.70,3.20,.80,5000,200,14300,1.10,.24,.30,60],
+ ['Silk Hall — R&B','VOCAL',0,.55,2.20,.75,6800,240,16900,1.12,.20,.45,35],['Intimate Room — Rap','VOCAL',4,.30,.70,.70,7500,250,15600,1.00,.14,.30,8],
+ ['Gated Air — Trap / Drill','VOCAL',6,.30,.60,.80,8000,300,18000,1.15,.12,.50,15],['Ambient Wash — Hook','VOCAL',5,.70,4.50,.85,6000,260,15600,1.15,.22,.45,90],
+ ['Sand Hall — Strings & Pads','INSTR',0,.85,4.00,.80,5500,120,15600,1.15,.35,.30,25],['Cathedral — Choir','INSTR',1,.80,5.50,.75,4500,150,13000,1.12,.35,.20,40],
+ ['Tight Room — Drums','INSTR',3,.35,.60,.70,8000,120,18000,1.03,.20,.30,4],['Studio Room — Guitar','INSTR',4,.45,1.10,.75,7000,150,15600,1.09,.25,.35,12],
+ ['Bright Plate — Snare','INSTR',2,.40,1.30,.90,11000,200,18000,1.06,.25,.60,6],['80s Gate — Snare','INSTR',6,.35,.50,.85,9000,150,18000,1.12,.30,.40,2],
+ ['Ambient — Keys','INSTR',5,.60,3.50,.85,6500,140,15600,1.15,.35,.40,30],['Infinite Sand — FX','FX',5,1.00,15.0,1.00,5000,200,11700,1.15,.50,.30,0],
+ // teatr uchun
+ ['Teatr zali — Monolog','SAHNA',0,.75,2.60,.80,5600,160,14500,1.10,.26,.30,40],['Tosh qasr — Ruh ovozi','SAHNA',1,.90,6.50,.85,4200,200,12000,1.15,.45,.20,70],
+ ['Yopiq xona — Dialog','SAHNA',3,.30,.55,.70,7000,180,15000,1.00,.16,.25,6],['Ertak — Sehrli ovoz','SAHNA',5,.80,5.00,.90,7500,220,17000,1.20,.40,.65,50]
+];
+const AZV_KEYS=['algo','size','decay','diff','damp','lc','hc','width','mix','crystal','pre'];
+function azvFromPreset(i){const r=AZV_PRESETS[i];const o={on:true,preset:r[0]};AZV_KEYS.forEach((k,j)=>o[k]=r[j+2]);return o;}
+const AZV_DEF=()=>azvFromPreset(16);
+const azvCache=new Map();
+function azvKey(p){return AZV_KEYS.filter(k=>k!=='mix').map(k=>(+p[k]).toFixed(3)).join('|');}
+function azvIR(p){
+ const key=azvKey(p);if(azvCache.has(key))return azvCache.get(key);
+ const pr=(async()=>{
+  const sr=ctx.sampleRate,sh=AZV_SHAPE[p.algo|0]||AZV_SHAPE[2],nonlin=(p.algo|0)===6;
+  const rt=Math.max(.1,Math.min(20,+p.decay)),pre=Math.max(0,+p.pre)/1000,size=+p.size,diff=+p.diff;
+  const sizeMul=sh[3]+(sh[4]-sh[3])*size;
+  const att=(nonlin?.004:.006+.05*sizeMul*(1-diff*.7));
+  const len=Math.ceil(sr*(pre+att+(nonlin?rt+.04:rt*1.12)+.05));
+  const oc=new OfflineAudioContext(2,len,sr);
+  // dekorrelyatsiyalangan shovqin (WIDTH: M/S)
+  const nb=oc.createBuffer(2,len,sr),a=nb.getChannelData(0),b=nb.getChannelData(1),w=+p.width;
+  const dens=.15+.85*diff; // diffuziya: siyrak -> zich
+  for(let i=0;i<len;i++){let x=Math.random()*2-1,y=Math.random()*2-1;if(dens<1&&Math.random()>dens){x*=.15;y*=.15;}const M=(x+y)/2,S=(x-y)/2;a[i]=M+S*w;b[i]=M-S*w;}
+  const sum=oc.createGain();
+  // 3 polosali so'nish: bass biroz qisqa, o'rtalar tekis, yuqorilar damp va hfRatio bo'yicha
+  const bands=[['lowpass',300,.92],['bandpass',1600,1],['highpass',Math.min(+p.damp,18000),sh[2]]];
+  for(const [type,f,k] of bands){
+   const s=oc.createBufferSource();s.buffer=nb;const fl=oc.createBiquadFilter();fl.type=type;fl.frequency.value=f;if(type==='bandpass')fl.Q.value=.35;
+   const g=oc.createGain();const t0=pre,t1=pre+att,r=Math.max(.05,rt*k*(nonlin?1:1.11));
+   g.gain.setValueAtTime(0,0);g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(1,t1);
+   if(nonlin){g.gain.setValueAtTime(1,t1+r*.82);g.gain.linearRampToValueAtTime(0,t1+r);}
+   else g.gain.exponentialRampToValueAtTime(.001,t1+r);
+   s.connect(fl);fl.connect(g);g.connect(sum);s.start(0);
+  }
+  // erta aks-sadolar (Hall, Church, Room)
+  if(sh[0]>0){
+   const n=Math.ceil(sr*.25),eb=oc.createBuffer(2,n,sr),L=eb.getChannelData(0),R=eb.getChannelData(1);
+   for(let k=0;k<16;k++){const t=(.003+k*.0055*sh[1]*sizeMul*(.7+Math.random()*.6));const i=Math.floor(t*sr);if(i>=n)continue;const amp=sh[0]*(1-k/18)*(Math.random()<.5?-1:1)*.9;const pan=Math.random();L[i]+=amp*Math.cos(pan*Math.PI/2)*1.4;R[i]+=amp*Math.sin(pan*Math.PI/2)*1.4;}
+   const es=oc.createBufferSource();es.buffer=eb;const eg=oc.createGain();eg.gain.value=1;es.connect(eg);eg.connect(sum);es.start(pre);
+  }
+  const lc=oc.createBiquadFilter();lc.type='highpass';lc.frequency.value=+p.lc;lc.Q.value=.6;
+  const hc=oc.createBiquadFilter();hc.type='lowpass';hc.frequency.value=Math.min(+p.hc,sr/2-100);hc.Q.value=.6;
+  const air=oc.createBiquadFilter();air.type='highshelf';air.frequency.value=8500;air.gain.value=(+p.crystal)*((p.algo|0)===2?7.5:5.5);
+  sum.connect(lc);lc.connect(hc);hc.connect(air);air.connect(oc.destination);
+  const ir=await oc.startRendering();
+  // algoritmlar orasida bir xil balandlik: energiyani me'yorlash
+  let e=0;for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<d.length;i++)e+=d[i]*d[i];}
+  const k=.8/Math.sqrt(e+1e-9);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<d.length;i++)d[i]*=k;}
+  return ir;
+ })();
+ azvCache.set(key,pr);if(azvCache.size>40)azvCache.delete(azvCache.keys().next().value);
+ return pr;
+}
+function makeVerb(input,output,p){
+ const dry=ctx.createGain(),wet=ctx.createGain(),conv=ctx.createConvolver();conv.normalize=false;
+ input.connect(dry);dry.connect(output);input.connect(conv);conv.connect(wet);wet.connect(output);
+ const vi={dry,wet,conv,p:null,_t:null,
+  set(q){this.p=q;const on=!!(q&&q.on),m=on?+q.mix:0,n=ctx.currentTime;
+   dry.gain.setTargetAtTime(on?Math.cos(m*Math.PI/2):1,n,.02);wet.gain.setTargetAtTime(on?Math.sin(m*Math.PI/2):0,n,.02);
+   if(!on)return;const k=azvKey(q);if(this._k===k)return;clearTimeout(this._t);
+   const go=()=>azvIR(q).then(ir=>{if(this.p===q||azvKey(this.p||{})===k){try{conv.buffer=ir;this._k=k;}catch(e){}}}).catch(()=>{});
+   if(azvCache.has(k))go();else this._t=setTimeout(go,120);},
+  kill(t){const n=ctx.currentTime;wet.gain.cancelScheduledValues(n);wet.gain.setValueAtTime(wet.gain.value,n);wet.gain.linearRampToValueAtTime(0,n+(t||.1));}
+ };
+ vi.set(p);return vi;
+}
+/* --- panel --- */
+let azvTarget='dub';
+function azvOwner(){
+ if(azvTarget==='pad'){const p=show.banks[bank]&&show.banks[bank].pads[selPad];return p?{obj:p,name:'SFX '+KEYS[selPad][1]+' · '+padTitle(p)}:null;}
+ if(azvTarget==='cue'){const i=Math.min(next,show.cues.length-1),c=show.cues[i];return c?{obj:c,name:'Q'+(i+1)+' · '+c.name}:null;}
+ return {obj:null,name:'Dublaj kanali (mikrofon va dublaj fayllari)'};
+}
+function azvGet(){const o=azvOwner();if(!o)return null;return o.obj?o.obj.verb||null:show.dubverb||null;}
+function azvSet(p){const o=azvOwner();if(!o)return;if(o.obj){if(p)o.obj.verb=p;else delete o.obj.verb;}else{if(p)show.dubverb=p;else delete show.dubverb;}
+ saveShow();azvLive(o.obj,p);if(azvTarget==='pad')renderPads();else if(azvTarget==='cue')renderCues();}
+function azvLive(obj,p){
+ if(!ctx)return;
+ if(!obj){if(dub.verbIns)dub.verbIns.set(p);return;}
+ voices.forEach(v=>{if(v.stopping||(v.padObj!==obj&&v.cue!==obj))return;
+  if(!v.vi){if(!p||!p.on)return;try{v.g.disconnect();}catch(e){}v.vi=makeVerb(v.g,buses[v.bus].input,p);}else v.vi.set(p);});
+}
+const AZV_SL=[ // id, nom, min,max, slider->qiymat, qiymat->slider, format
+ ['mix','Mix',0,100,x=>x/100,v=>v*100,v=>Math.round(v*100)+' %'],
+ ['decay','Decay',0,100,x=>+(0.1*Math.pow(200,x/100)).toFixed(2),v=>Math.log(v/0.1)/Math.log(200)*100,v=>(+v).toFixed(2)+' s'],
+ ['size','Size',0,100,x=>x/100,v=>v*100,v=>v<.2?'Tiny':v<.4?'Small':v<.65?'Medium':v<.85?'Large':'Huge'],
+ ['pre','Pre-Delay',0,100,x=>Math.round(500*Math.pow(x/100,2)),v=>Math.sqrt(v/500)*100,v=>Math.round(v)+' ms'],
+ ['diff','Diffusion',0,100,x=>x/100,v=>v*100,v=>Math.round(v*100)+' %'],
+ ['damp','Damp HF',0,100,x=>Math.round(1000*Math.pow(20,x/100)),v=>Math.log(v/1000)/Math.log(20)*100,v=>v>=1000?(v/1000).toFixed(1)+' kHz':v+' Hz'],
+ ['lc','Low Cut',0,100,x=>Math.round(20*Math.pow(50,x/100)),v=>Math.log(v/20)/Math.log(50)*100,v=>v>=1000?(v/1000).toFixed(1)+' kHz':Math.round(v)+' Hz'],
+ ['hc','High Cut',0,100,x=>Math.round(1000*Math.pow(20,x/100)),v=>Math.log(v/1000)/Math.log(20)*100,v=>(v/1000).toFixed(1)+' kHz'],
+ ['width','Width',0,100,x=>x/50,v=>v*50,v=>Math.round(v*100)+' %'],
+ ['crystal','Crystal',0,100,x=>x/100,v=>v*100,v=>Math.round(v*100)+' %']
+];
+function renderAzv(){
+ const box=$('#azvBody');if(!box)return;const o=azvOwner(),p=azvGet(),on=!!(p&&p.on);
+ $('#azvOn').checked=on;$('#azvOn').disabled=!o;
+ document.querySelectorAll('#azvTgt button').forEach(b=>{b.classList.toggle('on',b.dataset.azt===azvTarget);b.setAttribute('aria-pressed',b.dataset.azt===azvTarget);});
+ $('#azvName').textContent=o?o.name:(azvTarget==='pad'?'SFX tugmasi tanlanmagan — tugmani bosing':'Cue tanlanmagan');
+ if(!o||!p){box.innerHTML='<p class="hint" style="margin:0">'+(o?'Bu ovoz uchun AZ VERB o\'chiq. Yoqish uchun “Yoqiq” belgisini bosing — teatr presetidan boshlanadi.':'')+'</p>';return;}
+ const cats={};AZV_PRESETS.forEach((r,i)=>(cats[r[1]]=cats[r[1]]||[]).push(i));
+ box.innerHTML='<div class="frow"><select class="inp" id="azvPreset" aria-label="Preset" style="flex:1 1 200px"><option value="">— qo\'lda sozlangan —</option>'+Object.keys(cats).map(c=>'<optgroup label="'+c+'">'+cats[c].map(i=>'<option value="'+i+'"'+(p.preset===AZV_PRESETS[i][0]?' selected':'')+'>'+esc(AZV_PRESETS[i][0])+'</option>').join('')+'</optgroup>').join('')+'</select><button type="button" class="btn sm" id="azvPlay">▶ Tinglash</button></div>'+
+  '<div class="azalg" role="group" aria-label="Algoritm">'+AZV_ALGOS.map((n,i)=>'<button type="button" data-azalg="'+i+'" class="'+((p.algo|0)===i?'on':'')+'" aria-pressed="'+((p.algo|0)===i)+'">'+n+'</button>').join('')+'</div>'+
+  '<div class="azsl">'+AZV_SL.map(s=>'<label class="azk wfield" for="az_'+s[0]+'"><span>'+s[1]+' <b class="mono" id="azv_'+s[0]+'">'+s[6](p[s[0]])+'</b></span><input type="range" id="az_'+s[0]+'" data-azk="'+s[0]+'" min="0" max="100" step="0.5" value="'+Math.max(0,Math.min(100,s[5](p[s[0]])))+'"></label>').join('')+'</div>'+
+  '<div class="azviz" aria-hidden="true">'+azvViz(p)+'</div>';
+}
+function azvViz(p){
+ const W=300,H=46,rt=+p.decay,pre=+p.pre/1000,tot=Math.max(1,pre+rt*1.15),nl=(p.algo|0)===6;let d='M0,'+H;
+ for(let i=0;i<=60;i++){const t=i/60*tot,x=i/60*W;let y=H;if(t>=pre){const tt=t-pre;const g=nl?(tt<rt*.82?1:Math.max(0,1-(tt-rt*.82)/(rt*.18))):Math.exp(-6.9*tt/rt);y=H-g*(H-6);}d+=' L'+x.toFixed(1)+','+y.toFixed(1);}
+ return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><path d="'+d+' L'+W+','+H+' Z" fill="rgba(127,167,245,.25)" stroke="#7FA7F5" stroke-width="1.5"/></svg><span class="mono">'+AZV_ALGOS[p.algo|0]+' · '+(+p.decay).toFixed(1)+' s · '+Math.round(p.pre)+' ms</span>';
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest&&e.target.closest('#azvPanel button');if(!b)return;
+ if(b.dataset.azt){azvTarget=b.dataset.azt;renderAzv();}
+ else if(b.dataset.azalg!=null){const p=Object.assign({},azvGet(),{algo:+b.dataset.azalg,preset:''});azvSet(p);renderAzv();}
+ else if(b.id==='azvPlay'){
+  if(azvTarget==='pad')padPreview(selPad);
+  else if(azvTarget==='cue'){const c=show.cues[Math.min(next,show.cues.length-1)];if(c&&c.type!=='atmos'&&buffers[c.ref])play(c.ref,c.type==='dub'?'dub':'sfx',{title:'▶ '+c.name,preview:true,trim:c.trim,verb:c.verb,cue:c});else toast('Bu cue\'ni GO bilan tinglang');}
+  else{if(buffers.dub_monolog)play('dub_monolog','dub',{title:'▶ Dublaj'});else toast('Dublaj fayli yo\'q — mikrofon yoki fayl bilan tinglang');}
+ }
+});
+document.addEventListener('change',e=>{
+ if(e.target.id==='azvOn'){const p=azvGet();if(e.target.checked)azvSet(p?Object.assign({},p,{on:true}):AZV_DEF());else if(p)azvSet(Object.assign({},p,{on:false}));renderAzv();}
+ else if(e.target.id==='azvPreset'&&e.target.value!==''){const q=azvFromPreset(+e.target.value);azvSet(q);renderAzv();toast('AZ VERB: '+q.preset);}
+});
+document.addEventListener('input',e=>{
+ const k=e.target.dataset&&e.target.dataset.azk;if(!k)return;const s=AZV_SL.find(x=>x[0]===k);const p=Object.assign({},azvGet());p[k]=s[4](+e.target.value);p.preset='';
+ $('#azv_'+k).textContent=s[6](p[k]);const sel=$('#azvPreset');if(sel)sel.value='';const vz=document.querySelector('.azviz');if(vz)vz.innerHTML=azvViz(p);
+ const o=azvOwner();if(o.obj)o.obj.verb=p;else show.dubverb=p;azvLive(o.obj,p);clearTimeout(renderAzv._s);renderAzv._s=setTimeout(()=>{saveShow();if(azvTarget==='pad')renderPads();else if(azvTarget==='cue')renderCues();},400);
+});
+
+/* ---------- SFX tugmasi: pauza / stop, jonli gain, to'lqinda belgilash ---------- */
+const pausedPads=new Map();const IC_PAUSE='<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"></rect><rect x="14" y="4" width="5" height="16" rx="1"></rect></svg>',IC_PLAY='<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"></path></svg>',IC_STOP='<svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>';
+function padOpts(p,extra){return Object.assign({color:(CAT[p.cat]||CAT.zarba)[0],fadeIn:p.loop||p.t?Math.min(fadeT,1.5):0,loop:!!p.loop,level:dbToG(p.g||0),title:padTitle(p),trim:p.trim,verb:p.verb,pad:p},extra||{});}
+function padVoices(p){return voices.filter(v=>v.padObj===p&&!v.stopping&&!v.preview);}
+function voicePos(v){let el=(v.off0||0)+ctx.currentTime-v.start;if(v.loop&&v.regLen)el=el%v.regLen;return el;}
+function padPause(i){
+ const p=show.banks[bank].pads[i];if(!p||!ctx)return;
+ if(pausedPads.has(p)){const L=pausedPads.get(p);pausedPads.delete(p);L.forEach(x=>play(p.a,'sfx',padOpts(p,{offset:x.pos,fadeIn:.03})));toast('Davom: '+padTitle(p));renderPadStates();return;}
+ const vs=padVoices(p);if(!vs.length){toast('“'+padTitle(p)+'” hozir yangramayapti');return;}
+ pausedPads.set(p,vs.map(v=>({pos:voicePos(v)})));vs.forEach(v=>stopVoice(v,.05));toast('Pauza: '+padTitle(p)+' — ⏯ yana bosilsa shu joydan davom etadi');renderPadStates();
+}
+function padStop(i){const p=show.banks[bank].pads[i];if(!p)return;pausedPads.delete(p);const vs=padVoices(p);vs.forEach(v=>stopVoice(v,.12));renderPadStates();}
+function applyPadGain(p){if(!ctx)return;const n=ctx.currentTime;voices.forEach(v=>{if(v.padObj===p&&!v.stopping){v.lvl0=dbToG(gainFor(v.ref))*dbToG(p.g||0);v.g.gain.cancelScheduledValues(n);v.g.gain.setTargetAtTime(v.lvl0,n,.03);}});}
+function padGainStep(d){const p=show.banks[bank].pads[selPad];if(!p){toast('SFX tugmasi tanlanmagan');return;}p.g=Math.max(-30,Math.min(12,(p.g||0)+d));applyPadGain(p);saveShow();renderPads();toast('SFX '+KEYS[selPad][1]+' · '+padTitle(p)+': '+dbStr(p.g));}
+let sbDrag=null;
+function sbCur(){return show.banks[bank]&&show.banks[bank].pads[selPad];}
+function sbPaint(s,e,D){const a=$('#sbM1'),b=$('#sbM2'),S=$('#sbS'),E=$('#sbE');if(!a)return;a.style.width=(s/D*100)+'%';b.style.left=(e/D*100)+'%';S.style.left=(s/D*100)+'%';E.style.left=(e/D*100)+'%';const l=$('#sbSel');if(l)l.textContent=fmtT(s)+' — '+fmtT(e)+' · '+fmtT(e-s);}
+document.addEventListener('pointerdown',e=>{
+ const w=e.target.closest&&e.target.closest('.swv');if(!w)return;const p=sbCur();if(!p||!buffers[p.a])return;
+ const D=+$('#sbox').dataset.dur;const r=w.getBoundingClientRect();const x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*D;
+ const s=p.trim?p.trim.s:0,en=p.trim?p.trim.e:D,tol=10/r.width*D;
+ sbDrag={mode:Math.abs(x-s)<tol?'s':Math.abs(x-en)<tol?'e':'new',x0:x,D,r,s,e:en,moved:false,tol};
+ try{w.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();
+});
+document.addEventListener('pointermove',e=>{
+ if(!sbDrag)return;const d=sbDrag,x=Math.max(0,Math.min(1,(e.clientX-d.r.left)/d.r.width))*d.D;
+ if(Math.abs(x-d.x0)>d.tol/2)d.moved=true;if(!d.moved)return;
+ if(d.mode==='s')d.s=Math.min(x,d.e-.05);else if(d.mode==='e')d.e=Math.max(x,d.s+.05);else{d.s=Math.min(d.x0,x);d.e=Math.max(d.x0,x);if(d.e-d.s<.05)d.e=d.s+.05;}
+ sbPaint(d.s,d.e,d.D);
+});
+document.addEventListener('pointerup',()=>{
+ if(!sbDrag)return;const d=sbDrag;sbDrag=null;const p=sbCur();if(!p)return;
+ if(!d.moved){ // bosish: shu joydan eshittirish
+  if(pvVoice)stopVoice(pvVoice,.04);const tr={s:d.x0,e:d.x0<d.e?d.e:d.D,fi:0,fo:0};pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:tr,verb:p.verb});return;}
+ const old=p.trim||{};const t=cleanTrim({s:d.s,e:d.e,fi:old.fi||0,fo:old.fo||0},d.D);if(t)p.trim=t;else delete p.trim;
+ saveShow();renderPads();toast('Belgilandi: '+fmtT(d.s)+' — '+fmtT(d.e)+' (asl fayl o\'zgarmaydi)');padPreview(selPad);
+});
+document.addEventListener('dblclick',e=>{if(!(e.target.closest&&e.target.closest('.swv')))return;const p=sbCur();if(!p||!p.trim)return;delete p.trim;saveShow();renderPads();toast('Belgi olib tashlandi — butun fayl');});
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
  const src=ctx.createBufferSource();src.buffer=buf;const g=ctx.createGain();
  const lvl0=dbToG(gainFor(id))*(o.level==null?1:o.level),lvl=lvl0*(o.cue?dbToG(o.cue.g||0):1),now=ctx.currentTime,fi=o.fadeIn||0;
  if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
- src.connect(g);g.connect(buses[bus].input);
+ src.connect(g);
+ const out=buses[bus].input;let vi=null;
+ if(o.verb&&o.verb.on)vi=makeVerb(g,out,o.verb);else g.connect(out);
  const m=META[id]||{};let off=0;const base=(!overrides[id]&&m.loop)?m.loopStart:0;
- const tr=o.trim&&o.trim.e>o.trim.s?o.trim:null;let dur=buf.duration;
+ const tr=o.trim&&o.trim.e>o.trim.s?o.trim:null;let dur=buf.duration,regLen;const off0=Math.max(0,o.offset||0);
  if(tr){
-  off=base+tr.s;dur=tr.e-tr.s;
-  if(tr.fi>0&&!(fi>0)){g.gain.cancelScheduledValues(now);g.gain.setValueAtTime(0.0001,now);g.gain.linearRampToValueAtTime(lvl,now+Math.min(tr.fi,dur/2));}
-  if(o.loop){src.loop=true;src.loopStart=off;src.loopEnd=base+tr.e;src.start(now,off);}
+  regLen=tr.e-tr.s;const st=Math.min(off0,Math.max(0,regLen-.02));off=base+tr.s+st;dur=regLen-st;
+  if(tr.fi>0&&!(fi>0)&&!st){g.gain.cancelScheduledValues(now);g.gain.setValueAtTime(0.0001,now);g.gain.linearRampToValueAtTime(lvl,now+Math.min(tr.fi,dur/2));}
+  if(o.loop){src.loop=true;src.loopStart=base+tr.s;src.loopEnd=base+tr.e;src.start(now,off);}
   else{if(tr.fo>0){const f=Math.min(tr.fo,dur/2);g.gain.setValueAtTime(lvl,now+dur-f);g.gain.linearRampToValueAtTime(0.0001,now+dur);}src.start(now,off,dur);}
  }else{
-  if(o.loop){src.loop=true;if(!overrides[id]&&m.loop){src.loopStart=m.loopStart;src.loopEnd=m.loopEnd;off=m.loopStart;}}
-  src.start(now,off);dur=buf.duration-off;
+  const lp=o.loop&&!overrides[id]&&m.loop;regLen=lp?m.dur:buf.duration;
+  if(o.loop){src.loop=true;if(lp){src.loopStart=m.loopStart;src.loopEnd=m.loopEnd;}}
+  off=(lp?m.loopStart:0)+Math.min(off0,regLen-.02);src.start(now,off);dur=buf.duration-off;
  }
- const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
+ const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,padObj:o.pad||null,vi,off0,regLen,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
  voices.push(v);
  src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
  renderVoices();renderPadStates();return v;
 }
 function stopVoice(v,t){if(!v||v.stopping)return;t=Math.max(t||0,.02);const now=ctx.currentTime;v.stopping=true;
  try{v.g.gain.cancelScheduledValues(now);v.g.gain.setValueAtTime(v.g.gain.value,now);v.g.gain.linearRampToValueAtTime(0,now+t);v.src.stop(now+t+.03);}catch(e){}
+ if(v.vi&&v.panicCut)v.vi.kill(.08);
  renderVoices();}
 function preview(id){const v=voices.find(x=>x.ref===id&&x.preview);if(v){stopVoice(v,.1);return;}if(!buffers[id]){toast('Bu ovozda fayl yo\'q');return;}play(id,'sfx',{title:'▶ '+titleOf(id),preview:true});}
 
@@ -873,7 +1094,7 @@ function startScene(key,t,cue){
  const def=show.scenes[key];if(!def){toast('Atmosfera topilmadi');return;}
  if(scene)scene.layers.forEach(l=>stopVoice(l.voice,t));
  scene={key,cue:cue||null,layers:def.layers.map(l=>({a:l.a,v:l.v,t:l.t,voice:null}))};
- scene.layers.forEach(l=>{l.voice=play(l.a,'atmos',{loop:true,fadeIn:t,level:layerGain(l.v),title:layerTitle(l),cue:scene.cue});});
+ scene.layers.forEach(l=>{l.voice=play(l.a,'atmos',{loop:true,fadeIn:t,level:layerGain(l.v),title:layerTitle(l),cue:scene.cue,verb:scene.cue&&scene.cue.verb});});
  renderScene();
 }
 function setLayerVol(i,vol){if(!scene)return;const l=scene.layers[i];l.v=vol;const v=l.voice;if(v&&!v.stopping){v.lvl0=dbToG(gainFor(l.a))*layerGain(vol);const tg=v.lvl0*(scene.cue?dbToG(scene.cue.g||0):1);v.g.gain.cancelScheduledValues(ctx.currentTime);v.g.gain.setTargetAtTime(tg,ctx.currentTime,.04);}
@@ -886,9 +1107,9 @@ function fireCue(i){
  if(showStart==null){showStart=performance.now();$('#clockBox').classList.add('live');$('#liveTxt').textContent='JONLI';}
  if(c.type==='atmos')startScene(c.ref,fadeT,c);
  else if(!buffers[c.ref])toast('“'+c.name+'” uchun ovoz fayli yo\'q — Tahrirlash rejimida ✎ orqali biriktiring.');
- else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c});}
- else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c});
- else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c});
+ else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c,verb:c.verb});}
+ else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c,verb:c.verb});
+ else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c,verb:c.verb});
  cur=i;next=Math.min(i+1,show.cues.length);savePos();renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
 }
 const dbStr=d=>(d>0?'+':d<0?'−':'')+Math.abs(d).toFixed(Number.isInteger(d)?0:1)+' dB';
@@ -923,7 +1144,7 @@ function zoomMenu(){openModal('Masshtab','<div class="zgrid">'+ZOOMS.map(z=>'<bu
 try{const z=+localStorage.getItem('sahnaOvozi.zoom');if(z)setZoom(z,true);}catch(e){}
 
 function go(){if(next>=show.cues.length){toast('Cue ro\'yxati tugadi. Boshidan boshlash uchun Q1 ni tanlang.');return;}fireCue(next);}
-function panic(){if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
+function panic(){voices.forEach(v=>{v.panicCut=true;});if(dub.verbIns){dub.verbIns.kill(.1);const q=dub.verbIns.p;setTimeout(()=>{try{dub.verbIns.conv.buffer=null;dub.verbIns._k=null;dub.verbIns.set(q);}catch(e){}},180);}pausedPads.clear();if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
 
 /* ---------- files ---------- */
 let fileCb=null;
@@ -1066,10 +1287,11 @@ function cueLen(c){if(c.type==='atmos'){const s=show.scenes[c.ref];return s?s.na
 function renderCues(){
  const C=show.cues;if(next>C.length)next=C.length;if(cur>=C.length)cur=-1;
  $('#cues').innerHTML=C.length?C.map((c,i)=>{const T=TYPE[c.type]||TYPE.sfx;const st=i===cur?'live':(i===next?'next':(i<cur?'done':''));const tag=i===cur?'JONLI':(i===next?'KEYINGI':(i<cur?'TUGADI':''));
-  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
+  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+(c.verb&&c.verb.on?'<span class="cv">R</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
   if(editing)return '<div class="cue editrow '+st+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
   return '<button type="button" class="cue '+st+'" data-cue="'+i+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
+ if(typeof azvTarget!=='undefined'&&azvTarget==='cue')azvRefresh();
  $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
 }
 function renderNow(){
@@ -1091,17 +1313,17 @@ function renderPads(){
  $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
-  return '<div class="pad" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+  return '<div class="pad" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
  renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
 }
-function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));});}
+function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));const ps=!!p&&pausedPads.has(p);el.classList.toggle('paused',ps);const bt=el.querySelector('[data-ppause]');if(bt&&bt.dataset.st!==String(ps)){bt.dataset.st=ps;bt.innerHTML=ps?IC_PLAY:IC_PAUSE;}});}
 function hitPad(i){
  if(!ctx)return;const p=show.banks[bank].pads[i];selectPad(i);
  if(editing){editPad(i);return;}
  if(!p||!buffers[p.a]){toast('Bo\'sh tugma — faylni sudrab tashlang yoki ↑ bilan yuklang');return;}
  const playing=voices.filter(v=>v.ref===p.a&&!v.stopping&&!v.preview);
  if(p.t&&playing.length){playing.forEach(v=>stopVoice(v,Math.max(fadeT,.3)));return;}
- play(p.a,'sfx',{color:(CAT[p.cat]||CAT.zarba)[0],fadeIn:p.loop||p.t?Math.min(fadeT,1.5):0,loop:!!p.loop,level:dbToG(p.g||0),title:padTitle(p),trim:p.trim});
+ pausedPads.delete(p);play(p.a,'sfx',padOpts(p));
  $('#lastPad').textContent=padTitle(p);logEvent('SFX '+KEYS[i][1]+' · '+padTitle(p));
  const el=document.querySelector('.pad[data-pad="'+i+'"]');if(el){el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),140);}
 }
@@ -1140,7 +1362,7 @@ function peakOf(an){an.getFloatTimeDomainData(tmp);let m=0;for(let i=0;i<tmp.len
 function loop(){
  if(ctx){for(const [k] of BUSES){const b=buses[k];[b.aL,b.aR].forEach((an,ch)=>{const db=20*Math.log10(peakOf(an)+1e-6);const pct=Math.max(0,Math.min(1,(db+60)/60));b.pk[ch]=Math.max(pct,b.pk[ch]-.02);const el=document.getElementById((ch?'mR_':'mL_')+k);if(el)el.style.height=(b.pk[ch]*100).toFixed(1)+'%';});}
   const now=ctx.currentTime;for(const v of voices){if(v.loop)continue;const el=document.getElementById('pg'+v.vid),rm=document.getElementById('rm'+v.vid);const pos=now-v.start;if(el)el.style.width=Math.min(100,pos/v.dur*100)+'%';if(rm)rm.textContent='−'+fmt(v.dur-pos);}}
- if(ctx){const ph=document.getElementById('sbPh');if(ph){const p=show.banks[bank]&&show.banks[bank].pads[selPad];const v=p&&[...voices].reverse().find(x=>x.ref===p.a&&!x.stopping);const D=+$('#sbox').dataset.dur||0;if(v&&D){let el=ctx.currentTime-v.start;const tl=p.trim?trimLen(p.trim):D;if(v.loop)el=el%tl;const pos=((p.trim?p.trim.s:0)+el)/D;ph.hidden=pos>1;ph.style.left=Math.min(100,pos*100)+'%';}else ph.hidden=true;}}
+ if(ctx){const ph=document.getElementById('sbPh');if(ph){const p=show.banks[bank]&&show.banks[bank].pads[selPad];const v=p&&[...voices].reverse().find(x=>x.ref===p.a&&!x.stopping);const D=+$('#sbox').dataset.dur||0;if(v&&D){let el=(v.off0||0)+ctx.currentTime-v.start;const tl=p.trim?trimLen(p.trim):D;if(v.loop)el=el%tl;const pos=((p.trim?p.trim.s:0)+el)/D;ph.hidden=pos>1;ph.style.left=Math.min(100,pos*100)+'%';}else ph.hidden=true;}}
  if(showStart!=null){const s=Math.floor((performance.now()-showStart)/1000);$('#clock').textContent=[s/3600|0,(s/60|0)%60,s%60].map(x=>String(x).padStart(2,'0')).join(':');}
  requestAnimationFrame(loop);
 }
@@ -1420,6 +1642,7 @@ function applyMix(){
  fadeT=show.fade==null?3:show.fade;
  const a=$('#amt');if(a){a.value=Math.round(dub.amount*100);$('#amtV').textContent=a.value+'%';}
  renderStrips();renderPresets();renderFades();
+ if(dub.verbIns)dub.verbIns.set(show.dubverb||null);renderAzv();
 }
 function usedAssets(){
  const ids=new Set();show.cues.forEach(c=>{if(c.type!=='atmos'&&c.ref)ids.add(c.ref);});
@@ -1750,6 +1973,8 @@ document.addEventListener('click',e=>{
  if(d.cue!=null){next=+d.cue;renderCues();}
  else if(d.cedit!=null)editCue(+d.cedit);
  else if(d.cmove){const [i,dd]=d.cmove.split(',').map(Number);moveCue(i,dd);}
+ else if(d.ppause!=null){selectPad(+d.ppause);padPause(+d.ppause);}
+ else if(d.pstop!=null){selectPad(+d.pstop);padStop(+d.pstop);}
  else if(d.hit!=null)hitPad(+d.hit);
  else if(d.up!=null){const i=+d.up;pickFile(f=>padUpload(i,f));}
  else if(d.bank!=null){bank=+d.bank;renderPads();}
@@ -1811,7 +2036,7 @@ const KEYPAD={};KEYS.forEach(([code],i)=>KEYPAD[code]=i);
 const typing=t=>t&&(t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!/^(range|checkbox|button)$/.test(t.type)));
 document.addEventListener('keydown',e=>{
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
- if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else cueGainStep(d);return;}
+ if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
  if(!ctx||e.ctrlKey||e.metaKey||e.altKey)return;
  if(!$('#hub').hidden){if(e.code==='Escape'&&!modalOpen()&&ctx){e.preventDefault();hideHub();}return;}

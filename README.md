@@ -3,6 +3,17 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.4.0: AZ VERB · har bir tugmada pauza/stop · to'lqinda belgilash · jonli gain
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| **AZ VERB** | D-Verb asosidagi AZ VERB plaginining veb dvigateli: 7 algoritm (Hall, Church, Plate, Room I, Room II, Ambient, NonLin), 16 zavod preseti + 4 teatr preseti, Mix · Decay · Size · Pre-Delay · Diffusion · Damp HF · Low/High Cut · Width · Crystal, so'nish egri chizig'i |
+| Har bir ovozga alohida | Nishon: **Dublaj** kanali (mikrofon va dublaj fayllari) · tanlangan **SFX tugma** · tanlangan **Cue** — har birining o'z reverbi, loyihada saqlanadi; yangrab turgan ovozda ham shu zahoti o'zgaradi; tugma/cue'da "R" belgisi |
+| O'lchovlar | RT60 aniqligi ±4% (0.6–8 s), algoritmlar orasida balandlik farqi 0 dB, stereo korrelyatsiya ≈0 |
+| Pauza / stop | Har bir SFX tugmasida ⏸ (pauza → ▶ shu joydan davom) va ■ (to'xtatish) |
+| To'lqinda belgilash | Sample brauzerida to'lqin ustida sudrash — kerakli joyni belgilash (S/E), bosish — shu joydan tinglash, 2× — butun fayl |
+| Jonli gain | Gain slayderi yangrab turgan ovozga ham shu zahoti ta'sir qiladi; tugmada dB belgisi; **Shift + Num ±** — tanlangan tugma |
+
 ## 1.3.0: AZ BEAT uslubidagi sample brauzer · avtosaqlash · ish joyi saqlanadi
 
 | Bo'lim | Nima qilindi |
