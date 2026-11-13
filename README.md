@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.10.0: Onlayn tizim — 1 kunlik sinov, tariflar, to'lov, admin (Daftar tuzilishida)
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sinov | Yangi foydalanuvchi 1 kun hamma imkoniyat bilan ishlaydi (muddatni admin o'zgartiradi) |
+| Tariflar | **Standart** 25 000 so'm / 30 kun — to'liq pult; **Pro** 49 000 so'm / 30 kun — + ASIO, Audioni sozlash, quloqchin chiqishi |
+| To'lov | 💎 tugmasi → Telegram bot → kartaga o'tkazish → chek → admin tasdig'i → pult **o'zi faollashadi** |
+| Admin | `/admin`: foydalanuvchilar, to'lovlar, kodlar, karta, tariflar, sinov muddati, bot |
+| Server | Cloudflare Pages (`web/`) + Functions (`functions/api`) + D1 — sozlash: [ONLAYN-SOZLASH.md](ONLAYN-SOZLASH.md) |
+
 ## 1.9.0: Takrorlash (loop) tugmalari · SFX qulfi · bir xil ijro
 
 | Bo'lim | Nima qilindi |

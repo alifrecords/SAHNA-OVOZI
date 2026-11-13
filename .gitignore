@@ -3,3 +3,4 @@ build/
 dist/
 installer/windows/Output/
 *.tmp-*
+.wrangler/

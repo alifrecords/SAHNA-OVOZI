@@ -223,7 +223,7 @@ select.inp{padding-right:28px}
 .psub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmore{position:absolute;right:8px;bottom:10px;background:var(--panel)}
 html.native .show-info{cursor:pointer}
-@media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:140px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
+@media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:96px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
 #sfxLock{display:flex;align-items:center;gap:6px}#sfxLock .lk-closed{display:none}#sfxLock.on{border-color:#F2A93B;color:#F2A93B;background:rgba(242,169,59,.1)}#sfxLock.on .lk-closed{display:inline}#sfxLock.on .lk-open{display:none}
@@ -231,6 +231,15 @@ body.sfx-locked #sbox{opacity:.75}body.sfx-locked #sbPrev,body.sfx-locked #sbNex
 .pctl button.lp.on{color:#14110B;background:#3DD6C3;border-color:#3DD6C3}
 .clp{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;color:var(--muted);border:1px solid transparent;flex:0 0 auto;margin-left:auto;cursor:pointer;opacity:.55}.clp:hover{opacity:1;border-color:var(--line2)}.clp.on{opacity:1;color:#3DD6C3;border-color:#2F6B63;background:rgba(61,214,195,.1)}
 .loopbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line2);background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}.loopbtn:hover{color:var(--text)}.loopbtn.on{color:#3DD6C3;border-color:#3DD6C3;background:rgba(61,214,195,.12);box-shadow:0 0 0 1px rgba(61,214,195,.3)}
+#licBtn{display:flex;align-items:center;gap:6px;white-space:nowrap}#licBtn.exp{border-color:#E5484D;color:#FF8A8D;background:rgba(229,72,77,.12)}#licBtn.ok{border-color:#2F6B63;color:#7FE0D3}
+#licWall{position:fixed;inset:0;z-index:44;background:rgba(8,9,11,.92);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:5vh 16px}#licWall[hidden]{display:none}#licWall .lwb{max-width:880px;width:100%;padding:24px 26px}
+@media (max-width:1500px){#licBtn:not(.exp) .lct{display:none}}
+.lch{margin:0 0 6px;font-size:22px}.lcst{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:10px 0 14px}.lcdev{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.lcdev b{color:var(--text);font-size:15px;letter-spacing:.04em}
+.lcb{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:700}.lcb.ok{background:rgba(61,214,195,.15);color:#7FE0D3}.lcb.tr{background:rgba(242,169,59,.16);color:#F2A93B}.lcb.ex{background:rgba(229,72,77,.18);color:#FF8A8D}
+.lcplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.lcp{position:relative;border:1px solid var(--line2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}.lcp.pro{border-color:#F2A93B;box-shadow:0 0 0 1px rgba(242,169,59,.25)}.lcp h3{margin:0;font-size:17px}.lcpr{font-size:24px;font-weight:700;color:#F2A93B}.lcpr small{font-size:12px;color:var(--muted);font-weight:500}.lcp ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted);flex:1}.lcp li{margin:3px 0}.lctag{position:absolute;right:12px;top:12px;font-size:11px;font-weight:700;background:#F2A93B;color:#14110B;border-radius:6px;padding:2px 7px}
+.lcpay{margin-top:14px;border:1px dashed var(--line2);border-radius:12px;padding:10px 14px;font-size:13px}.lcpay ol{margin:6px 0 0;padding-left:20px}.lcpay li{margin:4px 0}
+.lcact{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.lcact .inp{flex:1 1 260px}.lcfoot{display:flex;gap:10px;align-items:center;margin-top:12px;font-size:12px}.lnk{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:12px;padding:2px}
+body.lic-locked #app,body.lic-locked main{filter:blur(2px)}
 .pxbox{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}.pxgrid{display:flex;flex-direction:column;gap:6px}.pxrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:34px}.pxrow .chk{min-width:210px;margin:0}.pxs{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;font-size:12px;color:var(--muted)}.pxs input[type=range]{flex:1}.envlane{position:relative;height:74px;border-radius:10px;background:var(--panel);overflow:hidden;touch-action:none;cursor:crosshair;user-select:none}.envlane .tbars i{background:#3a372f}.envlane svg{position:absolute;inset:0;width:100%;height:100%}.envlane circle{cursor:grab}.envtag{position:absolute;right:6px;top:3px;font:600 9px/1 Inter,system-ui,sans-serif;color:#77705f}.envtag.b{top:auto;bottom:3px}
 .trimbox{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .acc{color:var(--amber)}
@@ -353,6 +362,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
+    <button class="btn" id="licBtn" type="button" title="Tarif, sinov muddati va to'lov"><span aria-hidden="true">💎</span><span class="lct">Sinov</span></button>
     <button class="btn" id="dbBtn" type="button" aria-label="Ma'lumotlar bazasi va jurnal">Baza</button>
     <button class="btn" id="asBtn" type="button" aria-pressed="true" title="Avtosaqlash: yoqish / o'chirish (Ctrl+Shift+A)"><span class="asdot"></span><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg><span class="aslbl">Avto saqlash</span><b class="asst">YOQIQ</b></button>
     <button class="btn proj" id="projBtn" type="button" aria-label="Loyiha: saqlash va ochish"><span class="pname">Loyiha</span></button>
@@ -457,10 +467,12 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
   </section>
 </div>
 
+<div id="licWall" hidden><div class="lwb card"></div></div>
 <div id="hub" hidden>
   <aside class="hside">
     <div class="brand" style="padding:4px 6px 14px"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg><span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span></div>
     <div class="langseg" style="align-self:flex-start;margin:0 0 10px 6px" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
+    <button type="button" class="btn" id="hubLicBtn" onclick="LIC_OPEN()" style="margin:0 6px 10px;justify-content:flex-start"><span id="hubLic">💎 Tarif</span></button>
     <button type="button" class="hprof" id="hubProf" aria-label="Profilni tahrirlash"></button>
     <nav class="hnav" aria-label="Bosh sahifa bo'limlari">
       <button type="button" data-hpage="home">Bosh sahifa</button>
@@ -684,6 +696,7 @@ async function audioDevMenu(){
  {change:async e=>{
   const id=e.target.id,v=e.target.value,nm=e.target.selectedOptions&&e.target.selectedOptions[0]?e.target.selectedOptions[0].textContent:'';
   if(id==='adOut'){AUD.out=v;AUD.outName=v?nm:'';audSave();if(await audApplyOut()){toast('Chiqish: '+(v?nm:'Tizim standarti'));logEvent('Audio chiqish: '+(v?nm:'Tizim standarti'));}}
+  else if((id==='adMon'&&e.target.value)&&!proOnly('Quloqchin (monitor) chiqishi')){e.target.value='';return;}
   else if(id==='adMon'){AUD.mon=v;AUD.monName=v?nm:'';audSave();if(await audApplyMon()!==false)toast(v?'Quloqchin chiqishi: '+nm:'Quloqchin chiqishi o\'chirildi');logEvent('Quloqchin chiqishi: '+(v?nm:'o\'chiq'));}
   else if(id==='adIn'||id==='adCh'){if(id==='adIn'){AUD.inp=v;AUD.inpName=v?nm:'';}else AUD.inCh=v;audSave();if(mic){await toggleMic();await toggleMic();}toast('Mikrofon kirishi: '+(AUD.inpName||'Tizim standarti')+' · '+(AUD.inCh==='st'?'Stereo':AUD.inCh+'-kirish'));}
   else if(id==='adEng'){AUD.engine=v;const bx=document.getElementById('adAsioBox');if(bx)bx.hidden=v!=='asio';if(v==='asio')asioCollect();audSave();restart=true;}
@@ -729,6 +742,7 @@ async function asioBoot(){
  }catch(e){toast('ASIO ishga tushmadi: '+(e.message||e));logEvent('ASIO xato: '+(e.message||e));}
 }
 async function asioPanel(){
+ if(!LIC.pro())return '<div class="field"><span class="flabel">ASIO drayver (ASIO4ALL, M-Audio, Focusrite…)</span><div class="warn">💎 ASIO / tashqi ovoz kartasi — Pro tarifida. <button type="button" class="btn sm" onclick="LIC_OPEN()">Tariflar</button></div></div>';
  if(!HAS_ASIO())return '<div class="field"><span class="flabel">ASIO drayver (ASIO4ALL, M-Audio, Focusrite…)</span><div class="hint">ASIO faqat kompyuterga o\'rnatilgan dasturda ishlaydi (Windows). Bu yerda tizim qurilmalari ishlatiladi.</div></div>';
  const api=window.azNative.platform==='win32'?'asio':'';
  const L=await window.azNative.asioList(api).catch(e=>({ok:false,reason:'api',detail:String(e)}));
@@ -946,6 +960,7 @@ function pxInfo(buf,base,s,e,px){
  return r;
 }
 function pxHtml(){
+ if(!LIC.pro())return '<div class="pxbox" id="pxBox"><div class="between"><span class="flabel">🎚 Audioni sozlash</span><span class="lcb tr">💎 Pro</span></div><p class="hint" style="margin:0">Maximizer, Normalize, Envelope va Avto balans — Pro tarifida. <button type="button" class="btn sm" onclick="LIC_OPEN()">Tariflar</button></p></div>';
  const px=TR.px||{};
  return '<div class="pxbox" id="pxBox"><div class="between"><span class="flabel">🎚 Audioni sozlash</span><span class="mono muted" id="pxInfo" style="font-size:12px"></span></div>'+
  '<div class="pxgrid">'+
@@ -976,7 +991,7 @@ function pxPaint(){
 }
 function pxEmit(){TR.px=pxClean(TR.px);pxPaint();trimPaint();trimEmit();}
 function pxBind(){
- const box=$('#pxBox');if(!box)return;
+ const box=$('#pxBox');if(!box||!$('#pxN'))return;
  TR.px=TR.px||null;
  const ensure=()=>{TR.px=Object.assign({},TR.px||{});return TR.px;};
  box.addEventListener('change',e=>{const id=e.target.id,px=ensure();
@@ -2282,7 +2297,134 @@ async function renderHub(){
  }
 }
 function showHub(page){if(page)hubPage=page;const H=$('#hub');H.hidden=false;document.body.classList.add('hub-open');renderHub();}
-function hideHub(){$('#hub').hidden=true;document.body.classList.remove('hub-open');}
+/* ---------- 💎 Litsenziya: sinov → to'lov (karta, Telegram bot) → admin tasdig'i → faollashtirish (Daftar Azimxodjayev bilan bir xil) ---------- */
+const LIC=(()=>{
+ const PUB={"kty":"EC","crv":"P-256","x":"oL_W_ndjs6oLvzvU3ovARMERq_B0j-rZgygAOzVrKKA","y":"08EaXauA7iS6_mW7RlgOeiC-Aq8jzQ3bU8fpN7juFD4"};
+ const DEF_API='https://sahna-ovozi.pages.dev',DAY=864e5,REPO='alifrecords/SAHNA-OVOZI';
+ const VER=(window.azNative&&window.azNative.version)||'1.10.0';
+ const K=k=>'sahnaOvozi.'+k;
+ const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(K(k));if(v===null)localStorage.removeItem(K(k));else localStorage.setItem(K(k),v);}catch(_){}return null;};
+ const sub=window.crypto&&crypto.subtle;
+ const b64u=buf=>{let s='';new Uint8Array(buf).forEach(c=>s+=String.fromCharCode(c));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');};
+ const unb=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0));};
+ const td=new TextDecoder();
+ const AL='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+ function dev(){let d=LS('dev');if(!d||!/^[A-HJ-KM-NP-Z2-9]{12}$/.test(d)){const a=new Uint8Array(12);crypto.getRandomValues(a);d=[...a].map(x=>AL[x%AL.length]).join('');LS('dev',d);}return d;}
+ const fmtDev=d=>'SO-'+d.match(/.{4}/g).join('-');
+ const api=()=>LS('api')||(/^https?:$/.test(location.protocol)&&!IS_FRAME?location.origin:DEF_API);
+ const cfg=()=>{try{return JSON.parse(LS('cfg')||'null')||{};}catch(_){return {};}};
+ const trialDays=()=>{const c=cfg();return Number.isFinite(+c.trialDays)?+c.trialDays:1;};
+ const platform=()=>NATIVE?(window.azNative.platform||'desktop'):(isStandalone()?'pwa':'web');
+ let ST={st:'trial'};
+ function calc(){
+  const now=Date.now();
+  if(IS_FRAME)return {st:'owner'};
+  if(LS('adm'))return {st:'admin'};
+  const seen=+LS('seen')||0,back=seen&&now<seen-6*36e5;if(!back)LS('seen',String(Math.max(seen,now)));
+  let tr=+LS('trial')||0;if(!tr){tr=now;LS('trial',String(tr));}
+  const tok=LS('lic');
+  if(tok&&!back){try{const p=JSON.parse(td.decode(unb(tok.split('.')[0])));if(p.d===dev()&&p.x>now)return {st:'active',until:p.x,plan:p.p==='std'?'std':'pro',left:p.x-now};}catch(_){}}
+  if(back)return {st:'expired',back:true};
+  const end=tr+trialDays()*DAY;return end>now?{st:'trial',until:end,left:end-now}:{st:'expired',trialEnd:end};
+ }
+ const leftTxt=ms=>ms>=DAY?Math.ceil(ms/DAY)+' kun':Math.max(1,Math.ceil(ms/36e5))+' soat';
+ const locked=()=>ST.st==='expired';
+ const pro=()=>ST.st!=='expired'&&!(ST.st==='active'&&ST.plan==='std');
+ async function verify(tok){
+  if(!sub)throw new Error('Bu muhitda imzo tekshiruvi ishlamaydi');
+  const [a,b]=String(tok).trim().split('.');if(!a||!b)return null;
+  const k=await sub.importKey('jwk',PUB,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+  let ok=false;try{ok=await sub.verify({name:'ECDSA',hash:'SHA-256'},k,unb(b),unb(a));}catch(_){}
+  return ok?JSON.parse(td.decode(unb(a))):null;
+ }
+ async function activate(tok,quiet){
+  const p=await verify(tok).catch(()=>null);
+  if(!p){if(!quiet)toast('Kod noto\'g\'ri yoki buzilgan');return false;}
+  if(p.d!==dev()){if(!quiet)toast('Bu kod boshqa qurilma uchun berilgan ('+fmtDev(p.d)+')');return false;}
+  if(p.x<=Date.now()){if(!quiet)toast('Bu kodning muddati tugagan');return false;}
+  const old=LS('lic');if(old===tok&&quiet)return true;
+  LS('lic',tok);refresh();
+  toast('💎 Faollashtirildi: '+(p.p==='std'?'Standart':'Pro')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
+  logEvent('Litsenziya faollashtirildi: '+(p.p==='std'?'Standart':'Pro')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
+  hello(true);
+  return true;
+ }
+ async function fetchCfg(){try{const r=await fetch(api()+'/api/config',{cache:'no-store'});if(!r.ok)return;const j=await r.json();if(j&&j.tariffs){LS('cfg',JSON.stringify(j));refresh();}}catch(_){}}
+ async function checkLic(){try{const r=await fetch(api()+'/api/license?dev='+dev(),{cache:'no-store'});const j=await r.json();if(j&&j.license&&j.license.token)return activate(j.license.token,true);}catch(_){}return false;}
+ async function hello(force){
+  if(IS_FRAME||!navigator.onLine)return;
+  const last=+LS('hello')||0;if(!force&&Date.now()-last<6*36e5)return;
+  try{
+   const r=await fetch(api()+'/api/hello',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dev:dev(),ver:VER,platform:platform(),lang:(window.AZ_I18N&&AZ_I18N.lang)||'uz',trial:+LS('trial')||Date.now(),st:ST.st,plan:ST.plan||'',until:ST.until||0})});
+   if(!r.ok)return;const j=await r.json();LS('hello',String(Date.now()));
+   if(j.trial&&j.trial<(+LS('trial')||Infinity)){LS('trial',String(j.trial));refresh();}
+   if(j.license&&j.license.token)activate(j.license.token,true);
+  }catch(_){}
+ }
+ function badge(){
+  const b=$('#licBtn');if(!b)return;const t=b.querySelector('.lct');
+  b.classList.toggle('exp',ST.st==='expired');b.classList.toggle('ok',ST.st==='active'||ST.st==='admin');
+  t.textContent=ST.st==='admin'?'Admin':ST.st==='owner'?'Egasi':ST.st==='active'?(ST.plan==='std'?'Standart':'Pro')+' · '+leftTxt(ST.left):ST.st==='trial'?'Sinov · '+leftTxt(ST.left):'To\'lov kerak';
+  const hb=$('#hubLic');if(hb)hb.textContent='💎 '+t.textContent;
+ }
+ function refresh(){ST=calc();badge();wall();document.body.classList.toggle('lic-std',ST.st==='active'&&ST.plan==='std');}
+ function wall(){
+  const w=$('#licWall');if(!w)return;const on=locked();
+  w.hidden=!on;document.body.classList.toggle('lic-locked',on);
+  if(on){if(!w.dataset.r||w.dataset.r!==ST.st){w.querySelector('.lwb').innerHTML=panelHtml(true);w.dataset.r=ST.st;}poll(true);}else{w.dataset.r='';}
+ }
+ const money=n=>String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' so\'m';
+ const FEAT={std:['Cue ro\'yxati, GO, SFX banklari, atmosferalar','Mikser, AZ VERB, obraz ovozlari','O\'z fayllari, kesish, loop, SFX qulfi','Loyiha saqlash / ochish (.sahna), avtosaqlash','Documents bazasi, 3 til'],pro:['Standartdagi hamma narsa','ASIO / tashqi ovoz kartasi (ASIO4ALL, M-Audio…)','Audioni sozlash: Maximizer, Normalize, Envelope, Avto balans','Quloqchin (monitor) chiqishi — tinglash zalga chiqmaydi']};
+ function panelHtml(isWall){
+  const c=cfg(),T=(c.tariffs&&c.tariffs.length?c.tariffs:[{id:'STD',name:'Standart',plan:'std',days:30,price:25000},{id:'PRO',name:'Pro',plan:'pro',days:30,price:49000}]);
+  const st=ST.st==='trial'?'<span class="lcb tr">Sinov: '+leftTxt(ST.left)+' qoldi</span>':ST.st==='active'?'<span class="lcb ok">'+(ST.plan==='std'?'Standart':'Pro')+' · '+new Date(ST.until).toLocaleDateString(AZL())+' gacha</span>':ST.st==='admin'?'<span class="lcb ok">Admin — hamma imkoniyat ochiq</span>':ST.st==='owner'?'<span class="lcb ok">Egasi (ko\'rib chiqish)</span>':'<span class="lcb ex">'+(ST.back?'Qurilma soati orqaga surilgan — to\'g\'rilang':'Sinov muddati tugadi')+'</span>';
+  const bot=c.botUsername,card=c.card&&c.card.number?c.card:null;
+  return (isWall?'<div class="between" style="margin-bottom:4px"><span></span><button type="button" class="btn sm" data-lc="hub">← Bosh sahifa</button></div><h2 class="lch">💎 Sahna Ovozi — davom etish uchun tarif tanlang</h2><p class="hint">'+trialDays()+' kunlik sinov muddati tugadi. Loyihalaringiz joyida — Bosh sahifadan ochib, saqlab qo\'yishingiz mumkin. Pult to\'lovdan keyin ochiladi.</p>':'')+
+  '<div class="lcst">'+st+'<span class="lcdev">Qurilma kodi: <b class="mono" id="lcDev">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="copy">Nusxalash</button></span></div>'+
+  '<div class="lcplans">'+T.map(t=>'<div class="lcp'+(t.plan==='pro'?' pro':'')+'">'+(t.plan==='pro'?'<span class="lctag">To\'liq</span>':'')+'<h3>'+esc(t.name)+'</h3><div class="lcpr">'+money(t.price)+' <small>/ '+t.days+' kun</small></div><ul>'+FEAT[t.plan==='std'?'std':'pro'].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'+(bot?'<button type="button" class="btn '+(t.plan==='pro'?'primary':'')+'" data-lc="tg" data-t="'+esc(t.id)+'">Telegram orqali to\'lash</button>':'')+'</div>').join('')+'</div>'+
+  '<div class="lcpay"><b>To\'lov tartibi</b><ol>'+
+   '<li>'+(bot?'“Telegram orqali to\'lash” — bot <b>@'+esc(bot)+'</b> ochiladi, qurilma kodingiz o\'zi o\'tadi, tarifni tanlaysiz.':'Tarifni tanlang va quyidagi kartaga o\'tkazing.')+'</li>'+
+   '<li>'+(card?'Karta: <b class="mono">'+esc(card.number)+'</b> ('+esc(card.system)+') · '+esc(card.holder)+' <button type="button" class="btn sm" data-lc="copycard">Nusxalash</button>':'Karta raqami bot orqali beriladi.')+'</li>'+
+   '<li>Chek rasmini (skrinshot) botga yuboring'+(bot?'':' — admin bilan bog\'laning')+'.</li>'+
+   '<li>Admin tasdiqlagach, pult <b>o\'zi faollashadi</b> (internet bo\'lsa 1–2 daqiqa). Yoki botdan kelgan kodni pastga joylang.</li></ol></div>'+
+  '<div class="lcact"><input class="inp mono" id="lcCode" placeholder="Faollashtirish kodi (botdan keladi)" spellcheck="false" autocomplete="off"><button type="button" class="btn primary" data-lc="act">Faollashtirish</button><button type="button" class="btn" data-lc="check">Holatni tekshirish</button></div>'+
+  '<div class="lcfoot"><span class="muted" id="lcNet"></span><span style="flex:1"></span><button type="button" class="lnk" data-lc="admin">'+(ST.st==='admin'?'Admin rejimidan chiqish':'Admin')+'</button><button type="button" class="lnk" data-lc="server">Server</button></div>';
+ }
+ function open(){
+  fetchCfg();
+  openModal('💎 Sahna Ovozi tariflari','<div id="lcBody">'+panelHtml(false)+'</div>',[{label:'Yopish',fn:()=>{poll(false);}}]);
+  poll(true);
+ }
+ let pT=null;
+ function poll(on){clearInterval(pT);pT=null;if(on&&!IS_FRAME&&ST.st!=='active'&&ST.st!=='admin')pT=setInterval(async()=>{if(document.hidden)return;if(await checkLic()){poll(false);}},8000);}
+ async function adminLogin(){
+  if(ST.st==='admin'){LS('adm',null);refresh();toast('Admin rejimidan chiqildi');reRender();return;}
+  const t=prompt('Admin: GitHub tokeni ('+REPO+' reposiga yozish huquqi bilan). Token saqlanmaydi.');if(!t)return;
+  try{const r=await fetch('https://api.github.com/repos/'+REPO,{headers:{Authorization:'Bearer '+t.trim(),Accept:'application/vnd.github+json'}});const j=await r.json();
+   if(r.ok&&j.permissions&&j.permissions.push){LS('adm','1');refresh();toast('Admin rejimi yoqildi — hamma imkoniyat ochiq');logEvent('Admin rejimi yoqildi');reRender();}
+   else toast('Token noto\'g\'ri yoki '+REPO+' ga yozish huquqi yo\'q');}catch(e){toast('GitHub bilan bog\'lanib bo\'lmadi: '+(e.message||e));}
+ }
+ function reRender(){const b=document.getElementById('lcBody');if(b)b.innerHTML=panelHtml(false);const w=$('#licWall');if(w&&!w.hidden)w.querySelector('.lwb').innerHTML=panelHtml(true);}
+ document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-lc]');if(!b)return;const a=b.dataset.lc;
+  if(a==='copy'){try{await navigator.clipboard.writeText(fmtDev(dev()));toast('Qurilma kodi nusxalandi');}catch(_){toast(fmtDev(dev()));}}
+  else if(a==='copycard'){const c=cfg().card;try{await navigator.clipboard.writeText((c.number||'').replace(/\s/g,''));toast('Karta raqami nusxalandi');}catch(_){}}
+  else if(a==='tg'){const u='https://t.me/'+cfg().botUsername+'?start='+dev();if(NATIVE&&window.azNative.openExternal)window.azNative.openExternal(u);else window.open(u,'_blank','noopener');poll(true);}
+  else if(a==='act'){const v=(document.getElementById('lcCode')||{}).value||'';if(!v.trim()){toast('Kodni joylang');return;}if(await activate(v.trim()))reRender();}
+  else if(a==='check'){toast('Tekshirilmoqda…');await fetchCfg();const ok=await checkLic();if(!ok)toast(navigator.onLine?'Hali tasdiqlanmagan — admin tasdiqlagach o\'zi faollashadi':'Internet yo\'q');reRender();}
+  else if(a==='hub')showHub();
+  else if(a==='admin')adminLogin();
+  else if(a==='server'){const v=prompt('Server manzili (Cloudflare Pages):',api());if(v===null)return;LS('api',v.trim()?v.trim().replace(/\/+$/,''):null);fetchCfg();toast('Server: '+api());}
+ });
+ function init(){
+  dev();refresh();
+  if(!IS_FRAME){fetchCfg();setTimeout(()=>hello(false),4000);setInterval(()=>{refresh();},60000);window.addEventListener('online',()=>{hello(true);fetchCfg();});}
+ }
+ return {init,open,refresh,locked,pro,get st(){return ST;},dev,fmtDev};
+})();
+window.LIC_OPEN=()=>{if(modalOpen())closeModal();setTimeout(()=>LIC.open(),30);};
+function proOnly(what){if(LIC.pro())return true;toast('💎 '+what+' — Pro tarifida. Tarif oynasini oching.');return false;}
+function hideHub(){$('#hub').hidden=true;document.body.classList.remove('hub-open');LIC.refresh();}
 function newProjectDialog(tplId){
  let sel=tplId||'namuna';
  const body='<div class="field"><label for="npN">Loyiha nomi</label><input class="inp" type="text" id="npN" value="'+esc('Yangi spektakl')+'"></div>'+
@@ -2354,6 +2496,7 @@ document.addEventListener('click',e=>{
  const cl=e.target.closest('[data-cloop]');if(cl){e.preventDefault();e.stopPropagation();cueLoopToggle(+cl.dataset.cloop);return;}
  if(e.target.closest('#nowLoop')){if(cur>=0)cueLoopToggle(cur);return;}
  if(e.target.closest('#sfxLock')){lockToggle();return;}
+ if(e.target.closest('#licBtn')){LIC.open();return;}
  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
  if(d.cue!=null){next=+d.cue;renderCues();}
  else if(d.cedit!=null)editCue(+d.cedit);
@@ -2422,6 +2565,7 @@ $('#libClose').addEventListener('click',e=>{e.stopPropagation();$('#lib').classL
 const KEYPAD={};KEYS.forEach(([code],i)=>KEYPAD[code]=i);
 const typing=t=>t&&(t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='INPUT'&&!/^(range|checkbox|button)$/.test(t.type)));
 document.addEventListener('keydown',e=>{
+ if(LIC.locked()&&$('#hub').hidden&&!modalOpen()&&!typing(e.target)){if(!/^(F\d+|Tab)$/.test(e.key)&&!(e.ctrlKey||e.metaKey)){e.preventDefault();return;}}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
  if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
@@ -2478,6 +2622,7 @@ async function boot(){
   SP(4,'Sahna oynasi',1);
   $('#gate').remove();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
   setTimeout(()=>{if(ctx.state!=='running')runDiag(true);},600);
+  LIC.init();
   logEvent('Ilova ochildi · '+(NATIVE?'o\'rnatilgan dastur v'+APP_VERSION:isStandalone()?'o\'rnatilgan ilova':'brauzer')+' · baza: '+(Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer'));
   let opened=false;
   if(launchFile){const h=launchFile;launchFile=null;await openFile(await h.getFile(),h);addRecent(h);opened=true;}

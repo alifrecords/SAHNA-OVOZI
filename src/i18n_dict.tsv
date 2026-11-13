@@ -772,3 +772,74 @@ takrorlash o'chirildi	повтор выключен	repeat off
 Hozir sahnada cue yo'q	Сейчас на сцене нет cue	No cue on stage now
 yoqiq	вкл	on
 ✓ Tugatish	✓ Готово	✓ Done
+Sinov	Пробный	Trial
+Sinov ·	Пробный ·	Trial ·
+To'lov kerak	Нужна оплата	Payment needed
+Egasi	Владелец	Owner
+Admin	Админ	Admin
+kun	дн.	days
+soat	ч	h
+Tarif, sinov muddati va to'lov	Тариф, пробный период и оплата	Plan, trial period and payment
+💎 Sahna Ovozi tariflari	💎 Тарифы Sahna Ovozi	💎 Sahna Ovozi plans
+💎 Sahna Ovozi — davom etish uchun tarif tanlang	💎 Sahna Ovozi — выберите тариф, чтобы продолжить	💎 Sahna Ovozi — choose a plan to continue
+← Bosh sahifa	← Главная	← Home
+kunlik sinov muddati tugadi. Loyihalaringiz joyida — Bosh sahifadan ochib, saqlab qo'yishingiz mumkin. Pult to'lovdan keyin ochiladi.	-дневный пробный период закончился. Ваши проекты на месте — их можно открыть и сохранить с Главной. Пульт откроется после оплаты.	-day trial has ended. Your projects are safe — you can open and save them from Home. The console unlocks after payment.
+Sinov:	Пробный:	Trial:
+qoldi	осталось	left
+gacha	до	until
+Admin — hamma imkoniyat ochiq	Админ — все возможности открыты	Admin — everything unlocked
+Egasi (ko'rib chiqish)	Владелец (просмотр)	Owner (preview)
+Qurilma soati orqaga surilgan — to'g'rilang	Часы устройства переведены назад — исправьте	Device clock was set back — fix it
+Sinov muddati tugadi	Пробный период закончился	Trial has ended
+Qurilma kodi:	Код устройства:	Device code:
+Nusxalash	Копировать	Copy
+To'liq	Полный	Full
+Telegram orqali to'lash	Оплатить через Telegram	Pay via Telegram
+To'lov tartibi	Порядок оплаты	How to pay
+“Telegram orqali to'lash” — bot	«Оплатить через Telegram» — откроется бот	“Pay via Telegram” — the bot
+ochiladi, qurilma kodingiz o'zi o'tadi, tarifni tanlaysiz.	, код устройства передастся сам, выберите тариф.	opens, your device code is passed automatically, choose a plan.
+Tarifni tanlang va quyidagi kartaga o'tkazing.	Выберите тариф и переведите на карту ниже.	Choose a plan and transfer to the card below.
+Karta:	Карта:	Card:
+Karta raqami bot orqali beriladi.	Номер карты выдаст бот.	The bot will give you the card number.
+Chek rasmini (skrinshot) botga yuboring	Отправьте фото чека (скриншот) боту	Send a photo of the receipt (screenshot) to the bot
+— admin bilan bog'laning	— свяжитесь с админом	— contact the admin
+Admin tasdiqlagach, pult	После подтверждения админом пульт	Once the admin approves, the console
+o'zi faollashadi	активируется сам	activates by itself
+(internet bo'lsa 1–2 daqiqa). Yoki botdan kelgan kodni pastga joylang.	(при интернете 1–2 минуты). Или вставьте код из бота ниже.	(1–2 minutes when online). Or paste the code from the bot below.
+Faollashtirish kodi (botdan keladi)	Код активации (придёт от бота)	Activation code (from the bot)
+Faollashtirish	Активировать	Activate
+Holatni tekshirish	Проверить статус	Check status
+Admin rejimidan chiqish	Выйти из режима админа	Leave admin mode
+Server	Сервер	Server
+Cue ro'yxati, GO, SFX banklari, atmosferalar	Список cue, GO, банки SFX, атмосферы	Cue list, GO, SFX banks, atmospheres
+Mikser, AZ VERB, obraz ovozlari	Микшер, AZ VERB, голоса образов	Mixer, AZ VERB, character voices
+O'z fayllari, kesish, loop, SFX qulfi	Свои файлы, обрезка, loop, блокировка SFX	Own files, trimming, loop, SFX lock
+Loyiha saqlash / ochish (.sahna), avtosaqlash	Сохранение / открытие проектов (.sahna), автосохранение	Project save / open (.sahna), auto-save
+Documents bazasi, 3 til	База в «Документах», 3 языка	Documents database, 3 languages
+Standartdagi hamma narsa	Всё из Стандарта	Everything in Standard
+ASIO / tashqi ovoz kartasi (ASIO4ALL, M-Audio…)	ASIO / внешняя звуковая карта (ASIO4ALL, M-Audio…)	ASIO / external sound card (ASIO4ALL, M-Audio…)
+Audioni sozlash: Maximizer, Normalize, Envelope, Avto balans	Обработка: Maximizer, Normalize, Envelope, Автобаланс	Audio processing: Maximizer, Normalize, Envelope, Auto balance
+Quloqchin (monitor) chiqishi — tinglash zalga chiqmaydi	Выход на наушники (монитор) — прослушивание не идёт в зал	Headphone (monitor) output — previews stay out of the hall
+Kod noto'g'ri yoki buzilgan	Код неверный или повреждён	Invalid or damaged code
+Bu kod boshqa qurilma uchun berilgan	Этот код выдан для другого устройства	This code was issued for another device
+Bu kodning muddati tugagan	Срок действия этого кода истёк	This code has expired
+💎 Faollashtirildi:	💎 Активировано:	💎 Activated:
+Litsenziya faollashtirildi:	Лицензия активирована:	License activated:
+Qurilma kodi nusxalandi	Код устройства скопирован	Device code copied
+Karta raqami nusxalandi	Номер карты скопирован	Card number copied
+Kodni joylang	Вставьте код	Paste the code
+Tekshirilmoqda…	Проверяется…	Checking…
+Hali tasdiqlanmagan — admin tasdiqlagach o'zi faollashadi	Ещё не подтверждено — активируется само после подтверждения админом	Not approved yet — it activates by itself once the admin approves
+Internet yo'q	Нет интернета	No internet
+Admin rejimidan chiqildi	Режим админа выключен	Left admin mode
+Admin rejimi yoqildi — hamma imkoniyat ochiq	Режим админа включён — всё открыто	Admin mode on — everything unlocked
+Admin rejimi yoqildi	Режим админа включён	Admin mode on
+GitHub bilan bog'lanib bo'lmadi:	Не удалось связаться с GitHub:	Could not reach GitHub:
+Server:	Сервер:	Server:
+— Pro tarifida. Tarif oynasini oching.	— в тарифе Pro. Откройте окно тарифов.	— in the Pro plan. Open the plans window.
+Tariflar	Тарифы	Plans
+💎 Pro	💎 Pro	💎 Pro
+Maximizer, Normalize, Envelope va Avto balans — Pro tarifida.	Maximizer, Normalize, Envelope и Автобаланс — в тарифе Pro.	Maximizer, Normalize, Envelope and Auto balance — in the Pro plan.
+💎 ASIO / tashqi ovoz kartasi — Pro tarifida.	💎 ASIO / внешняя звуковая карта — в тарифе Pro.	💎 ASIO / external sound card — in the Pro plan.
+Quloqchin (monitor) chiqishi	Выход на наушники (монитор)	Headphone (monitor) output
+💎 Tarif	💎 Тариф	💎 Plan
