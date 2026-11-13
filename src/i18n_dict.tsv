@@ -751,3 +751,24 @@ ASIO moduli topilmadi	Модуль ASIO не найден	ASIO module not found
 Qurilma topilmadi:	Устройство не найдено:	Device not found:
 kirish	вход	input
 ASIO drayver to'xtadi — ovoz tizim chiqishiga o'tkazildi	ASIO-драйвер остановился — звук переведён на системный выход	ASIO driver stopped — sound moved to the system output
+Qulflash	Заблокировать	Lock
+Qulflangan	Заблокировано	Locked
+SFX banki qulflangan: sample, kesish, daraja va effektlar o'zgarmaydi · bosing — ochish	Банк SFX заблокирован: сэмплы, обрезка, уровни и эффекты не меняются · нажмите — открыть	SFX bank locked: samples, trims, levels and effects cannot change · click — unlock
+SFX bankini qulflash — tanlangan sample va effektlar tasodifan o'zgarmasin	Заблокировать банк SFX — чтобы выбранные сэмплы и эффекты случайно не изменились	Lock the SFX bank so chosen samples and effects cannot change by accident
+SFX banki qulflangan 🔒 — o'zgartirish uchun qulfni oching	Банк SFX заблокирован 🔒 — чтобы изменить, снимите блокировку	SFX bank is locked 🔒 — unlock it to make changes
+SFX banki qulflandi 🔒 — faqat ijro	Банк SFX заблокирован 🔒 — только воспроизведение	SFX bank locked 🔒 — playback only
+SFX banki ochildi 🔓	Банк SFX разблокирован 🔓	SFX bank unlocked 🔓
+SFX banki qulflandi	Банк SFX заблокирован	SFX bank locked
+SFX banki ochildi	Банк SFX разблокирован	SFX bank unlocked
+Takrorlash (loop):	Повтор (loop):	Repeat (loop):
+Takrorlash (loop): yoqiq	Повтор (loop): вкл	Repeat (loop): on
+Takrorlash (loop): o'chiq	Повтор (loop): выкл	Repeat (loop): off
+Takrorlash (loop): yoqiq · L	Повтор (loop): вкл · L	Repeat (loop): on · L
+Takrorlash (loop): o'chiq · L	Повтор (loop): выкл · L	Repeat (loop): off · L
+Takrorlash (loop) · L	Повтор (loop) · L	Repeat (loop) · L
+takrorlash yoqildi	повтор включён	repeat on
+takrorlash o'chirildi	повтор выключен	repeat off
+— takrorlash	— повтор	— repeat
+Hozir sahnada cue yo'q	Сейчас на сцене нет cue	No cue on stage now
+yoqiq	вкл	on
+✓ Tugatish	✓ Готово	✓ Done

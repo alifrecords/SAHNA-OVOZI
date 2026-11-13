@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.9.0: Takrorlash (loop) tugmalari · SFX qulfi · bir xil ijro
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Takrorlash — SFX | Har bir SFX tugmada ↻ tugmasi (pauza va stop yonida): yoqilsa ovoz to'xtatilguncha takrorlanadi, qayta bosish — to'xtaydi. O'ynab turgan ovozda ham ishlaydi: yoqilsa uzilmay takrorga o'tadi, o'chirilsa joriy aylanishni tugatib to'xtaydi |
+| Takrorlash — cue | Cue ro'yxatidagi har bir qatorda ↻ belgisi va "Hozir sahnada" nomi yonida katta ↻ tugmasi; klaviatura: **L** — joriy cue takrori |
+| SFX qulfi | SFX sarlavhasida **Qulflash** tugmasi: qulflanganda sample almashtirish (◀ ▶, ← →, guruh, papka), sudrab tashlash, fayl yuklash, kesish, daraja (Shift+Num ±), AZ VERB va tahrirlash yopiladi — faqat ijro. Holat loyiha bilan saqlanadi |
+| Bir xil ijro | Sichqoncha (tugma, to'lqin, ▶ Tinglash) yoki klaviatura — har qanday holatda ovoz bir xil chiqadi: belgilangan parcha, daraja, fade, AZ VERB va Audioni sozlash |
+
 ## 1.8.1: ASIO moduli Windows o'rnatuvchisiga to'g'ri kiritildi
 
 | Bo'lim | Nima qilindi |

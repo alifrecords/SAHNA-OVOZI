@@ -223,9 +223,14 @@ select.inp{padding-right:28px}
 .psub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmore{position:absolute;right:8px;bottom:10px;background:var(--panel)}
 html.native .show-info{cursor:pointer}
-@media (max-width:1500px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:140px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
+@media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:140px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
+#sfxLock{display:flex;align-items:center;gap:6px}#sfxLock .lk-closed{display:none}#sfxLock.on{border-color:#F2A93B;color:#F2A93B;background:rgba(242,169,59,.1)}#sfxLock.on .lk-closed{display:inline}#sfxLock.on .lk-open{display:none}
+body.sfx-locked #sbox{opacity:.75}body.sfx-locked #sbPrev,body.sfx-locked #sbNext,body.sfx-locked #sbGroup,body.sfx-locked #sbTrim,body.sfx-locked #sbFolder,body.sfx-locked #sbG{opacity:.4;pointer-events:none}body.sfx-locked .pad .up{display:none}body.sfx-locked .pad{cursor:default}
+.pctl button.lp.on{color:#14110B;background:#3DD6C3;border-color:#3DD6C3}
+.clp{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;color:var(--muted);border:1px solid transparent;flex:0 0 auto;margin-left:auto;cursor:pointer;opacity:.55}.clp:hover{opacity:1;border-color:var(--line2)}.clp.on{opacity:1;color:#3DD6C3;border-color:#2F6B63;background:rgba(61,214,195,.1)}
+.loopbtn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line2);background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}.loopbtn:hover{color:var(--text)}.loopbtn.on{color:#3DD6C3;border-color:#3DD6C3;background:rgba(61,214,195,.12);box-shadow:0 0 0 1px rgba(61,214,195,.3)}
 .pxbox{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}.pxgrid{display:flex;flex-direction:column;gap:6px}.pxrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:34px}.pxrow .chk{min-width:210px;margin:0}.pxs{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;font-size:12px;color:var(--muted)}.pxs input[type=range]{flex:1}.envlane{position:relative;height:74px;border-radius:10px;background:var(--panel);overflow:hidden;touch-action:none;cursor:crosshair;user-select:none}.envlane .tbars i{background:#3a372f}.envlane svg{position:absolute;inset:0;width:100%;height:100%}.envlane circle{cursor:grab}.envtag{position:absolute;right:6px;top:3px;font:600 9px/1 Inter,system-ui,sans-serif;color:#77705f}.envtag.b{top:auto;bottom:3px}
 .trimbox{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
 .acc{color:var(--amber)}
@@ -383,7 +388,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
         <div class="between" style="align-items:flex-start">
           <div style="display:flex;flex-direction:column;gap:4px">
             <span class="lbl" id="nowLbl">Hozir sahnada</span>
-            <h1 style="font-size:30px" id="nowName">Spektakl boshlanishini kutmoqda</h1>
+            <div style="display:flex;align-items:center;gap:10px"><h1 style="font-size:30px" id="nowName">Spektakl boshlanishini kutmoqda</h1><button type="button" class="loopbtn" id="nowLoop" hidden aria-pressed="false" title="Takrorlash (loop) · L"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div>
             <span class="muted" style="font-size:13px" id="nowSub">GO bosing yoki Probel</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
@@ -404,7 +409,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
       </section>
 
       <section class="panel" aria-label="SFX tugmalari" style="display:flex;flex-direction:column;gap:12px">
-        <div class="between"><h2>Tezkor effektlar (SFX)</h2><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span></div>
+        <div class="between"><h2>Tezkor effektlar (SFX)</h2><span style="display:flex;align-items:center;gap:12px"><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span><button type="button" class="btn sm" id="sfxLock" aria-pressed="false"><svg class="lk-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg><svg class="lk-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lkt">Qulflash</span></button></span></div>
         <div class="banks" id="banks" role="group" aria-label="SFX banklari"></div>
         <div class="pads" id="pads"></div>
         <div class="sbox" id="sbox" aria-label="Tanlangan SFX tugmasi: sample brauzeri"></div>
@@ -1116,15 +1121,39 @@ function groupOf(id){const m=META[id];if(!m)return null;if(m.kind==='user')retur
 function groupName(g){return !g?'—':g.indexOf('u:')===0?g.slice(2):({sfx:'SFX namunalar',music:'Musiqa',atmos:'Atmosfera qatlamlari',dub:'Dublaj'}[g]||g);}
 function groupList(){const s=new Set();for(const id in META){const g=groupOf(id);if(g&&g!=='dub'&&buffers[id])s.add(g);}return [...s].sort((a,b)=>((a.indexOf('u:')===0?0:1)-(b.indexOf('u:')===0?0:1))||a.localeCompare(b));}
 function groupAssets(g){return Object.keys(META).filter(id=>groupOf(id)===g&&buffers[id]).sort((a,b)=>titleOf(a).localeCompare(titleOf(b),undefined,{numeric:true}));}
-function setPadAsset(i,id,audition){const b=show.banks[bank];const o=b.pads[i];b.pads[i]={a:id,cat:o?o.cat:'zarba',t:o?o.t:0,loop:o?o.loop:0,title:'',g:o?o.g||0:0};lastGroup=groupOf(id)||lastGroup;saveShow();renderPads();if(audition)padPreview(i);}
+function setPadAsset(i,id,audition){if(sfxLocked()){lockToast();return;}const b=show.banks[bank];const o=b.pads[i];b.pads[i]={a:id,cat:o?o.cat:'zarba',t:o?o.t:0,loop:o?o.loop:0,title:'',g:o?o.g||0:0};lastGroup=groupOf(id)||lastGroup;saveShow();renderPads();if(audition)padPreview(i);}
 function browsePad(dir,g){
+ if(sfxLocked()){lockToast();renderSB();return;}
  const p=show.banks[bank].pads[selPad];g=g||(p&&groupOf(p.a))||lastGroup;let L=groupAssets(g);
  if(!L.length){g=groupList()[0];L=groupAssets(g);}if(!L.length)return;
  let i=(p&&groupOf(p.a)===g)?L.indexOf(p.a):-1;i=i<0?(dir>=0?0:L.length-1):(i+dir+L.length)%L.length;
  setPadAsset(selPad,L[i],true);sbInfo=(i+1)+' / '+L.length+' · '+groupName(g);renderSB();
  logEvent('SFX '+KEYS[selPad][1]+' sample: '+titleOf(L[i]));
 }
-function padPreview(i){const p=show.banks[bank].pads[i];if(!p||!buffers[p.a]||!ctx)return;if(pvVoice)stopVoice(pvVoice,.04);pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:p.trim,verb:p.verb,color:(CAT[p.cat]||CAT.zarba)[0]});}
+const IC_LOOP='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>';
+// tinglash ham tugmadagidek: bir xil parcha, daraja, fade, AZ VERB va audio ishlov
+function padPreview(i){const p=show.banks[bank].pads[i];if(!p||!buffers[p.a]||!ctx)return;if(pvVoice)stopVoice(pvVoice,.04);pvVoice=play(p.a,'sfx',padOpts(p,{title:'▶ '+padTitle(p),preview:true,loop:false,pad:null}));}
+function voiceLoopSet(list,on){
+ list.forEach(v=>{
+  if(v.stopping)return;
+  if(!on&&v.loop){const pos=voicePos(v),rem=Math.max(.02,(v.regLen||0)-pos);v.loop=false;v.dur=pos+rem;try{v.src.stop(ctx.currentTime+rem);}catch(e){}renderVoices();}
+  else if(on&&!v.loop){const o=v.reopt;if(!o)return;const pos=voicePos(v);const nv=play(v.ref,v.bus,Object.assign({},o,{loop:true,offset:pos,fadeIn:.03}));if(nv)stopVoice(v,.03);}
+ });
+}
+function padLoopToggle(i){
+ const p=show.banks[bank].pads[i];if(!p)return;if(sfxLocked()){lockToast();return;}
+ p.loop=p.loop?0:1;if(p.loop)p.t=1;saveShow();renderPads();voiceLoopSet(padVoices(p),!!p.loop);
+ toast('SFX '+KEYS[i][1]+' · '+padTitle(p)+': takrorlash '+(p.loop?'yoqildi':'o\'chirildi'));
+}
+function cueLoopToggle(i){
+ const c=show.cues[i];if(!c||c.type==='atmos')return;c.loop=c.loop?0:1;saveShow();renderCues();renderNow();
+ voiceLoopSet(voices.filter(v=>v.cue===c&&!v.preview),!!c.loop);
+ toast('Q'+(i+1)+' · '+c.name+': takrorlash '+(c.loop?'yoqildi':'o\'chirildi'));
+}
+const sfxLocked=()=>!!show.lockSfx;
+function lockToast(){toast('SFX banki qulflangan 🔒 — o\'zgartirish uchun qulfni oching');}
+function lockUI(){const b=$('#sfxLock');const on=sfxLocked();if(b){b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');b.querySelector('.lkt').textContent=on?'Qulflangan':'Qulflash';b.title=on?'SFX banki qulflangan: sample, kesish, daraja va effektlar o\'zgarmaydi · bosing — ochish':'SFX bankini qulflash — tanlangan sample va effektlar tasodifan o\'zgarmasin';}document.body.classList.toggle('sfx-locked',on);}
+function lockToggle(){show.lockSfx=show.lockSfx?0:1;saveShow();lockUI();renderPads();toast(show.lockSfx?'SFX banki qulflandi 🔒 — faqat ijro':'SFX banki ochildi 🔓');logEvent(show.lockSfx?'SFX banki qulflandi':'SFX banki ochildi');}
 function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();if(azvTarget==='pad')azvRefresh();}
 function azvRefresh(){const a=document.activeElement;if(a&&a.dataset&&a.dataset.azk)return;renderAzv();}
 function renderSB(){
@@ -1145,7 +1174,7 @@ function renderSB(){
   '<span class="muted sbinfo mono">'+esc(info)+(p&&buf?' · '+fmtT(p.trim?trimLen(p.trim):+box.dataset.dur)+(p.trim?' ✂':''):'')+'</span><span style="flex:1"></span>'+
   '<button type="button" class="btn sm" id="sbPlay"'+(buf?'':' disabled')+'>▶ Tinglash</button><button type="button" class="btn sm" id="sbTrim"'+(buf?'':' disabled')+'>✂ Kesish</button><button type="button" class="btn sm" id="sbFolder">Papkadan sample\'lar</button></div>'+
   wave+
-  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="mono acc" id="sbSel" style="font-size:11px">'+(p.trim?fmtT(p.trim.s)+' — '+fmtT(p.trim.e)+' · '+fmtT(trimLen(p.trim)):'')+'</span><span class="muted" style="font-size:11px;margin-left:auto">to\'lqinda sudrang — joyni belgilash · bosing — o\'sha joydan tinglash · 2× — butun fayl · ← → — sample</span></div>':'');
+  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="mono acc" id="sbSel" style="font-size:11px">'+(p.trim?fmtT(p.trim.s)+' — '+fmtT(p.trim.e)+' · '+fmtT(trimLen(p.trim)):'')+'</span><span class="muted" style="font-size:11px;margin-left:auto">to\'lqinda sudrang — joyni belgilash · bosing — tugmadagidek tinglash · 2× — butun fayl · ← → — sample</span></div>':'');
 }
 async function importFolder(files){
  const L=[...files].filter(f=>/\.(wav|mp3|ogg|oga|flac|m4a|aac|aif|aiff|opus|webm)$/i.test(f.name)).sort((a,b)=>(a.webkitRelativePath||a.name).localeCompare(b.webkitRelativePath||b.name,undefined,{numeric:true}));
@@ -1161,11 +1190,11 @@ document.addEventListener('click',e=>{
  const t=e.target.closest&&e.target.closest('#sbox button');if(!t)return;
  if(t.id==='sbPrev')browsePad(-1);else if(t.id==='sbNext')browsePad(1);
  else if(t.id==='sbPlay')padPreview(selPad);
- else if(t.id==='sbTrim')editPad(selPad);
- else if(t.id==='sbFolder'){if(!ctx)return;$('#dirIn').click();}
+ else if(t.id==='sbTrim'){if(sfxLocked()){lockToast();return;}editPad(selPad);}
+ else if(t.id==='sbFolder'){if(!ctx)return;if(sfxLocked()){lockToast();return;}$('#dirIn').click();}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sbGroup'){sbInfo='';browsePad(0,e.target.value);}});
-document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks[bank].pads[selPad];if(!p)return;p.g=+e.target.value;$('#sbGv').textContent=dbStr(p.g);applyPadGain(p);saveShow();const t=document.querySelector('.pad[data-pad="'+selPad+'"] .pg');if(t)t.textContent=p.g?dbStr(p.g):'';}});
+document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks[bank].pads[selPad];if(!p)return;if(sfxLocked()){e.target.value=p.g||0;lockToast();return;}p.g=+e.target.value;$('#sbGv').textContent=dbStr(p.g);applyPadGain(p);saveShow();const t=document.querySelector('.pad[data-pad="'+selPad+'"] .pg');if(t)t.textContent=p.g?dbStr(p.g):'';}});
 
 /* ---------- avtosaqlash (Cubase kabi) ---------- */
 const AUTOSAVE={on:true,min:2};let lastAuto=Date.now(),lastAutoAt=null;
@@ -1277,7 +1306,7 @@ function azvOwner(){
  return {obj:null,name:'Dublaj kanali (mikrofon va dublaj fayllari)'};
 }
 function azvGet(){const o=azvOwner();if(!o)return null;return o.obj?o.obj.verb||null:show.dubverb||null;}
-function azvSet(p){const o=azvOwner();if(!o)return;if(o.obj){if(p)o.obj.verb=p;else delete o.obj.verb;}else{if(p)show.dubverb=p;else delete show.dubverb;}
+function azvSet(p){const o=azvOwner();if(!o)return;if(azvTarget==='pad'&&sfxLocked()){lockToast();renderAzv();return;}if(o.obj){if(p)o.obj.verb=p;else delete o.obj.verb;}else{if(p)show.dubverb=p;else delete show.dubverb;}
  saveShow();azvLive(o.obj,p);if(azvTarget==='pad')renderPads();else if(azvTarget==='cue')renderCues();}
 function azvLive(obj,p){
  if(!ctx)return;
@@ -1347,12 +1376,13 @@ function padPause(i){
 }
 function padStop(i){const p=show.banks[bank].pads[i];if(!p)return;pausedPads.delete(p);const vs=padVoices(p);vs.forEach(v=>stopVoice(v,.12));renderPadStates();}
 function applyPadGain(p){if(!ctx)return;const n=ctx.currentTime;voices.forEach(v=>{if(v.padObj===p&&!v.stopping){v.lvl0=dbToG(gainFor(v.ref))*dbToG(p.g||0);v.g.gain.cancelScheduledValues(n);v.g.gain.setTargetAtTime(v.lvl0,n,.03);}});}
-function padGainStep(d){const p=show.banks[bank].pads[selPad];if(!p){toast('SFX tugmasi tanlanmagan');return;}p.g=Math.max(-30,Math.min(12,(p.g||0)+d));applyPadGain(p);saveShow();renderPads();toast('SFX '+KEYS[selPad][1]+' · '+padTitle(p)+': '+dbStr(p.g));}
+function padGainStep(d){const p=show.banks[bank].pads[selPad];if(!p){toast('SFX tugmasi tanlanmagan');return;}if(sfxLocked()){lockToast();return;}p.g=Math.max(-30,Math.min(12,(p.g||0)+d));applyPadGain(p);saveShow();renderPads();toast('SFX '+KEYS[selPad][1]+' · '+padTitle(p)+': '+dbStr(p.g));}
 let sbDrag=null;
 function sbCur(){return show.banks[bank]&&show.banks[bank].pads[selPad];}
 function sbPaint(s,e,D){const a=$('#sbM1'),b=$('#sbM2'),S=$('#sbS'),E=$('#sbE');if(!a)return;a.style.width=(s/D*100)+'%';b.style.left=(e/D*100)+'%';S.style.left=(s/D*100)+'%';E.style.left=(e/D*100)+'%';const l=$('#sbSel');if(l)l.textContent=fmtT(s)+' — '+fmtT(e)+' · '+fmtT(e-s);}
 document.addEventListener('pointerdown',e=>{
  const w=e.target.closest&&e.target.closest('.swv');if(!w)return;const p=sbCur();if(!p||!buffers[p.a])return;
+ if(sfxLocked()){e.preventDefault();padPreview(selPad);return;}
  const D=+$('#sbox').dataset.dur;const r=w.getBoundingClientRect();const x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*D;
  const s=p.trim?p.trim.s:0,en=p.trim?p.trim.e:D,tol=10/r.width*D;
  sbDrag={mode:Math.abs(x-s)<tol?'s':Math.abs(x-en)<tol?'e':'new',x0:x,D,r,s,e:en,moved:false,tol};
@@ -1367,11 +1397,11 @@ document.addEventListener('pointermove',e=>{
 document.addEventListener('pointerup',()=>{
  if(!sbDrag)return;const d=sbDrag;sbDrag=null;const p=sbCur();if(!p)return;
  if(!d.moved){ // bosish: shu joydan eshittirish
-  if(pvVoice)stopVoice(pvVoice,.04);const tr={s:d.x0,e:d.x0<d.e?d.e:d.D,fi:0,fo:0};pvVoice=play(p.a,'sfx',{title:'▶ '+padTitle(p),preview:true,level:dbToG(p.g||0),trim:tr,verb:p.verb});return;}
+  padPreview(selPad);return;}
  const old=p.trim||{};const t=cleanTrim({s:d.s,e:d.e,fi:old.fi||0,fo:old.fo||0,px:old.px},d.D);if(t)p.trim=t;else delete p.trim;
  saveShow();renderPads();toast('Belgilandi: '+fmtT(d.s)+' — '+fmtT(d.e)+' (asl fayl o\'zgarmaydi)');padPreview(selPad);
 });
-document.addEventListener('dblclick',e=>{if(!(e.target.closest&&e.target.closest('.swv')))return;const p=sbCur();if(!p||!p.trim)return;delete p.trim;saveShow();renderPads();toast('Belgi olib tashlandi — butun fayl');});
+document.addEventListener('dblclick',e=>{if(!(e.target.closest&&e.target.closest('.swv')))return;const p=sbCur();if(!p||!p.trim)return;if(sfxLocked()){lockToast();return;}delete p.trim;saveShow();renderPads();toast('Belgi olib tashlandi — butun fayl');});
 
 /* ---------- sudrab tashlash: kutubxona -> SFX tugma / cue, tugma <-> tugma ---------- */
 let dragAsset=null,dragPad=null,bankHoverT=null;
@@ -1399,6 +1429,7 @@ document.addEventListener('drop',e=>{
 },true);
 document.addEventListener('dragend',()=>{dndClear();$('#lib').classList.remove('peek');});
 function padDrop(i,e){
+ if(sfxLocked()){lockToast();return true;}
  if(dragAsset!=null){const id=dragAsset;setPadAsset(i,id,true);selectPad(i);toast('SFX '+KEYS[i][1]+' ← '+titleOf(id));logEvent('SFX '+KEYS[i][1]+' ← '+titleOf(id)+' (sudrab)');return true;}
  if(dragPad!=null&&dragPad!==i){const P=show.banks[bank].pads,a=dragPad;[P[a],P[i]]=[P[i],P[a]];saveShow();selectPad(i);renderPads();toast('Almashtirildi: '+KEYS[a][1]+' ↔ '+KEYS[i][1]);logEvent('SFX tugmalar almashtirildi: '+KEYS[a][1]+' ↔ '+KEYS[i][1]);return true;}
  return false;
@@ -1426,7 +1457,7 @@ function play(id,bus,o){
  }
  let tail=g;if(tr&&pxOn(tr.px)){const ch=pxChain(ctx,buf,tr.px,base,tr.s,tr.e,pxSt,now,!!o.loop);g.connect(ch.inp);tail=ch.out;}
  if(o.verb&&o.verb.on)vi=makeVerb(tail,out,o.verb);else tail.connect(out);
- const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,padObj:o.pad||null,vi,off0,regLen,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview};
+ const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,padObj:o.pad||null,vi,off0,regLen,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview,reopt:Object.assign({},o,{offset:0})};
  voices.push(v);
  src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
  renderVoices();renderPadStates();return v;
@@ -1455,9 +1486,9 @@ function fireCue(i){
  if(showStart==null){showStart=performance.now();$('#clockBox').classList.add('live');$('#liveTxt').textContent='JONLI';}
  if(c.type==='atmos')startScene(c.ref,fadeT,c);
  else if(!buffers[c.ref])toast('“'+c.name+'” uchun ovoz fayli yo\'q — Tahrirlash rejimida ✎ orqali biriktiring.');
- else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c,verb:c.verb});}
- else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c,verb:c.verb});
- else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c,verb:c.verb});
+ else if(c.type==='music'){busOff('music',fadeT);play(c.ref,'music',{title:c.name,trim:c.trim,cue:c,verb:c.verb,loop:!!c.loop});}
+ else if(c.type==='sfx')play(c.ref,'sfx',{title:c.name,trim:c.trim,cue:c,verb:c.verb,loop:!!c.loop});
+ else if(c.type==='dub')play(c.ref,'dub',{title:c.name,trim:c.trim,cue:c,verb:c.verb,loop:!!c.loop});
  cur=i;next=Math.min(i+1,show.cues.length);savePos();renderCues();renderNow();logEvent('GO Q'+(i+1)+' · '+c.name+' ('+TYPE[c.type].n+')');
 }
 const dbStr=d=>(d>0?'+':d<0?'−':'')+Math.abs(d).toFixed(Number.isInteger(d)?0:1)+' dB';
@@ -1635,7 +1666,7 @@ function cueLen(c){if(c.type==='atmos'){const s=show.scenes[c.ref];return s?s.na
 function renderCues(){
  const C=show.cues;if(next>C.length)next=C.length;if(cur>=C.length)cur=-1;
  $('#cues').innerHTML=C.length?C.map((c,i)=>{const T=TYPE[c.type]||TYPE.sfx;const st=i===cur?'live':(i===next?'next':(i<cur?'done':''));const tag=i===cur?'JONLI':(i===next?'KEYINGI':(i<cur?'TUGADI':''));
-  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+(c.verb&&c.verb.on?'<span class="cv">R</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>';
+  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+(c.verb&&c.verb.on?'<span class="cv">R</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>'+(c.type!=='atmos'?'<span class="clp'+(c.loop?' on':'')+'" role="button" tabindex="-1" data-cloop="'+i+'" aria-pressed="'+(c.loop?'true':'false')+'" title="Takrorlash (loop): '+(c.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</span>':'');
   if(editing)return '<div class="cue editrow '+st+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
   return '<button type="button" class="cue '+st+'" data-cue="'+i+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
@@ -1643,6 +1674,7 @@ function renderCues(){
  $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
 }
 function renderNow(){
+ const nl=$('#nowLoop');if(nl){const cc=show.cues[cur];nl.hidden=!cc||cc.type==='atmos';if(cc){nl.classList.toggle('on',!!cc.loop);nl.setAttribute('aria-pressed',cc.loop?'true':'false');nl.title='Takrorlash (loop): '+(cc.loop?'yoqiq':'o\'chiq')+' · L';}}
  const c=show.cues[cur];if(!c){$('#nowLbl').textContent='Hozir sahnada';$('#nowName').textContent='Spektakl boshlanishini kutmoqda';$('#nowSub').textContent='GO bosing yoki Probel';return;}
  const T=TYPE[c.type];$('#nowLbl').textContent='Hozir sahnada · Q'+(cur+1);$('#nowName').textContent=c.name;
  $('#nowSub').textContent=T.n+(c.type==='atmos'?' · cheksiz takror (loop)':(durOf(c.ref)?' · '+(c.trim?fmt(trimLen(c.trim))+' '+trimLabel(c.trim):fmt(durOf(c.ref))):''))+(c.note?' · '+c.note:'');
@@ -1655,19 +1687,20 @@ function renderScene(){
  el.innerHTML='<div class="layers">'+scene.layers.map((l,i)=>'<div class="layer"><div class="between"><label for="ly'+i+'">'+esc(layerTitle(l))+'</label><span class="mono" style="font-size:12px;color:var(--teal)" id="lv'+i+'">'+l.v+'%</span></div><input type="range" min="0" max="100" value="'+l.v+'" id="ly'+i+'" data-layer="'+i+'">'+(META[l.a]&&(META[l.a].kind==='user'||overrides[l.a])?'<span style="font-size:11px;color:var(--amber)">o\'z fayli</span>':'<span class="muted" style="font-size:11px">loop · '+fmt(durOf(l.a))+'</span>')+'</div>').join('')+'</div>';
 }
 function renderPads(){
+ lockUI();
  if(bank>=show.banks.length)bank=0;
  $('#banks').innerHTML=show.banks.map((b,i)=>'<button type="button" class="bank'+(i===bank?' on':'')+'" data-bank="'+i+'" aria-pressed="'+(i===bank)+'">'+esc(b.name)+'</button>').join('')+
   (editing?'<button type="button" class="bank" data-bedit="1">✎ Bankni tahrirlash</button><button type="button" class="bank" data-bnew="1">+ Yangi bank</button>':'');
  $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
-  return '<div class="pad" data-pad="'+i+'" draggable="true" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom · Home (tanlangan tugma)">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+  return '<div class="pad" data-pad="'+i+'" draggable="'+(sfxLocked()?'false':'true')+'" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+''+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom · Home (tanlangan tugma)">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button><button type="button" class="lp'+(p.loop?' on':'')+'" data-ploop="'+i+'" aria-pressed="'+(p.loop?'true':'false')+'" aria-label="'+esc(padTitle(p))+' — takrorlash" title="Takrorlash (loop): '+(p.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
  renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
 }
 function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));const ps=!!p&&pausedPads.has(p);el.classList.toggle('paused',ps);const bt=el.querySelector('[data-ppause]');if(bt&&bt.dataset.st!==String(ps)){bt.dataset.st=ps;bt.innerHTML=ps?IC_PLAY:IC_PAUSE;}});}
 function hitPad(i){
  if(!ctx)return;const p=show.banks[bank].pads[i];selectPad(i);
- if(editing){editPad(i);return;}
+ if(editing){if(sfxLocked()){lockToast();return;}editPad(i);return;}
  if(!p||!buffers[p.a]){toast('Bo\'sh tugma — faylni sudrab tashlang yoki ↑ bilan yuklang');return;}
  const playing=voices.filter(v=>v.ref===p.a&&!v.stopping&&!v.preview);
  if(p.t&&playing.length){playing.forEach(v=>stopVoice(v,Math.max(fadeT,.3)));return;}
@@ -1702,7 +1735,7 @@ function renderLib(){
  $('#libBody').innerHTML=h;
 }
 function renderAll(){renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();}
-function setEditing(on){editing=on;document.body.classList.toggle('editing',on);const b=$('#editBtn');b.classList.toggle('edit-on',on);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Tahrirlashni tugatish':'✎ Tahrirlash';renderCues();renderPads();}
+function setEditing(on){editing=on;document.body.classList.toggle('editing',on);const b=$('#editBtn');b.classList.toggle('edit-on',on);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Tugatish':'✎ Tahrirlash';renderCues();renderPads();}
 
 /* ---------- meters & clock loop ---------- */
 const tmp=new Float32Array(1024);
@@ -2318,14 +2351,18 @@ document.addEventListener('contextmenu',e=>{const c=e.target.closest&&e.target.c
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
  if(e.target.closest('#modal'))return;
+ const cl=e.target.closest('[data-cloop]');if(cl){e.preventDefault();e.stopPropagation();cueLoopToggle(+cl.dataset.cloop);return;}
+ if(e.target.closest('#nowLoop')){if(cur>=0)cueLoopToggle(cur);return;}
+ if(e.target.closest('#sfxLock')){lockToggle();return;}
  const t=e.target.closest('button');if(!t)return;const d=t.dataset;
  if(d.cue!=null){next=+d.cue;renderCues();}
  else if(d.cedit!=null)editCue(+d.cedit);
  else if(d.cmove){const [i,dd]=d.cmove.split(',').map(Number);moveCue(i,dd);}
+ else if(d.ploop!=null){selectPad(+d.ploop);padLoopToggle(+d.ploop);}
  else if(d.ppause!=null){selectPad(+d.ppause);padPause(+d.ppause);}
  else if(d.pstop!=null){selectPad(+d.pstop);padStop(+d.pstop);}
  else if(d.hit!=null)hitPad(+d.hit);
- else if(d.up!=null){const i=+d.up;pickFile(f=>padUpload(i,f));}
+ else if(d.up!=null){if(sfxLocked()){lockToast();return;}const i=+d.up;pickFile(f=>padUpload(i,f));}
  else if(d.bank!=null){bank=+d.bank;renderPads();}
  else if(d.bedit)editBank(false);
  else if(d.bnew)editBank(true);
@@ -2395,6 +2432,7 @@ document.addEventListener('keydown',e=>{
  if(modalOpen()){if(e.code==='Escape'){e.preventDefault();closeModal();}return;}
  if(typing(e.target))return;
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
+ if(e.code==='KeyL'&&!e.shiftKey&&!e.repeat){e.preventDefault();if(cur>=0&&show.cues[cur]&&show.cues[cur].type!=='atmos')cueLoopToggle(cur);else toast('Hozir sahnada cue yo\'q');return;}
  if((e.key==='End'||e.key==='Home')&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();if(e.repeat)return;if(e.key==='End'){busOff('music',Math.max(fadeT,.05));const b=$('#musOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}toast("Musiqani so'ndirish · End");}else padPause(selPad);return;}
  if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(fadeT,.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
@@ -2410,7 +2448,7 @@ document.addEventListener('keyup',e=>{if(ctx&&e.code==='Space'&&!typing(e.target
 /* drag & drop onto pads */
 document.addEventListener('dragover',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p){if(dragPad!=null&&+p.dataset.pad===dragPad)return;e.preventDefault();e.dataTransfer.dropEffect=dragAsset!=null?'copy':(dragPad!=null?'move':'copy');document.querySelectorAll('.pad.drag').forEach(x=>{if(x!==p)x.classList.remove('drag');});p.classList.add('drag');}});
 document.addEventListener('dragleave',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p)p.classList.remove('drag');});
-document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest('.pad');if(!p)return;e.preventDefault();p.classList.remove('drag');if(padDrop(+p.dataset.pad,e)){dndClear();$('#lib').classList.remove('peek');return;}const f=e.dataTransfer.files[0];if(f)padUpload(+p.dataset.pad,f);});
+document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest('.pad');if(!p)return;e.preventDefault();p.classList.remove('drag');if(sfxLocked()){lockToast();dndClear();return;}if(padDrop(+p.dataset.pad,e)){dndClear();$('#lib').classList.remove('peek');return;}const f=e.dataTransfer.files[0];if(f)padUpload(+p.dataset.pad,f);});
 
 /* ---------- start ---------- */
 async function boot(){
