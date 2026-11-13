@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  APP_VERSION: 1.8.0
+  APP_VERSION: 1.8.1
 
 jobs:
   windows:
@@ -25,6 +25,13 @@ jobs:
         run: npm run fix:audify
       - name: Dastur (Electron) yig'ish
         run: npm run pack:win
+      - name: ASIO moduli paketda borligini tekshirish
+        shell: pwsh
+        run: |
+          $p = Get-ChildItem -Recurse -Filter audify.node build | Select-Object -First 1
+          if (-not $p) { throw "audify.node paketda yo'q" }
+          Write-Host "OK: $($p.FullName)"
+          Get-ChildItem (Split-Path $p.FullName) | ForEach-Object { Write-Host " - $($_.Name)" }
       - name: O'rnatuvchi (Inno Setup)
         shell: pwsh
         run: |

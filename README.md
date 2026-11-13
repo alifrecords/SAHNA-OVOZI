@@ -3,6 +3,12 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.8.1: ASIO moduli Windows o'rnatuvchisiga to'g'ri kiritildi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Yig'ish | ASIO moduli (audify, N-API 8) har doim o'rnatiladi va paketda borligi tekshiriladi — 1.8.0 Windows o'rnatuvchisida ASIO ro'yxati bo'sh chiqishi mumkin edi |
+
 ## 1.8.0: ASIO (ASIO4ALL v2, M-Audio va boshqalar) · Audioni sozlash
 
 | Bo'lim | Nima qilindi |
