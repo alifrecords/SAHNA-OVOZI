@@ -19,8 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - name: Paketlar
-        run: npm install --no-audit --no-fund
+      - name: Paketlar (skriptlarsiz — audify ikkiligi keyingi qadamda o'rnatiladi; Electron'ni packager o'zi yuklaydi)
+        run: npm install --no-audit --no-fund --ignore-scripts
       - name: ASIO moduli (audify, N-API 8)
         run: npm run fix:audify
       - name: Dastur (Electron) yig'ish
