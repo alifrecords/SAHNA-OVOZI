@@ -180,6 +180,7 @@ select.inp{padding-right:28px}
 .btn.proj{display:flex;align-items:center;gap:8px;max-width:260px}
 .pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pdirty{color:var(--amber);font-size:14px}
+#asBtn{display:flex;align-items:center;gap:6px;white-space:nowrap}#asBtn .asdot{width:8px;height:8px;border-radius:50%;background:#555}#asBtn .asst{font:700 10px/1 Inter,system-ui,sans-serif;letter-spacing:.04em;padding:3px 5px;border-radius:4px;background:#2a2a30;color:#9aa}#asBtn.on{border-color:#2F6B63;color:#7FE0D3}#asBtn.on .asdot{background:#3DD6C3;box-shadow:0 0 6px #3DD6C3}#asBtn.on .asst{background:#1E4A44;color:#9FF0E4}#asBtn.wait .asdot{background:#F2A93B;box-shadow:0 0 6px #F2A93B}
 #dbBtn{display:flex;align-items:center;gap:8px}#dbBtn.ok{border-color:#2F6B63;color:#7FE0D3}.ndot{width:8px;height:8px;border-radius:50%;display:inline-block}
 #hub{position:fixed;inset:0;z-index:45;background:#0B0C0F;display:flex}
 #hub[hidden]{display:none}
@@ -222,6 +223,7 @@ select.inp{padding-right:28px}
 .psub{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmore{position:absolute;right:8px;bottom:10px;background:var(--panel)}
 html.native .show-info{cursor:pointer}
+@media (max-width:1500px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:140px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
 .trimbox{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
@@ -346,6 +348,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
     <button class="btn" id="dbBtn" type="button" aria-label="Ma'lumotlar bazasi va jurnal">Baza</button>
+    <button class="btn" id="asBtn" type="button" aria-pressed="true" title="Avtosaqlash: yoqish / o'chirish (Ctrl+Shift+A)"><span class="asdot"></span><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg><span class="aslbl">Avto saqlash</span><b class="asst">YOQIQ</b></button>
     <button class="btn proj" id="projBtn" type="button" aria-label="Loyiha: saqlash va ochish"><span class="pname">Loyiha</span></button>
     <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Tahrirlash</button>
     <button class="btn" type="button" id="audioBadge" aria-label="Ovoz holati va tekshiruv">OVOZ: —</button>
@@ -391,7 +394,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
           <h2 id="atmTitle">Atmosfera: —</h2>
           <div class="row" style="gap:8px;flex-wrap:wrap">
             <button class="btn" type="button" id="atmOff" title="Num *">Atmosferani so'ndirish<kbd class="nk">Num *</kbd></button>
-            <button class="btn" type="button" id="musOff" title="Num /">Musiqani so'ndirish<kbd class="nk">Num /</kbd></button>
+            <button class="btn" type="button" id="musOff" title="End · Num /">Musiqani so'ndirish<kbd class="nk">End</kbd></button>
             <button class="btn" type="button" id="allOff" title="Num 0">Sahnani so'ndirish<kbd class="nk">Num 0</kbd></button>
           </div>
         </div>
@@ -481,7 +484,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <h1>Jonli sahna ovoz pulti</h1>
     <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
     <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
-    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Num / — musiqani so'ndirish · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · End — musiqani so'ndirish · Home — tanlangan tugmada pauza · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab</p>
     <button id="start" type="button">Ovozni yoqish va boshlash</button>
     <span class="muted" style="font-size:12px" id="gateMsg"></span>
   </div>
@@ -876,7 +879,11 @@ document.addEventListener('input',e=>{if(e.target.id==='sbG'){const p=show.banks
 /* ---------- avtosaqlash (Cubase kabi) ---------- */
 const AUTOSAVE={on:true,min:2};let lastAuto=Date.now(),lastAutoAt=null;
 async function loadSettings(){const s=await DB.get('__settings');if(s&&s.autosave)Object.assign(AUTOSAVE,s.autosave);}
-function saveSettings(){DB.put('__settings',{autosave:AUTOSAVE});}
+function saveSettings(){DB.put('__settings',{autosave:AUTOSAVE});asUI();}
+function asUI(){const b=$('#asBtn');if(!b)return;const on=!!AUTOSAVE.on,wait=on&&(!proj.handle||IS_FRAME);b.classList.toggle('on',on);b.classList.toggle('wait',wait);b.setAttribute('aria-pressed',on?'true':'false');b.querySelector('.asst').textContent=on?'YOQIQ':"O'CHIQ";
+ b.title=(on?(wait?(IS_FRAME?'Avtosaqlash yoqiq — bu sahifada faylga avtomatik yozib bo\'lmaydi, o\'rnatilgan dasturda ishlaydi':'Avtosaqlash yoqiq — loyiha bir marta Ctrl+S bilan saqlangach ishlaydi'):'Avtosaqlash yoqiq: har '+AUTOSAVE.min+' daqiqada'):'Avtosaqlash o\'chiq')+' · bosing — yoqish / o\'chirish (Ctrl+Shift+A)';
+ const c=$('#asOn');if(c&&c.checked!==on)c.checked=on;}
+function asToggle(){AUTOSAVE.on=!AUTOSAVE.on;saveSettings();toast(AUTOSAVE.on?'Avtosaqlash yoqildi · har '+AUTOSAVE.min+' daqiqada':'Avtosaqlash o\'chirildi');logEvent(AUTOSAVE.on?'Avtosaqlash yoqildi':'Avtosaqlash o\'chirildi');}
 setInterval(()=>{
  if(!AUTOSAVE.on||!ctx||!proj.dirty||!proj.handle||IS_FRAME)return;
  if(Date.now()-lastAuto<AUTOSAVE.min*60000)return;
@@ -1362,7 +1369,7 @@ function renderPads(){
  $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
-  return '<div class="pad" data-pad="'+i+'" draggable="true" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+  return '<div class="pad" data-pad="'+i+'" draggable="true" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom · Home (tanlangan tugma)">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
  renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
 }
 function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));const ps=!!p&&pausedPads.has(p);el.classList.toggle('paused',ps);const bt=el.querySelector('[data-ppause]');if(bt&&bt.dataset.st!==String(ps)){bt.dataset.st=ps;bt.innerHTML=ps?IC_PLAY:IC_PAUSE;}});}
@@ -1594,8 +1601,8 @@ function logEvent(txt){
 function updateDbBadge(){
  const b=$('#dbBtn');if(!b)return;const on=navigator.onLine;
  const where=Store.mode==='folder'?'Documents':'Brauzer';
- b.innerHTML='<span class="ndot" style="background:'+(on?'#4FC3B5':'#9AA0A8')+'" title="'+(on?'Onlayn':'Oflayn')+'"></span>'+where+(FS.busy?' <span class="muted">· yozilmoqda…</span>':(Store.mode==='folder'?' ✓':''));
- b.classList.toggle('ok',Store.mode==='folder');
+ b.innerHTML='<span class="ndot" style="background:'+(on?'#4FC3B5':'#9AA0A8')+'" title="'+(on?'Onlayn':'Oflayn')+'"></span><span class="dbl">'+where+'</span>'+(FS.busy?' <span class="muted">· yozilmoqda…</span>':(Store.mode==='folder'?' ✓':''));
+ b.classList.toggle('ok',Store.mode==='folder');b.title='Baza: '+where;
 }
 window.addEventListener('online',()=>{updateDbBadge();toast('Internet tiklandi');});
 window.addEventListener('offline',()=>{updateDbBadge();toast('Internet uzildi — pult oflayn ishlashda davom etadi');});
@@ -1681,6 +1688,7 @@ function markDirty(){if(projLoading)return;if(!proj.dirty){proj.dirty=true;rende
 function storeProj(){const h=proj.handle;const fake=h&&(h.__abs||h.__rel);
  Store.put('__proj',{name:proj.name,dirty:proj.dirty,handle:fake?null:h,pathAbs:h&&h.__abs||null,pathRel:h&&h.__rel||null});}
 function renderProj(){
+ asUI();
  const b=$('#projBtn');if(b)b.innerHTML='<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="pname">'+esc(proj.name)+'</span>'+(proj.dirty?'<span class="pdirty" title="Saqlanmagan o\'zgarishlar">●</span>':'');
  document.title=(proj.dirty?'● ':'')+proj.name+' — Sahna Ovozi';
 }
@@ -2061,6 +2069,7 @@ if(NATIVE){
  azNative.onOpenFile(p=>{if(!ctx){window.__launchPath=p;return;}guardDirty(async()=>{const h=nFile(null,p.split(/[\\/]/).pop(),p);await openFile(await h.getFile(),h);hideHub();});});
  azNative.onCloseRequest(()=>{if(!proj.dirty){azNative.closeNow();return;}guardDirty(()=>azNative.closeNow());});
 }
+$('#asBtn').addEventListener('click',e=>{e.stopPropagation();asToggle();});
 $('#dbBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)dbMenu();});
 $('#projBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)projMenu();});
 ($('#installBtn')||{addEventListener(){}}).addEventListener('click',e=>{e.stopPropagation();installApp();});
@@ -2087,11 +2096,13 @@ document.addEventListener('keydown',e=>{
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
  if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
+ if((e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&e.code==='KeyA'&&ctx&&!typing(e.target)){e.preventDefault();asToggle();return;}
  if(!ctx||e.ctrlKey||e.metaKey||e.altKey)return;
  if(!$('#hub').hidden){if(e.code==='Escape'&&!modalOpen()&&ctx){e.preventDefault();hideHub();}return;}
  if(modalOpen()){if(e.code==='Escape'){e.preventDefault();closeModal();}return;}
  if(typing(e.target))return;
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
+ if((e.key==='End'||e.key==='Home')&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();if(e.repeat)return;if(e.key==='End'){busOff('music',Math.max(fadeT,.05));const b=$('#musOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}toast("Musiqani so'ndirish · End");}else padPause(selPad);return;}
  if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(fadeT,.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
  if(e.target.type==='range'&&/^Arrow/.test(e.code))return;
@@ -2131,7 +2142,7 @@ async function boot(){
   if(Store.mode==='browser'){const lg=await DB.get('__log');if(Array.isArray(lg))logRing=lg;}
   $('#gateMsg').textContent='Baza tiklanmoqda…';SP(2,NATIVE?'Hujjatlar / Sahna Ovozi bazasi':'Ma\'lumotlar bazasi',0.72);
   const nUser=await hydrate(await Store.all());
-  SP(3,'Loyihalar va profil',0.86);await loadProfile();await loadSettings();
+  SP(3,'Loyihalar va profil',0.86);await loadProfile();await loadSettings();asUI();
   renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
   SP(4,'Sahna oynasi',1);
   $('#gate').remove();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();

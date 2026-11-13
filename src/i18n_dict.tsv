@@ -630,7 +630,6 @@ Hozir sahnada ·	Сейчас на сцене ·	Now on stage ·
 Musiqani so'ndirish · Num /	Убрать музыку · Num /	Fade music · Num /
 Atmosferani so'ndirish · Num *	Убрать атмосферу · Num *	Fade atmosphere · Num *
 Sahnani so'ndirish · Num 0	Погасить сцену · Num 0	Fade scene · Num 0
-Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Num / — musiqani so'ndirish · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab	Пробел — GO · Esc — остановить всё · 1–8, Q W E R, A S D F — SFX · ← → — смена сэмпла на выбранной кнопке · [ ] — банк · ↑ ↓ — выбор cue · Num + / Num − — уровень выбранного cue · Ctrl + Num ± — Master · Num / — убрать музыку · Num * — убрать атмосферу · Num 0 — погасить сцену · Ctrl + колесо — масштаб	Space — GO · Esc — stop all · 1–8, Q W E R, A S D F — SFX · ← → — change sample on selected pad · [ ] — bank · ↑ ↓ — select cue · Num + / Num − — selected cue level · Ctrl + Num ± — Master · Num / — fade music · Num * — fade atmosphere · Num 0 — fade scene · Ctrl + wheel — zoom
 qatlam	слоёв	layers
 parda	акт	act
 Master:	Master:	Master:
@@ -638,3 +637,20 @@ Joriy holat (cue, banklar, mikser, ish joyi) esa har o'zgarishda bazaga yoziladi
 [SPEKTAKL NOMI]	[НАЗВАНИЕ СПЕКТАКЛЯ]	[SHOW TITLE]
 kesilgan	обрезано	trimmed
 Mening SFX	Мои SFX	My SFX
+Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · End — musiqani so'ndirish · Home — tanlangan tugmada pauza · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab	Пробел — GO · Esc — остановить всё · 1–8, Q W E R, A S D F — SFX · ← → — смена сэмпла на выбранной кнопке · [ ] — банк · ↑ ↓ — выбор cue · Num + / Num − — уровень выбранного cue · Ctrl + Num ± — Master · End — убрать музыку · Home — пауза на выбранной кнопке · Num * — убрать атмосферу · Num 0 — погасить сцену · Ctrl + колесо — масштаб	Space — GO · Esc — stop all · 1–8, Q W E R, A S D F — SFX · ← → — change sample on selected pad · [ ] — bank · ↑ ↓ — select cue · Num + / Num − — selected cue level · Ctrl + Num ± — Master · End — fade music · Home — pause selected pad · Num * — fade atmosphere · Num 0 — fade scene · Ctrl + wheel — zoom
+Avto saqlash	Автосохр.	Auto save
+YOQIQ	ВКЛ	ON
+O'CHIQ	ВЫКЛ	OFF
+Avtosaqlash yoqildi · har	Автосохранение включено · каждые	Auto save on · every
+daqiqada	мин	min
+Avtosaqlash yoqildi	Автосохранение включено	Auto save on
+Avtosaqlash o'chirildi	Автосохранение выключено	Auto save off
+Avtosaqlash o'chiq	Автосохранение выключено	Auto save is off
+Avtosaqlash yoqiq: har	Автосохранение включено: каждые	Auto save on: every
+Avtosaqlash yoqiq — loyiha bir marta Ctrl+S bilan saqlangach ishlaydi	Автосохранение включено — начнёт работать после первого сохранения Ctrl+S	Auto save on — starts after the project is saved once with Ctrl+S
+Avtosaqlash yoqiq — bu sahifada faylga avtomatik yozib bo'lmaydi, o'rnatilgan dasturda ishlaydi	Автосохранение включено — с этой страницы нельзя писать в файл, работает в установленной программе	Auto save on — this page cannot write files automatically; it works in the installed app
+bosing — yoqish / o'chirish (Ctrl+Shift+A)	нажмите — вкл / выкл (Ctrl+Shift+A)	click — on / off (Ctrl+Shift+A)
+Avtosaqlash: yoqish / o'chirish (Ctrl+Shift+A)	Автосохранение: вкл / выкл (Ctrl+Shift+A)	Auto save: on / off (Ctrl+Shift+A)
+Pauza / davom · Home (tanlangan tugma)	Пауза / продолжить · Home (выбранная кнопка)	Pause / resume · Home (selected pad)
+Musiqani so'ndirish · End	Убрать музыку · End	Fade music · End
+End · Num /	End · Num /	End · Num /

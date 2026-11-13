@@ -45,7 +45,7 @@ const TR = {
   'Ijro': ['Воспроизведение', 'Playback'],
   'GO — keyingi cue (Probel)': ['GO — следующий cue (Пробел)', 'GO — next cue (Space)'],
   'Hammasini to\'xtatish (Esc)': ['Остановить всё (Esc)', 'Stop all (Esc)'],
-  'Musiqani so\'ndirish (Num /)': ['Убрать музыку (Num /)', 'Fade music (Num /)'],
+  'Musiqani so\'ndirish (End)': ['Убрать музыку (End)', 'Fade music (End)'],
   'Atmosferani so\'ndirish (Num *)': ['Убрать атмосферу (Num *)', 'Fade atmosphere (Num *)'],
   'Sahnani so\'ndirish (Num 0)': ['Погасить сцену (Num 0)', 'Fade scene (Num 0)'],
   'Ko\'rinish': ['Вид', 'View'],
@@ -224,7 +224,7 @@ function buildMenu() {
       { label: tl('GO — keyingi cue (Probel)'), click: () => send('go') },
       { label: tl('Hammasini to\'xtatish (Esc)'), click: () => send('panic') },
       { type: 'separator' },
-      { label: tl('Musiqani so\'ndirish (Num /)'), click: () => send('musoff') },
+      { label: tl('Musiqani so\'ndirish (End)'), click: () => send('musoff') },
       { label: tl('Atmosferani so\'ndirish (Num *)'), click: () => send('atmoff') },
       { label: tl('Sahnani so\'ndirish (Num 0)'), click: () => send('alloff') }
     ]},

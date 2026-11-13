@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.6.1: Avto saqlash tugmasi · End va Home
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Avto saqlash | Sarlavhada alohida tugma: bir bosishda yoqiladi / o'chiriladi (**Ctrl+Shift+A**). Yashil — ishlayapti, sariq — yoqiq, lekin loyiha hali Ctrl+S bilan faylga saqlanmagan, kulrang — o'chiq. Loyiha menyusidagi belgi bilan bir xil ishlaydi, tanlov saqlanadi |
+| **End** | Musiqani so'ndirish (avval Num / edi — u ham ishlayveradi) |
+| **Home** | Tanlangan SFX tugmasida pauza; yana bosilsa — shu joydan davom |
+| Sarlavha | 1500 px dan tor ekranda ixchamlashadi: masshtab foizi qoladi (bosilsa — o'lchamlar menyusi, Ctrl + g'ildirak), baza va avto saqlash yorliqlari faqat belgi bilan |
+
 ## 1.6.0: uch tilli interfeys (UZ · RU · EN) · Numpad bilan so'ndirish
 
 | Bo'lim | Nima qilindi |
@@ -11,7 +20,7 @@ Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obr
 | Nima tarjima qilinadi | Butun pult: tugmalar, oynalar, maslahatlar (title / aria), xabarlar (toast), Bosh sahifa, shablonlar, kutubxona, AZ VERB, ovoz tekshiruvi, tayyor ovoz va cue nomlari; sanalar tanlangan til formatida |
 | O'rnatilgan dastur | Menyu (Fayl, Tahrir, Ijro, Ko'rinish, Yordam), saqlash/ochish oynalari va ochilish oynasi (splash) ham tanlangan tilda; **Ko'rinish → Til** menyusi |
 | Lug'at | `src/i18n_dict.tsv` — har qatorda `o'zbekcha ⇥ ruscha ⇥ inglizcha`; yangi matn qo'shish uchun shu faylga qator yoziladi |
-| **Num /** | Musiqani so'ndirish (fade vaqti bilan) |
+| **Num /** | Musiqani so'ndirish (fade vaqti bilan; 1.6.1 dan **End** ham) |
 | **Num \*** | Atmosferani so'ndirish |
 | **Num 0** | Sahnani so'ndirish — atmosfera, musiqa, SFX va dublaj |
 | Ko'rinishi | Uchala tugmada `Num /`, `Num *`, `Num 0` belgisi; klaviaturadan bosilganda tugma yonadi; **Ijro** menyusida ham bor |
