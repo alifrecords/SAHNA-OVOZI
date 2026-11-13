@@ -41,10 +41,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
   <div class="ver" id="ver"></div>
 </div>
 <script>
-const STEPS=['AUDIO TIZIM','OVOZ KUTUBXONASI','MA\'LUMOTLAR BAZASI','LOYIHALAR VA PROFIL','SAHNA OYNASI'];
+const LG=new URLSearchParams(location.search).get('lang')||'uz';
+const SL={ru:{steps:['АУДИОСИСТЕМА','БИБЛИОТЕКА ЗВУКОВ','БАЗА ДАННЫХ','ПРОЕКТЫ И ПРОФИЛЬ','ОКНО СЦЕНЫ'],tag:'Живой звуковой пульт для театра и дубляжа — cue, SFX, атмосфера, микшер и голоса образов',run:'Запуск…',ver:'ВЕРСИЯ '},
+en:{steps:['AUDIO SYSTEM','SOUND LIBRARY','DATABASE','PROJECTS AND PROFILE','STAGE WINDOW'],tag:'Live sound console for theatre and dubbing — cues, SFX, atmosphere, mixer and character voices',run:'Starting…',ver:'VERSION '}}[LG];
+const STEPS=SL?SL.steps:['AUDIO TIZIM','OVOZ KUTUBXONASI','MA\'LUMOTLAR BAZASI','LOYIHALAR VA PROFIL','SAHNA OYNASI'];
+if(SL){document.documentElement.lang=LG;document.querySelector('.tag').textContent=SL.tag;document.getElementById('status').textContent=SL.run;}
 const stepsEl=document.getElementById('steps');
 stepsEl.innerHTML=STEPS.map((s,i)=>'<div class="st" id="s'+i+'"><i></i>'+s+'</div>').join('');
-document.getElementById('ver').textContent='VERSIYA '+(new URLSearchParams(location.search).get('v')||'');
+document.getElementById('ver').textContent=(SL?SL.ver:'VERSIYA ')+(new URLSearchParams(location.search).get('v')||'');
 let cur=-1;
 function setStep(i,text,prog){
   STEPS.forEach((_,k)=>{const e=document.getElementById('s'+k);e.className='st'+(k<i?' done':k===i?' on':'');});
@@ -52,7 +56,7 @@ function setStep(i,text,prog){
   if(prog!=null)document.getElementById('bar').style.width=Math.max(2,Math.min(100,prog*100))+'%';
   cur=i;
 }
-setStep(0,'Ishga tushmoqda…',0.03);
+setStep(0,SL?SL.run:'Ishga tushmoqda…',0.03);
 if(window.splashBridge)splashBridge.onProgress(s=>setStep(s.step,s.text,s.prog));
 // to'lqin san'ati (AZ MUS splash'idagi kabi, amber rangda)
 const c=document.getElementById('c'),g=c.getContext('2d');let ph=0;

@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('azNative', {
   splash: (step, text, prog) => ipcRenderer.send('splash', { step, text, prog }),
   ready: () => ipcRenderer.send('ready'),
   closeNow: () => ipcRenderer.send('close-now'),
+  setLang: l => ipcRenderer.send('set-lang', l),
   onMenu: cb => ipcRenderer.on('menu', (_e, c) => cb(c)),
   onOpenFile: cb => ipcRenderer.on('open-file', (_e, p) => cb(p)),
   onCloseRequest: cb => ipcRenderer.on('close-request', () => cb())

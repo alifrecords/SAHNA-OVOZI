@@ -109,6 +109,8 @@ input.vfader{writing-mode:vertical-lr;direction:rtl;width:24px;height:150px;acce
 .prog{height:8px;background:var(--line);border-radius:4px;overflow:hidden;position:relative}
 .prog i{position:absolute;top:0;bottom:0;left:0;border-radius:4px}
 .prog.loop i{width:30%;animation:lp 2.4s linear infinite}
+.langseg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:0 0 auto}.langseg button{background:transparent;color:var(--muted,#9aa);border:0;font:700 11px/1 Inter,system-ui,sans-serif;letter-spacing:.04em;padding:0 7px;min-height:30px;cursor:pointer}.langseg button+button{border-left:1px solid var(--line)}.langseg button[aria-pressed=true]{background:#F2A93B;color:#14110B}
+kbd.nk{font:600 10px/1 'JetBrains Mono',ui-monospace,monospace;margin-left:8px;padding:3px 5px;border:1px solid var(--line,#3a3a44);border-radius:4px;opacity:.7}.btn.kflash{outline:2px solid #F2A93B;outline-offset:1px}
 @keyframes lp{from{left:-30%}to{left:100%}}
 .voice .rem{font-size:12px;text-align:right}
 .x{width:36px;height:32px;border-radius:6px;background:transparent;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;color:var(--muted)}
@@ -342,6 +344,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <button type="button" class="show-info" id="showBtn" aria-label="Spektakl ma'lumotlari"><span class="lbl">Spektakl</span><span style="font-size:14px;font-weight:600;color:var(--text)" id="showName">—</span></button>
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
+    <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
     <button class="btn" id="dbBtn" type="button" aria-label="Ma'lumotlar bazasi va jurnal">Baza</button>
     <button class="btn proj" id="projBtn" type="button" aria-label="Loyiha: saqlash va ochish"><span class="pname">Loyiha</span></button>
     <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Tahrirlash</button>
@@ -387,9 +390,9 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
         <div class="between">
           <h2 id="atmTitle">Atmosfera: —</h2>
           <div class="row" style="gap:8px;flex-wrap:wrap">
-            <button class="btn" type="button" id="atmOff">Atmosferani so'ndirish</button>
-            <button class="btn" type="button" id="musOff">Musiqani so'ndirish</button>
-            <button class="btn" type="button" id="allOff">Sahnani so'ndirish</button>
+            <button class="btn" type="button" id="atmOff" title="Num *">Atmosferani so'ndirish<kbd class="nk">Num *</kbd></button>
+            <button class="btn" type="button" id="musOff" title="Num /">Musiqani so'ndirish<kbd class="nk">Num /</kbd></button>
+            <button class="btn" type="button" id="allOff" title="Num 0">Sahnani so'ndirish<kbd class="nk">Num 0</kbd></button>
           </div>
         </div>
         <div id="layers"></div>
@@ -448,6 +451,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
 <div id="hub" hidden>
   <aside class="hside">
     <div class="brand" style="padding:4px 6px 14px"><svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg><span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span></div>
+    <div class="langseg" style="align-self:flex-start;margin:0 0 10px 6px" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
     <button type="button" class="hprof" id="hubProf" aria-label="Profilni tahrirlash"></button>
     <nav class="hnav" aria-label="Bosh sahifa bo'limlari">
       <button type="button" data-hpage="home">Bosh sahifa</button>
@@ -473,11 +477,11 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <div class="brand">
       <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"></path></svg>
       <span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span>
-    </div>
+    <div class="langseg" style="margin-left:auto" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div>
     <h1>Jonli sahna ovoz pulti</h1>
     <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
     <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
-    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Ctrl + g'ildirak — masshtab</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Num / — musiqani so'ndirish · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab</p>
     <button id="start" type="button">Ovozni yoqish va boshlash</button>
     <span class="muted" style="font-size:12px" id="gateMsg"></span>
   </div>
@@ -487,8 +491,12 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
 <input type="file" id="dirIn" webkitdirectory multiple class="sr" tabindex="-1" aria-hidden="true">
 <input type="file" id="fileIn" accept="audio/*" class="sr" tabindex="-1" aria-hidden="true">
 
+<script>
+/*__I18N_JS__*/
+</script>
 <script>const ASSETS=/*__ASSETS__*/;const META=/*__META__*/;</script>
 <script>
+const AZL=()=>window.AZ_I18N?window.AZ_I18N.loc():'uz-UZ';
 (function(){
 'use strict';
 
@@ -1746,7 +1754,7 @@ async function saveProject(as,opt){
    const w=await h.createWritable();await w.write(blob);await w.close();
    proj.handle=h;proj.name=h.name.replace(/\.sahna$/i,'');proj.dirty=false;renderProj();storeProj();if(!NATIVE)addRecent(h);if(typeof metaCache!=='undefined')metaCache.data=null;
    lastAutoAt=new Date();lastAuto=Date.now();
-   if(silent){toast('Avtosaqlandi · '+h.name+' · '+lastAutoAt.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'}));logEvent('Avtosaqlash: '+h.name);}
+   if(silent){toast('Avtosaqlandi · '+h.name+' · '+lastAutoAt.toLocaleTimeString(AZL(),{hour:'2-digit',minute:'2-digit'}));logEvent('Avtosaqlash: '+h.name);}
    else{toast('Saqlandi: '+h.name+' ('+(blob.size/1048576).toFixed(1)+' MB)');logEvent('Loyiha saqlandi: '+h.name);}
    if(Store.mode==='folder'){FS.run(()=>FS.backup());FS.run(()=>projBackup(blob,proj.name));}return;
   }catch(e){if(e&&e.name==='AbortError')return;if(silent)return;}
@@ -1787,8 +1795,8 @@ async function projMenu(){
   '<div class="frow"><button type="button" class="btn primary" id="pjSave">Saqlash · Ctrl+S</button><button type="button" class="btn" id="pjSaveAs">Boshqacha saqlash · Ctrl+Shift+S</button><button type="button" class="btn" id="pjOpen">Ochish · Ctrl+O</button></div>'+
   (NATIVE||isStandalone()?'':'<div class="frow"><button type="button" class="btn" id="pjInstall">⤓ Ilova sifatida o\'rnatish (PC / telefon)</button></div>')+'<div class="frow"><button type="button" class="btn" id="pjNew">Yangi bo\'sh loyiha</button><button type="button" class="btn" id="pjDemo">Namuna loyiha</button></div>'+
   (Store.mode==='folder'?await (async()=>{const L=[];try{for await (const [n,h] of FS.dirs.loyihalar.entries())if(h.kind==='file'&&/\.sahna(\.zip)?$/i.test(n))L.push(n);}catch(e){}L.sort();window.__fl=L;return L.length?'<div class="field"><span class="flabel">Documents / Sahna Ovozi / loyihalar</span>'+L.map((n,i)=>'<button type="button" class="btn" style="justify-content:flex-start" data-floj="'+i+'">'+esc(n)+'</button>').join('')+'</div>':'';})():'')+
-  (rec.length&&CAN_FS?'<div class="field"><span class="flabel">So\'nggi loyihalar</span>'+rec.map((r,i)=>'<button type="button" class="btn" style="justify-content:flex-start;text-align:left" data-recent="'+i+'">'+esc(r.name)+' <span class="muted" style="font-weight:500;margin-left:8px">'+new Date(r.at).toLocaleString('uz-UZ')+'</span></button>').join('')+'</div>':'')+
-  '<div class="field"><span class="flabel">Avtosaqlash (Cubase kabi)</span><div class="frow"><label class="chk" style="min-height:36px"><input type="checkbox" id="asOn"'+(AUTOSAVE.on?' checked':'')+'> Loyiha faylini avtomatik saqlash</label><select class="inp" id="asMin" style="max-width:170px" aria-label="Avtosaqlash oralig\'i">'+[1,2,5,10].map(m=>'<option value="'+m+'"'+(AUTOSAVE.min===m?' selected':'')+'>har '+m+' daqiqada</option>').join('')+'</select></div><p class="hint">'+(proj.handle?(lastAutoAt?'Oxirgi avtosaqlash: '+lastAutoAt.toLocaleTimeString('uz-UZ'):'Loyiha fayli ulangan — o\'zgarish bo\'lsa avtomatik saqlanadi'):'Avtosaqlash loyiha bir marta Ctrl+S bilan faylga saqlangandan keyin ishlaydi')+(Store.mode==='folder'?' · nusxalar: zaxira/loyihalar (oxirgi 10 ta)':'')+'. Joriy holat (cue, banklar, mikser, ish joyi) esa har o\'zgarishda bazaga yoziladi.</p></div>'+
+  (rec.length&&CAN_FS?'<div class="field"><span class="flabel">So\'nggi loyihalar</span>'+rec.map((r,i)=>'<button type="button" class="btn" style="justify-content:flex-start;text-align:left" data-recent="'+i+'">'+esc(r.name)+' <span class="muted" style="font-weight:500;margin-left:8px">'+new Date(r.at).toLocaleString(AZL())+'</span></button>').join('')+'</div>':'')+
+  '<div class="field"><span class="flabel">Avtosaqlash (Cubase kabi)</span><div class="frow"><label class="chk" style="min-height:36px"><input type="checkbox" id="asOn"'+(AUTOSAVE.on?' checked':'')+'> Loyiha faylini avtomatik saqlash</label><select class="inp" id="asMin" style="max-width:170px" aria-label="Avtosaqlash oralig\'i">'+[1,2,5,10].map(m=>'<option value="'+m+'"'+(AUTOSAVE.min===m?' selected':'')+'>har '+m+' daqiqada</option>').join('')+'</select></div><p class="hint">'+(proj.handle?(lastAutoAt?'Oxirgi avtosaqlash: '+lastAutoAt.toLocaleTimeString(AZL()):'Loyiha fayli ulangan — o\'zgarish bo\'lsa avtomatik saqlanadi'):'Avtosaqlash loyiha bir marta Ctrl+S bilan faylga saqlangandan keyin ishlaydi')+(Store.mode==='folder'?' · nusxalar: zaxira/loyihalar (oxirgi 10 ta)':'')+'. Joriy holat (cue, banklar, mikser, ish joyi) esa har o\'zgarishda bazaga yoziladi.</p></div>'+
   '<p class="hint"><b>Boshqa kompyuterda davom ettirish:</b> .sahna faylni fleshka, Telegram yoki bulut orqali ko\'chiring va u yerda “Ochish” — barcha ovozlar, kesishlar, darajalar va qaysi cue\'da to\'xtaganingiz bilan ochiladi.</p>'+
   '<p class="hint">Loyiha fayli ichida: cue ro\'yxati, SFX banklar, atmosferalar, mikser va dublaj sozlamalari hamda siz yuklagan barcha ovoz fayllari. Faylni boshqa kompyuter yoki telefonga ko\'chirib, xuddi shu holatda ochish mumkin.</p>';
  openModal('Loyiha',body,[{label:'Yopish',fn:()=>{}}],{change:e=>{if(e.target.id==='asOn'){AUTOSAVE.on=e.target.checked;saveSettings();}else if(e.target.id==='asMin'){AUTOSAVE.min=+e.target.value;saveSettings();}},click:(e,b)=>{
@@ -1903,7 +1911,7 @@ function coverHtml(p){
  return '<div class="pcover" style="background:linear-gradient(135deg,hsl('+h+' 38% 20%),hsl('+((h+40)%360)+' 30% 11%))"><div class="pbars">'+(bars||'<i style="background:#3A3F48"></i>')+'</div><span class="pcues">'+(p.cues||0)+' cue</span></div>';
 }
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';}
-function fmtDate(t){try{return new Date(t).toLocaleString('uz-UZ',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
+function fmtDate(t){try{return new Date(t).toLocaleString(AZL(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
 function projCard(p,trash){
  return '<div class="pcard'+(proj.name===p.name&&!trash?' cur':'')+'">'+
   '<button type="button" class="popen" data-'+(trash?'trest':'popen')+'="'+esc(p.file)+'" aria-label="'+esc(p.name)+(trash?' — tiklash':' — ochish')+'">'+coverHtml(p)+
@@ -2046,7 +2054,7 @@ $('#zoomOut').addEventListener('click',e=>{e.stopPropagation();zoomStep(-1);});
 $('#zoomV').addEventListener('click',e=>{e.stopPropagation();zoomMenu();});
 $('#homeBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)showHub('home');});
 if(NATIVE){
- azNative.onMenu(cmd=>{if(!ctx)return;if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
+ azNative.onMenu(cmd=>{if(/^lang:/.test(cmd)){if(window.AZ_I18N)window.AZ_I18N.setLang(cmd.slice(5));return;}if(!ctx)return;if(cmd==='musoff'||cmd==='atmoff'||cmd==='alloff'){const b=$('#'+(cmd==='musoff'?'musOff':cmd==='atmoff'?'atmOff':'allOff'));if(b)b.click();return;}if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
   ({home:()=>showHub('home'),new:()=>newProjectDialog(),open:()=>guardDirty(()=>openProject().then(()=>{if(!proj.dirty)hideHub();})),save:()=>saveProject(false),saveas:()=>saveProject(true),
     edit:()=>{hideHub();setEditing(!editing);},lib:()=>{hideHub();$('#libBtn').click();},diag:()=>runDiag(false),db:()=>dbMenu(),go:()=>go(),panic:()=>panic(),about:()=>aboutApp(),profile:()=>editProfile(),
     projects:()=>showHub('projects'),zoomin:()=>zoomStep(1),zoomout:()=>zoomStep(-1),zoomreset:()=>zoomStep(0),zoomfit:()=>zoomFit(),trash:()=>showHub('trash')}[cmd]||(()=>{}))();});
@@ -2084,6 +2092,7 @@ document.addEventListener('keydown',e=>{
  if(modalOpen()){if(e.code==='Escape'){e.preventDefault();closeModal();}return;}
  if(typing(e.target))return;
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
+ if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(fadeT,.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
  if(e.target.type==='range'&&/^Arrow/.test(e.code))return;
  if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&!e.repeat){e.preventDefault();browsePad(e.code==='ArrowRight'?1:-1);return;}
@@ -2102,7 +2111,7 @@ document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest(
 /* ---------- start ---------- */
 async function boot(){
  if(boot._on)return;boot._on=1;
- const SP=(i,t,p)=>{if(NATIVE)try{azNative.splash(i,t,p);}catch(e){}};
+ const SP=(i,t,p)=>{if(NATIVE)try{azNative.splash(i,window.AZ_I18N?window.AZ_I18N.tr(t):t,p);}catch(e){}};
  const btn=$('#start');btn.disabled=true;btn.textContent='Ovozlar yuklanmoqda…';
  try{
   SP(0,'Audio tizim ishga tushmoqda',0.08);

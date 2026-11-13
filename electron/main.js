@@ -19,6 +19,58 @@ if (process.platform === 'win32') app.setAppUserModelId('com.azimxodjayevmusic.s
 // Ovoz bosishsiz ham ishga tushsin (teatr pulti uchun muhim)
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
+// --- til (UZ / RU / EN) ---
+const TR = {
+  'Sahna Ovozi haqida': ['О Sahna Ovozi', 'About Sahna Ovozi'],
+  'Chiqish': ['Выход', 'Quit'],
+  'Fayl': ['Файл', 'File'],
+  'Bosh sahifa': ['Главная', 'Home'],
+  'Yangi loyiha…': ['Новый проект…', 'New project…'],
+  'Ochish…': ['Открыть…', 'Open…'],
+  'Loyihalar': ['Проекты', 'Projects'],
+  'Saqlash': ['Сохранить', 'Save'],
+  'Boshqacha saqlash…': ['Сохранить как…', 'Save as…'],
+  'Hujjatlar / Sahna Ovozi papkasini ochish': ['Открыть папку Документы / Sahna Ovozi', 'Open Documents / Sahna Ovozi folder'],
+  'Savat': ['Корзина', 'Trash'],
+  'Tahrir': ['Правка', 'Edit'],
+  'Bekor qilish': ['Отменить', 'Undo'],
+  'Qaytarish': ['Повторить', 'Redo'],
+  'Kesish': ['Вырезать', 'Cut'],
+  'Nusxa': ['Копировать', 'Copy'],
+  'Qo\'yish': ['Вставить', 'Paste'],
+  'Hammasini belgilash': ['Выделить всё', 'Select all'],
+  'Tahrirlash rejimi': ['Режим редактирования', 'Edit mode'],
+  'Ovozlar kutubxonasi': ['Библиотека звуков', 'Sound library'],
+  'Profil': ['Профиль', 'Profile'],
+  'Ijro': ['Воспроизведение', 'Playback'],
+  'GO — keyingi cue (Probel)': ['GO — следующий cue (Пробел)', 'GO — next cue (Space)'],
+  'Hammasini to\'xtatish (Esc)': ['Остановить всё (Esc)', 'Stop all (Esc)'],
+  'Musiqani so\'ndirish (Num /)': ['Убрать музыку (Num /)', 'Fade music (Num /)'],
+  'Atmosferani so\'ndirish (Num *)': ['Убрать атмосферу (Num *)', 'Fade atmosphere (Num *)'],
+  'Sahnani so\'ndirish (Num 0)': ['Погасить сцену (Num 0)', 'Fade scene (Num 0)'],
+  'Ko\'rinish': ['Вид', 'View'],
+  'To\'liq ekran': ['Полный экран', 'Full screen'],
+  'Kattalashtirish': ['Увеличить', 'Zoom in'],
+  'Kichraytirish': ['Уменьшить', 'Zoom out'],
+  'Ekranga moslash': ['Подогнать под экран', 'Fit to screen'],
+  'Yordam': ['Справка', 'Help'],
+  'Ovoz tekshiruvi': ['Проверка звука', 'Sound check'],
+  'Baza va jurnal': ['База и журнал', 'Database and log'],
+  'Til': ['Язык', 'Language'],
+  'Loyihani saqlash': ['Сохранить проект', 'Save project'],
+  'Loyihani ochish': ['Открыть проект', 'Open project'],
+  'Sahna Ovozi loyihasi': ['Проект Sahna Ovozi', 'Sahna Ovozi project']
+};
+let LANG = 'uz';
+const langFile = () => path.join(app.getPath('userData'), 'lang.json');
+try { const l = JSON.parse(fs.readFileSync(langFile(), 'utf8')).lang; if (['uz', 'ru', 'en'].includes(l)) LANG = l; } catch (e) {}
+const tl = s => (LANG === 'uz' || !TR[s]) ? s : TR[s][LANG === 'ru' ? 0 : 1];
+ipcMain.on('set-lang', (_e, l) => {
+  if (!['uz', 'ru', 'en'].includes(l) || l === LANG) return;
+  LANG = l; try { fs.writeFileSync(langFile(), JSON.stringify({ lang: l })); } catch (e) {}
+  buildMenu();
+});
+
 // --- Hujjatlar / Sahna Ovozi --------------------------------------------------
 let BASE = null;
 function base() {
@@ -75,9 +127,9 @@ ipcMain.handle('dlg-save', async (e, name) => {
   const win = BrowserWindow.fromWebContents(e.sender);
   const safe = String(name || 'Loyiha.sahna').replace(/[\\/:*?"<>|]/g, '-');
   const r = await dialog.showSaveDialog(win, {
-    title: 'Loyihani saqlash',
+    title: tl('Loyihani saqlash'),
     defaultPath: path.join(base(), 'loyihalar', PROJECT_EXT.test(safe) ? safe : safe + '.sahna'),
-    filters: [{ name: 'Sahna Ovozi loyihasi', extensions: ['sahna'] }]
+    filters: [{ name: tl('Sahna Ovozi loyihasi'), extensions: ['sahna'] }]
   });
   if (r.canceled || !r.filePath) return null;
   return PROJECT_EXT.test(r.filePath) ? r.filePath : r.filePath + '.sahna';
@@ -85,8 +137,8 @@ ipcMain.handle('dlg-save', async (e, name) => {
 ipcMain.handle('dlg-open', async e => {
   const win = BrowserWindow.fromWebContents(e.sender);
   const r = await dialog.showOpenDialog(win, {
-    title: 'Loyihani ochish', defaultPath: path.join(base(), 'loyihalar'), properties: ['openFile'],
-    filters: [{ name: 'Sahna Ovozi loyihasi', extensions: ['sahna', 'zip'] }]
+    title: tl('Loyihani ochish'), defaultPath: path.join(base(), 'loyihalar'), properties: ['openFile'],
+    filters: [{ name: tl('Sahna Ovozi loyihasi'), extensions: ['sahna', 'zip'] }]
   });
   return r.canceled || !r.filePaths[0] ? null : r.filePaths[0];
 });
@@ -109,7 +161,7 @@ function createSplash() {
     alwaysOnTop: true, skipTaskbar: false, show: false, icon: ICON, backgroundColor: '#00000000',
     webPreferences: { preload: path.join(__dirname, 'splash-preload.js'), contextIsolation: true, sandbox: true }
   });
-  splash.loadFile(path.join(__dirname, 'splash.html'), { query: { v: VERSION } });
+  splash.loadFile(path.join(__dirname, 'splash.html'), { query: { v: VERSION, lang: LANG } });
   splash.once('ready-to-show', () => splash.show());
   splash.on('closed', () => { splash = null; });
 }
@@ -144,47 +196,53 @@ ipcMain.on('close-now', () => { allowClose = true; if (win) win.close(); });
 function send(cmd) { if (win) win.webContents.send('menu', cmd); }
 function buildMenu() {
   const t = [
-    ...(process.platform === 'darwin' ? [{ label: APP_NAME, submenu: [{ label: 'Sahna Ovozi haqida', click: () => send('about') }, { type: 'separator' }, { role: 'quit', label: 'Chiqish' }] }] : []),
-    { label: 'Fayl', submenu: [
-      { label: 'Bosh sahifa', accelerator: 'CmdOrCtrl+Shift+W', click: () => send('home') },
+    ...(process.platform === 'darwin' ? [{ label: APP_NAME, submenu: [{ label: tl('Sahna Ovozi haqida'), click: () => send('about') }, { type: 'separator' }, { role: 'quit', label: tl('Chiqish') }] }] : []),
+    { label: tl('Fayl'), submenu: [
+      { label: tl('Bosh sahifa'), accelerator: 'CmdOrCtrl+Shift+W', click: () => send('home') },
       { type: 'separator' },
-      { label: 'Yangi loyiha…', accelerator: 'CmdOrCtrl+N', click: () => send('new') },
-      { label: 'Ochish…', accelerator: 'CmdOrCtrl+O', click: () => send('open') },
-      { label: 'Loyihalar', click: () => send('projects') },
+      { label: tl('Yangi loyiha…'), accelerator: 'CmdOrCtrl+N', click: () => send('new') },
+      { label: tl('Ochish…'), accelerator: 'CmdOrCtrl+O', click: () => send('open') },
+      { label: tl('Loyihalar'), click: () => send('projects') },
       { type: 'separator' },
-      { label: 'Saqlash', accelerator: 'CmdOrCtrl+S', click: () => send('save') },
-      { label: 'Boshqacha saqlash…', accelerator: 'CmdOrCtrl+Shift+S', click: () => send('saveas') },
+      { label: tl('Saqlash'), accelerator: 'CmdOrCtrl+S', click: () => send('save') },
+      { label: tl('Boshqacha saqlash…'), accelerator: 'CmdOrCtrl+Shift+S', click: () => send('saveas') },
       { type: 'separator' },
-      { label: 'Hujjatlar / Sahna Ovozi papkasini ochish', click: () => shell.openPath(base()) },
-      { label: 'Savat', click: () => send('trash') },
+      { label: tl('Hujjatlar / Sahna Ovozi papkasini ochish'), click: () => shell.openPath(base()) },
+      { label: tl('Savat'), click: () => send('trash') },
       { type: 'separator' },
-      { label: 'Chiqish', accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Alt+F4', click: () => { if (win) win.close(); else app.quit(); } }
+      { label: tl('Chiqish'), accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Alt+F4', click: () => { if (win) win.close(); else app.quit(); } }
     ]},
-    { label: 'Tahrir', submenu: [
-      { role: 'undo', label: 'Bekor qilish' }, { role: 'redo', label: 'Qaytarish' }, { type: 'separator' },
-      { role: 'cut', label: 'Kesish' }, { role: 'copy', label: 'Nusxa' }, { role: 'paste', label: 'Qo\'yish' }, { role: 'selectAll', label: 'Hammasini belgilash' },
+    { label: tl('Tahrir'), submenu: [
+      { role: 'undo', label: tl('Bekor qilish') }, { role: 'redo', label: tl('Qaytarish') }, { type: 'separator' },
+      { role: 'cut', label: tl('Kesish') }, { role: 'copy', label: tl('Nusxa') }, { role: 'paste', label: tl('Qo\'yish') }, { role: 'selectAll', label: tl('Hammasini belgilash') },
       { type: 'separator' },
-      { label: 'Tahrirlash rejimi', accelerator: 'CmdOrCtrl+E', click: () => send('edit') },
-      { label: 'Ovozlar kutubxonasi', accelerator: 'CmdOrCtrl+L', click: () => send('lib') },
-      { label: 'Profil', click: () => send('profile') }
+      { label: tl('Tahrirlash rejimi'), accelerator: 'CmdOrCtrl+E', click: () => send('edit') },
+      { label: tl('Ovozlar kutubxonasi'), accelerator: 'CmdOrCtrl+L', click: () => send('lib') },
+      { label: tl('Profil'), click: () => send('profile') }
     ]},
-    { label: 'Ijro', submenu: [
-      { label: 'GO — keyingi cue (Probel)', click: () => send('go') },
-      { label: 'Hammasini to\'xtatish (Esc)', click: () => send('panic') }
-    ]},
-    { label: 'Ko\'rinish', submenu: [
-      { role: 'togglefullscreen', label: 'To\'liq ekran' },
+    { label: tl('Ijro'), submenu: [
+      { label: tl('GO — keyingi cue (Probel)'), click: () => send('go') },
+      { label: tl('Hammasini to\'xtatish (Esc)'), click: () => send('panic') },
       { type: 'separator' },
-      { label: 'Kattalashtirish', accelerator: 'CmdOrCtrl+=', click: () => send('zoomin') },
-      { label: 'Kichraytirish', accelerator: 'CmdOrCtrl+-', click: () => send('zoomout') },
+      { label: tl('Musiqani so\'ndirish (Num /)'), click: () => send('musoff') },
+      { label: tl('Atmosferani so\'ndirish (Num *)'), click: () => send('atmoff') },
+      { label: tl('Sahnani so\'ndirish (Num 0)'), click: () => send('alloff') }
+    ]},
+    { label: tl('Ko\'rinish'), submenu: [
+      { role: 'togglefullscreen', label: tl('To\'liq ekran') },
+      { type: 'separator' },
+      { label: tl('Kattalashtirish'), accelerator: 'CmdOrCtrl+=', click: () => send('zoomin') },
+      { label: tl('Kichraytirish'), accelerator: 'CmdOrCtrl+-', click: () => send('zoomout') },
       { label: '100%', accelerator: 'CmdOrCtrl+0', click: () => send('zoomreset') },
-      { label: 'Ekranga moslash', click: () => send('zoomfit') }
-    ]},
-    { label: 'Yordam', submenu: [
-      { label: 'Ovoz tekshiruvi', click: () => send('diag') },
-      { label: 'Baza va jurnal', click: () => send('db') },
+      { label: tl('Ekranga moslash'), click: () => send('zoomfit') },
       { type: 'separator' },
-      { label: 'Sahna Ovozi haqida', click: () => send('about') }
+      { label: tl('Til'), submenu: [['uz', 'O\'zbekcha'], ['ru', 'Русский'], ['en', 'English']].map(([k, n]) => ({ label: n, type: 'radio', checked: LANG === k, click: () => { if (win) win.webContents.send('menu', 'lang:' + k); } })) }
+    ]},
+    { label: tl('Yordam'), submenu: [
+      { label: tl('Ovoz tekshiruvi'), click: () => send('diag') },
+      { label: tl('Baza va jurnal'), click: () => send('db') },
+      { type: 'separator' },
+      { label: tl('Sahna Ovozi haqida'), click: () => send('about') }
     ]}
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(t));

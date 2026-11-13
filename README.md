@@ -3,6 +3,19 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.6.0: uch tilli interfeys (UZ · RU · EN) · Numpad bilan so'ndirish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Til tanlash | Sarlavhada, ochilish kartasida va Bosh sahifada **UZ · RU · EN** tugmalari; tanlov saqlanadi, darhol (qayta yuklamasdan) almashadi |
+| Nima tarjima qilinadi | Butun pult: tugmalar, oynalar, maslahatlar (title / aria), xabarlar (toast), Bosh sahifa, shablonlar, kutubxona, AZ VERB, ovoz tekshiruvi, tayyor ovoz va cue nomlari; sanalar tanlangan til formatida |
+| O'rnatilgan dastur | Menyu (Fayl, Tahrir, Ijro, Ko'rinish, Yordam), saqlash/ochish oynalari va ochilish oynasi (splash) ham tanlangan tilda; **Ko'rinish → Til** menyusi |
+| Lug'at | `src/i18n_dict.tsv` — har qatorda `o'zbekcha ⇥ ruscha ⇥ inglizcha`; yangi matn qo'shish uchun shu faylga qator yoziladi |
+| **Num /** | Musiqani so'ndirish (fade vaqti bilan) |
+| **Num \*** | Atmosferani so'ndirish |
+| **Num 0** | Sahnani so'ndirish — atmosfera, musiqa, SFX va dublaj |
+| Ko'rinishi | Uchala tugmada `Num /`, `Num *`, `Num 0` belgisi; klaviaturadan bosilganda tugma yonadi; **Ijro** menyusida ham bor |
+
 ## 1.5.0: sudrab joylash
 
 | Bo'lim | Nima qilindi |
