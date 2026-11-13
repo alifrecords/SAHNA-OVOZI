@@ -654,3 +654,51 @@ Avtosaqlash: yoqish / o'chirish (Ctrl+Shift+A)	Автосохранение: в�
 Pauza / davom · Home (tanlangan tugma)	Пауза / продолжить · Home (выбранная кнопка)	Pause / resume · Home (selected pad)
 Musiqani so'ndirish · End	Убрать музыку · End	Fade music · End
 End · Num /	End · Num /	End · Num /
+Audio qurilma	Аудиоустройство	Audio device
+Audio qurilma…	Аудиоустройство…	Audio device…
+Tashqi ovoz kartalari (M-Audio, Focusrite, Behringer, Steinberg UR, UAD, RME va boshqalar) Windows / macOS tizimida qurilma sifatida ko'rinadi — shu ro'yxatdan tanlang.	Внешние звуковые карты (M-Audio, Focusrite, Behringer, Steinberg UR, UAD, RME и другие) видны в Windows / macOS как устройства — выберите из списка.	External sound cards (M-Audio, Focusrite, Behringer, Steinberg UR, UAD, RME and others) appear as devices in Windows / macOS — pick one from the list.
+Bu sahifa Claude ichida ochilgan — bu yerda chiqish qurilmasini tanlash cheklangan bo'lishi mumkin. To'liq imkoniyat o'rnatilgan dasturda.	Эта страница открыта внутри Claude — выбор устройства вывода здесь может быть ограничен. Полные возможности — в установленной программе.	This page is open inside Claude — choosing an output device may be limited here. Full support is in the installed app.
+Qurilma nomlari yashirin — brauzer mikrofon ruxsatisiz nomlarni ko'rsatmaydi.	Названия устройств скрыты — браузер не показывает их без доступа к микрофону.	Device names are hidden — the browser does not show them without microphone permission.
+Asosiy chiqish (zal karnaylari · Master)	Основной выход (колонки зала · Master)	Main output (hall speakers · Master)
+Tizim standarti	Системное по умолчанию	System default
+Bu brauzer chiqish qurilmasini tanlashni qo'llamaydi (Chrome / Edge 110+ yoki o'rnatilgan dastur kerak).	Этот браузер не поддерживает выбор устройства вывода (нужен Chrome / Edge 110+ или установленная программа).	This browser cannot choose an output device (Chrome / Edge 110+ or the installed app is needed).
+Quloqchin (monitor) chiqishi — ▶ tinglash zalga chiqmaydi	Выход на наушники (монитор) — ▶ прослушивание не идёт в зал	Headphone (monitor) output — ▶ previews stay out of the hall
+O'chiq — tinglash ham zalga chiqadi	Выкл — прослушивание тоже идёт в зал	Off — previews also go to the hall
+Bu brauzerda alohida quloqchin chiqishi yo'q.	В этом браузере нет отдельного выхода на наушники.	This browser has no separate headphone output.
+Mikrofon kirishi (dublaj)	Вход микрофона (дубляж)	Microphone input (dubbing)
+1-kirish (chap)	Вход 1 (левый)	Input 1 (left)
+2-kirish (o'ng)	Вход 2 (правый)	Input 2 (right)
+Stereo (1+2)	Стерео (1+2)	Stereo (1+2)
+Kechikish (bufer)	Задержка (буфер)	Latency (buffer)
+Past (tavsiya) — jonli spektakl uchun	Низкая (рекомендуется) — для живого спектакля	Low (recommended) — for live shows
+Juda past ≈5 ms — kuchli karta / ASIO o'rnidagi rejim	Очень низкая ≈5 мс — мощная карта / режим вместо ASIO	Very low ≈5 ms — strong card / ASIO-like mode
+O'rtacha — barqaror	Средняя — стабильно	Medium — stable
+Yuqori — eng barqaror (kuchsiz kompyuter)	Высокая — самая стабильная (слабый компьютер)	High — most stable (weak computer)
+Qurilma bo'yicha	По устройству	Device default
+Hozirgi chastota	Текущая частота	Current sample rate
+Hozirgi kechikish	Текущая задержка	Current latency
+Chiqish	Выход	Output
+Quloqchin	Наушники	Headphones
+o'chiq	выкл	off
+Kechikish va chastota o'zgarishi dastur qayta yuklanganda qo'llanadi.	Изменения задержки и частоты применяются после перезагрузки программы.	Latency and sample-rate changes apply after the app reloads.
+ASIO haqida:	Об ASIO:	About ASIO:
+dastur Windows audio tizimi (WASAPI) orqali ishlaydi, ASIO drayverini to'g'ridan-to'g'ri ochmaydi. Kartangizni shu ro'yxatdan tanlang va kechikishni "Juda past" qiling. Agar karta boshqa dasturda (Cubase) ASIO bilan band bo'lsa, Windows ovoz sozlamalarida "Exclusive mode" ni o'chiring — shunda ikkalasi birga ishlaydi.	программа работает через аудиосистему Windows (WASAPI) и не открывает ASIO-драйвер напрямую. Выберите карту из списка и поставьте задержку «Очень низкая». Если карта занята ASIO в другой программе (Cubase), отключите «Монопольный режим» в настройках звука Windows — тогда обе будут работать вместе.	the app works through the Windows audio system (WASAPI) and does not open the ASIO driver directly. Pick your card from the list and set latency to "Very low". If the card is held by ASIO in another program (Cubase), turn off "Exclusive mode" in Windows sound settings so both can run together.
+Quloqchinda sinov	Тест в наушниках	Headphone test
+Qayta yuklash va qo'llash	Перезагрузить и применить	Reload and apply
+Quloqchin chiqishi tanlanmagan	Выход на наушники не выбран	No headphone output selected
+Kechikish / chastota keyingi ishga tushirishda qo'llanadi	Задержка / частота применятся при следующем запуске	Latency / sample rate apply on next start
+Chiqish:	Выход:	Output:
+Quloqchin chiqishi:	Выход на наушники:	Headphone output:
+Quloqchin chiqishi o'chirildi	Выход на наушники выключен	Headphone output off
+Mikrofon kirishi:	Вход микрофона:	Microphone input:
+-kirish	-й вход	input
+O'zgarish saqlandi — qo'llash uchun “Qayta yuklash va qo'llash” ni bosing (ish avtomatik saqlangan).	Изменение сохранено — нажмите «Перезагрузить и применить» (работа сохранена автоматически).	Change saved — press “Reload and apply” (your work is saved automatically).
+Chiqish qurilmasini tanlab bo'lmadi:	Не удалось выбрать устройство вывода:	Could not select the output device:
+Quloqchin chiqishini tanlab bo'lmadi:	Не удалось выбрать выход на наушники:	Could not select the headphone output:
+Saqlangan qurilma topilmadi:	Сохранённое устройство не найдено:	Saved device not found:
+— ulanganini tekshiring. Hozir standart qurilma ishlayapti.	— проверьте подключение. Сейчас работает устройство по умолчанию.	— check it is connected. The default device is used for now.
+Tanlangan kirish topilmadi — standart mikrofon ishlatildi	Выбранный вход не найден — использован микрофон по умолчанию	Selected input not found — default microphone used
+Ovoz kartasi uzildi:	Звуковая карта отключена:	Sound card disconnected:
+— standart chiqishga o'tildi	— переключено на выход по умолчанию	— switched to the default output
+Ovoz kartasi qayta ulandi:	Звуковая карта снова подключена:	Sound card reconnected:
+Qurilma	Устройство	Device

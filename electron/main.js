@@ -55,6 +55,7 @@ const TR = {
   'Ekranga moslash': ['Подогнать под экран', 'Fit to screen'],
   'Yordam': ['Справка', 'Help'],
   'Ovoz tekshiruvi': ['Проверка звука', 'Sound check'],
+  'Audio qurilma (ovoz kartasi)…': ['Аудиоустройство (звуковая карта)…', 'Audio device (sound card)…'],
   'Baza va jurnal': ['База и журнал', 'Database and log'],
   'Til': ['Язык', 'Language'],
   'Loyihani saqlash': ['Сохранить проект', 'Save project'],
@@ -239,6 +240,7 @@ function buildMenu() {
       { label: tl('Til'), submenu: [['uz', 'O\'zbekcha'], ['ru', 'Русский'], ['en', 'English']].map(([k, n]) => ({ label: n, type: 'radio', checked: LANG === k, click: () => { if (win) win.webContents.send('menu', 'lang:' + k); } })) }
     ]},
     { label: tl('Yordam'), submenu: [
+      { label: tl('Audio qurilma (ovoz kartasi)…'), accelerator: 'CmdOrCtrl+Shift+D', click: () => send('audiodev') },
       { label: tl('Ovoz tekshiruvi'), click: () => send('diag') },
       { label: tl('Baza va jurnal'), click: () => send('db') },
       { type: 'separator' },
@@ -259,8 +261,8 @@ if (!app.requestSingleInstanceLock()) {
   app.on('open-file', (e, p) => { e.preventDefault(); if (win && win.isVisible()) win.webContents.send('open-file', p); else launchFile = p; }); // macOS
   app.whenReady().then(() => {
     // Jonli dublaj uchun mikrofon: faqat o'z sahifamizga ruxsat
-    session.defaultSession.setPermissionRequestHandler((wc, perm, cb, details) => cb(perm === 'media' && (!details.mediaTypes || details.mediaTypes.every(t => t === 'audio'))));
-    session.defaultSession.setPermissionCheckHandler((wc, perm) => perm === 'media');
+    session.defaultSession.setPermissionRequestHandler((wc, perm, cb, details) => cb(perm === 'speaker-selection' || (perm === 'media' && (!details.mediaTypes || details.mediaTypes.every(t => t === 'audio')))));
+    session.defaultSession.setPermissionCheckHandler((wc, perm) => perm === 'media' || perm === 'speaker-selection');
     if (process.platform === 'darwin') systemPreferences.askForMediaAccess('microphone').catch(() => {});
     base(); buildMenu(); createSplash(); createMain();
     app.on('activate', () => { if (!win) createMain(); });

@@ -3,6 +3,19 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.7.0: Audio qurilma (tashqi ovoz kartalari)
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Qayerda | **Yordam → Audio qurilma** (Ctrl+Shift+D) yoki OVOZ belgisi → "Audio qurilma…" |
+| Asosiy chiqish | Zal karnaylari (Master) uchun qurilma: M-Audio, Focusrite, Behringer, Steinberg UR, UAD, RME va boshqa kartalar — o'ynab turganda ham darhol almashadi |
+| Quloqchin (monitor) | ▶ tinglash ovozlari alohida chiqishga (masalan kartaning 3-4 yoki quloqchin chiqishi) — zalga chiqmaydi; "Quloqchinda sinov" |
+| Mikrofon kirishi | Kirish qurilmasi va kanal: 1-kirish, 2-kirish yoki stereo (masalan XLR mikrofon 2-kirishda) |
+| Kechikish | Past (tavsiya) · Juda past ≈5 ms · 10 / 20 ms · O'rtacha · Yuqori |
+| Chastota | Qurilma bo'yicha · 44.1 / 48 / 88.2 / 96 kHz |
+| Uzilish | Karta uzilsa — standart chiqishga o'tadi va xabar beradi; qayta ulansa — o'zi qaytadi; tanlov saqlanadi |
+| ASIO | Dastur Windows audio tizimi (WASAPI) orqali ishlaydi va ASIO drayverini to'g'ridan-to'g'ri ochmaydi; karta ro'yxatdan tanlanadi. Cubase bilan birga ishlatish uchun Windows'da "Exclusive mode" o'chiriladi |
+
 ## 1.6.1: Avto saqlash tugmasi · End va Home
 
 | Bo'lim | Nima qilindi |

@@ -613,8 +613,84 @@ function makeBus(name){
  if(name!=='master')b.mute.connect(masterIn);
  return b;
 }
+/* ---------- Audio qurilma: chiqish, quloqchin (monitor), kirish, kechikish, chastota ---------- */
+const AUD_KEY='sahnaOvozi.audio';
+const AUD=Object.assign({out:'',outName:'',mon:'',monName:'',inp:'',inpName:'',inCh:'1',lat:'interactive',sr:0},(()=>{try{return JSON.parse(localStorage.getItem(AUD_KEY)||'{}');}catch(e){return {};}})());
+const audSave=()=>{try{localStorage.setItem(AUD_KEY,JSON.stringify(AUD));}catch(e){}};
+const LAT_OPTS=[['interactive',"Past (tavsiya) — jonli spektakl uchun"],['0.005',"Juda past ≈5 ms — kuchli karta / ASIO o'rnidagi rejim"],['0.01',"≈10 ms"],['0.02',"≈20 ms"],['balanced',"O'rtacha — barqaror"],['playback',"Yuqori — eng barqaror (kuchsiz kompyuter)"]];
+const SR_OPTS=[[0,'Qurilma bo\'yicha'],[44100,'44 100 Hz'],[48000,'48 000 Hz'],[88200,'88 200 Hz'],[96000,'96 000 Hz']];
+const canSink=()=>typeof AudioContext!=='undefined'&&'setSinkId' in AudioContext.prototype;
+const canElSink=()=>typeof HTMLMediaElement!=='undefined'&&'setSinkId' in HTMLMediaElement.prototype;
+function audCtxOpts(){const o={};o.latencyHint=/^\d/.test(AUD.lat)?+AUD.lat:AUD.lat;if(AUD.sr)o.sampleRate=AUD.sr;return o;}
+function newCtx(){const C=window.AudioContext||window.webkitAudioContext;try{return new C(audCtxOpts());}catch(e){try{return new C({latencyHint:'interactive'});}catch(e2){return new C();}}}
+async function audApplyOut(quiet){
+ if(!ctx||!canSink())return false;
+ try{await ctx.setSinkId(AUD.out||'');return true;}
+ catch(e){if(!quiet)toast('Chiqish qurilmasini tanlab bo\'lmadi: '+(e.message||e.name));try{await ctx.setSinkId('');}catch(e2){}return false;}
+}
+/* quloqchin (monitor) chiqishi: ▶ tinglash ovozlari zal karnayiga emas, alohida qurilmaga */
+let mon=null;
+function monOn(){return !!(mon&&AUD.mon);}
+async function audApplyMon(){
+ if(!ctx)return;
+ if(!AUD.mon||!canElSink()){if(mon){try{mon.el.pause();mon.el.srcObject=null;mon.bus.disconnect();}catch(e){}mon=null;}return;}
+ if(!mon){const bus=ctx.createGain(),dest=ctx.createMediaStreamDestination();bus.connect(dest);const el=new Audio();el.srcObject=dest.stream;el.autoplay=true;mon={bus,dest,el};}
+ try{await mon.el.setSinkId(AUD.mon);await mon.el.play().catch(()=>{});}
+ catch(e){toast('Quloqchin chiqishini tanlab bo\'lmadi: '+(e.message||e.name));try{mon.el.pause();mon.el.srcObject=null;mon.bus.disconnect();}catch(e2){}mon=null;return false;}
+ return true;
+}
+async function audDevices(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.enumerateDevices)return {outs:[],ins:[],named:false};
+ let list=await navigator.mediaDevices.enumerateDevices();
+ let named=list.some(d=>d.label);
+ if(!named&&micOk()){try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());list=await navigator.mediaDevices.enumerateDevices();named=list.some(d=>d.label);}catch(e){}}
+ const clean=a=>a.filter(d=>d.deviceId&&d.deviceId!=='default'&&d.deviceId!=='communications');
+ return {outs:clean(list.filter(d=>d.kind==='audiooutput')),ins:clean(list.filter(d=>d.kind==='audioinput')),named};
+}
+function devName(id,arr,fallback){if(!id)return fallback;const d=arr.find(x=>x.deviceId===id);return d?(d.label||'Qurilma'):null;}
+async function audioDevMenu(){
+ if(!ctx){toast('Avval ovozni yoqing');return;}
+ const {outs,ins,named}=await audDevices();
+ const opt=(arr,cur,def)=>'<option value="">'+esc(def)+'</option>'+arr.map(d=>'<option value="'+esc(d.deviceId)+'"'+(d.deviceId===cur?' selected':'')+'>'+esc(d.label||('Qurilma '+d.deviceId.slice(0,6)))+'</option>').join('');
+ const lost=(id,arr,nm)=>id&&!arr.some(d=>d.deviceId===id)?'<div class="warn">Saqlangan qurilma topilmadi: '+esc(nm||'—')+' — ulanganini tekshiring. Hozir standart qurilma ishlayapti.</div>':'';
+ const latNow=((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000;
+ const sinkOk=canSink(),elOk=canElSink();
+ const body=
+  '<p class="hint">Tashqi ovoz kartalari (M-Audio, Focusrite, Behringer, Steinberg UR, UAD, RME va boshqalar) Windows / macOS tizimida qurilma sifatida ko\'rinadi — shu ro\'yxatdan tanlang.</p>'+
+  (IS_FRAME?'<div class="warn">Bu sahifa Claude ichida ochilgan — bu yerda chiqish qurilmasini tanlash cheklangan bo\'lishi mumkin. To\'liq imkoniyat o\'rnatilgan dasturda.</div>':'')+
+  (!named?'<div class="warn">Qurilma nomlari yashirin — brauzer mikrofon ruxsatisiz nomlarni ko\'rsatmaydi.</div>':'')+
+  '<div class="field"><span class="flabel">Asosiy chiqish (zal karnaylari · Master)</span>'+(sinkOk?'<select class="inp" id="adOut">'+opt(outs,AUD.out,'Tizim standarti')+'</select>':'<div class="warn">Bu brauzer chiqish qurilmasini tanlashni qo\'llamaydi (Chrome / Edge 110+ yoki o\'rnatilgan dastur kerak).</div>')+lost(AUD.out,outs,AUD.outName)+'</div>'+
+  '<div class="field"><span class="flabel">Quloqchin (monitor) chiqishi — ▶ tinglash zalga chiqmaydi</span>'+(elOk?'<select class="inp" id="adMon">'+opt(outs,AUD.mon,'O\'chiq — tinglash ham zalga chiqadi')+'</select>':'<div class="warn">Bu brauzerda alohida quloqchin chiqishi yo\'q.</div>')+lost(AUD.mon,outs,AUD.monName)+'</div>'+
+  '<div class="field"><span class="flabel">Mikrofon kirishi (dublaj)</span><div class="frow"><select class="inp" id="adIn" style="flex:1">'+opt(ins,AUD.inp,'Tizim standarti')+'</select><select class="inp" id="adCh" style="width:auto">'+[['1','1-kirish (chap)'],['2','2-kirish (o\'ng)'],['st','Stereo (1+2)']].map(([v,l])=>'<option value="'+v+'"'+(AUD.inCh===v?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+lost(AUD.inp,ins,AUD.inpName)+'</div>'+
+  '<div class="field"><span class="flabel">Kechikish (bufer)</span><select class="inp" id="adLat">'+LAT_OPTS.map(([v,l])=>'<option value="'+v+'"'+(AUD.lat===v?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
+  '<div class="field"><span class="flabel">Namuna chastotasi</span><select class="inp" id="adSr">'+SR_OPTS.map(([v,l])=>'<option value="'+v+'"'+(+AUD.sr===v?' selected':'')+'>'+l+'</option>').join('')+'</select></div>'+
+  '<table class="dtab"><tr><td>Hozirgi chastota</td><td class="mono">'+ctx.sampleRate+' Hz</td></tr><tr><td>Hozirgi kechikish</td><td class="mono">≈ '+latNow.toFixed(1)+' ms</td></tr><tr><td>Chiqish</td><td>'+esc(devName(AUD.out,outs,'Tizim standarti')||AUD.outName||'—')+'</td></tr><tr><td>Quloqchin</td><td>'+esc(AUD.mon?(devName(AUD.mon,outs,'')||AUD.monName):'o\'chiq')+'</td></tr></table>'+
+  '<div class="hint" id="adNote" style="margin-top:8px">Kechikish va chastota o\'zgarishi dastur qayta yuklanganda qo\'llanadi.</div>'+
+  '<p class="hint"><b>ASIO haqida:</b> dastur Windows audio tizimi (WASAPI) orqali ishlaydi, ASIO drayverini to\'g\'ridan-to\'g\'ri ochmaydi. Kartangizni shu ro\'yxatdan tanlang va kechikishni "Juda past" qiling. Agar karta boshqa dasturda (Cubase) ASIO bilan band bo\'lsa, Windows ovoz sozlamalarida "Exclusive mode" ni o\'chiring — shunda ikkalasi birga ishlaydi.</p>';
+ let restart=false;
+ openModal('Audio qurilma',body,[
+  {label:'Sinov signali (1 kHz)',fn:()=>{beep();return false;}},
+  {label:'Quloqchinda sinov',fn:()=>{if(!monOn()){toast('Quloqchin chiqishi tanlanmagan');return false;}monBeep();return false;}},
+  {label:'Qayta yuklash va qo\'llash',cls:'primary',fn:()=>{audSave();logEvent('Audio sozlama: qayta yuklash');setTimeout(()=>location.reload(),150);}},
+  {label:'Yopish',fn:()=>{if(restart)toast('Kechikish / chastota keyingi ishga tushirishda qo\'llanadi');}}],
+ {change:async e=>{
+  const id=e.target.id,v=e.target.value,nm=e.target.selectedOptions&&e.target.selectedOptions[0]?e.target.selectedOptions[0].textContent:'';
+  if(id==='adOut'){AUD.out=v;AUD.outName=v?nm:'';audSave();if(await audApplyOut()){toast('Chiqish: '+(v?nm:'Tizim standarti'));logEvent('Audio chiqish: '+(v?nm:'Tizim standarti'));}}
+  else if(id==='adMon'){AUD.mon=v;AUD.monName=v?nm:'';audSave();if(await audApplyMon()!==false)toast(v?'Quloqchin chiqishi: '+nm:'Quloqchin chiqishi o\'chirildi');logEvent('Quloqchin chiqishi: '+(v?nm:'o\'chiq'));}
+  else if(id==='adIn'||id==='adCh'){if(id==='adIn'){AUD.inp=v;AUD.inpName=v?nm:'';}else AUD.inCh=v;audSave();if(mic){await toggleMic();await toggleMic();}toast('Mikrofon kirishi: '+(AUD.inpName||'Tizim standarti')+' · '+(AUD.inCh==='st'?'Stereo':AUD.inCh+'-kirish'));}
+  else if(id==='adLat'){AUD.lat=v;audSave();restart=true;}
+  else if(id==='adSr'){AUD.sr=+v;audSave();restart=true;}
+  if(restart){const n=document.getElementById('adNote');if(n){n.textContent='O\'zgarish saqlandi — qo\'llash uchun “Qayta yuklash va qo\'llash” ni bosing (ish avtomatik saqlangan).';n.style.color='#F2A93B';}}
+ }});
+}
+function monBeep(){if(!monOn())return;const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=1000;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.25,ctx.currentTime+.02);g.gain.setValueAtTime(.25,ctx.currentTime+.5);g.gain.linearRampToValueAtTime(0,ctx.currentTime+.55);o.connect(g);g.connect(mon.bus);o.start();o.stop(ctx.currentTime+.6);}
+if(navigator.mediaDevices&&navigator.mediaDevices.addEventListener)navigator.mediaDevices.addEventListener('devicechange',async()=>{
+ if(!ctx)return;const {outs}=await audDevices();
+ if(AUD.out&&!outs.some(d=>d.deviceId===AUD.out)){toast('Ovoz kartasi uzildi: '+(AUD.outName||'qurilma')+' — standart chiqishga o\'tildi');logEvent('Audio chiqish uzildi: '+(AUD.outName||''));}
+ else if(AUD.out&&ctx.sinkId!==AUD.out){if(await audApplyOut(true))toast('Ovoz kartasi qayta ulandi: '+AUD.outName);}
+});
 function initAudio(){
- ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+ ctx=newCtx();
  masterIn=ctx.createGain();buses.master=makeBus('master');
  masterIn.connect(buses.master.input);buses.master.input.connect(buses.master.fader);
  limiter=ctx.createDynamicsCompressor();limiter.threshold.value=-2;limiter.knee.value=0;limiter.ratio.value=20;limiter.attack.value=.002;limiter.release.value=.15;
@@ -625,6 +701,7 @@ function initAudio(){
  dub.in=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.verbIns=makeVerb(dub.out,buses.dub.fader,null);buildDubFx();
  for(const n in buses)applyFader(n);
  ctx.onstatechange=()=>updateBadge();
+ if(AUD.out)audApplyOut(true);if(AUD.mon)audApplyMon();
 }
 function faderToGain(v){return v<=0?0:dbToG((v-80)*0.75);}
 function faderDb(v){if(v<=0)return '−∞';const d=(v-80)*0.75;return (d>0?'+':'')+d.toFixed(1).replace('-','−');}
@@ -668,8 +745,12 @@ async function toggleMic(){
  if(!ctx)return;
  if(mic){try{mic.src.disconnect();}catch(e){}mic.stream.getTracks().forEach(t=>t.stop());mic=null;renderMic();logEvent('Jonli mikrofon o\'chirildi');return;}
  try{
-  const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,latency:0,channelCount:1}});
-  const src=ctx.createMediaStreamSource(st);src.connect(buses.dub.input);mic={stream:st,src,name:(st.getAudioTracks()[0]||{}).label||'Mikrofon'};
+  const cons={echoCancellation:false,noiseSuppression:false,autoGainControl:false,latency:0,channelCount:AUD.inCh==='1'?1:2};if(AUD.inp)cons.deviceId={exact:AUD.inp};
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:cons});}catch(e1){if(!AUD.inp)throw e1;delete cons.deviceId;st=await navigator.mediaDevices.getUserMedia({audio:cons});toast('Tanlangan kirish topilmadi — standart mikrofon ishlatildi');}
+  const src=ctx.createMediaStreamSource(st);
+  if(AUD.inCh==='2'){const sp=ctx.createChannelSplitter(2),g=ctx.createGain();src.connect(sp);sp.connect(g,1);g.connect(buses.dub.input);}
+  else if(AUD.inCh==='1'&&(st.getAudioTracks()[0].getSettings().channelCount||1)>1){const sp=ctx.createChannelSplitter(2),g=ctx.createGain();src.connect(sp);sp.connect(g,0);g.connect(buses.dub.input);}
+  else src.connect(buses.dub.input);mic={stream:st,src,name:(st.getAudioTracks()[0]||{}).label||'Mikrofon'};
   renderMic();logEvent('Jonli mikrofon yoqildi: '+mic.name);
   toast('Mikrofon jonli: '+mic.name+' — akustik qaytish bo\'lmasligi uchun karnaydan uzoqroq tuting');
  }catch(e){toast('Mikrofonga ruxsat berilmadi yoki qurilma topilmadi');}
@@ -1120,7 +1201,7 @@ function play(id,bus,o){
  const lvl0=dbToG(gainFor(id))*(o.level==null?1:o.level),lvl=lvl0*(o.cue?dbToG(o.cue.g||0):1),now=ctx.currentTime,fi=o.fadeIn||0;
  if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
  src.connect(g);
- const out=buses[bus].input;let vi=null;
+ const out=o.preview&&monOn()?mon.bus:buses[bus].input;let vi=null;
  if(o.verb&&o.verb.on)vi=makeVerb(g,out,o.verb);else g.connect(out);
  const m=META[id]||{};let off=0;const base=(!overrides[id]&&m.loop)?m.loopStart:0;
  const tr=o.trim&&o.trim.e>o.trim.s?o.trim:null;let dur=buf.duration,regLen;const off0=Math.max(0,o.offset||0);
@@ -1473,7 +1554,7 @@ async function runDiag(auto){
  else verdict='Audio dvigatel ishlayapti. “Sinov signali”ni bosing va <b>Master</b> indikatoriga qarang: <br>• Indikator sakrasa, lekin eshitilmasa — muammo kompyuterda: brauzer vkladkasi ovozi o\'chirilgan (vkladkada karnay belgisi), Windows ovoz mikserida brauzer past, yoki boshqa chiqish qurilmasi (HDMI, Bluetooth, ovoz kartasi) tanlangan.'+(ios?'<br>• iPhone/iPad: yon tomondagi ovozsiz rejim (silent) tugmasini o\'chiring.':'');
  openModal('Ovoz tekshiruvi',(auto?'<div class="warn">Brauzer ovozni yoqishga ruxsat bermadi. Quyidagi natijaga qarang.</div>':'')+'<table class="dtab">'+rows.join('')+'</table><div class="warn" style="background:#16181D;border-color:var(--line2);color:var(--text)">'+verdict+'</div><p class="hint">Master indikatori sinov paytida: <span class="mono" id="dPk">—</span></p>',
   [{label:'Sinov signali (1 kHz)',cls:'primary',fn:()=>{beep();let n=0;const iv=setInterval(()=>{const pk=peakOf(buses.master.aL);const el=document.getElementById('dPk');if(el)el.textContent=pk>0.01?'sakrayapti ✓ ('+(20*Math.log10(pk)).toFixed(1)+' dB) — dastur ovoz chiqaryapti':'jim';if(++n>12)clearInterval(iv);},100);setTimeout(updateBadge,300);return false;}},
-   {label:'Qayta tekshirish',fn:()=>{setTimeout(()=>runDiag(false),50);}},{label:'Yopish',fn:()=>{}}]);
+   {label:'Audio qurilma…',fn:()=>{setTimeout(audioDevMenu,50);}},{label:'Qayta tekshirish',fn:()=>{setTimeout(()=>runDiag(false),50);}},{label:'Yopish',fn:()=>{}}]);
 }
 
 
@@ -2062,7 +2143,7 @@ $('#zoomOut').addEventListener('click',e=>{e.stopPropagation();zoomStep(-1);});
 $('#zoomV').addEventListener('click',e=>{e.stopPropagation();zoomMenu();});
 $('#homeBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)showHub('home');});
 if(NATIVE){
- azNative.onMenu(cmd=>{if(/^lang:/.test(cmd)){if(window.AZ_I18N)window.AZ_I18N.setLang(cmd.slice(5));return;}if(!ctx)return;if(cmd==='musoff'||cmd==='atmoff'||cmd==='alloff'){const b=$('#'+(cmd==='musoff'?'musOff':cmd==='atmoff'?'atmOff':'allOff'));if(b)b.click();return;}if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
+ azNative.onMenu(cmd=>{if(/^lang:/.test(cmd)){if(window.AZ_I18N)window.AZ_I18N.setLang(cmd.slice(5));return;}if(!ctx)return;if(cmd==='audiodev'){if(modalOpen())closeModal();audioDevMenu();return;}if(cmd==='musoff'||cmd==='atmoff'||cmd==='alloff'){const b=$('#'+(cmd==='musoff'?'musOff':cmd==='atmoff'?'atmOff':'allOff'));if(b)b.click();return;}if(modalOpen()&&!['save','saveas'].includes(cmd))closeModal();
   ({home:()=>showHub('home'),new:()=>newProjectDialog(),open:()=>guardDirty(()=>openProject().then(()=>{if(!proj.dirty)hideHub();})),save:()=>saveProject(false),saveas:()=>saveProject(true),
     edit:()=>{hideHub();setEditing(!editing);},lib:()=>{hideHub();$('#libBtn').click();},diag:()=>runDiag(false),db:()=>dbMenu(),go:()=>go(),panic:()=>panic(),about:()=>aboutApp(),profile:()=>editProfile(),
     projects:()=>showHub('projects'),zoomin:()=>zoomStep(1),zoomout:()=>zoomStep(-1),zoomreset:()=>zoomStep(0),zoomfit:()=>zoomFit(),trash:()=>showHub('trash')}[cmd]||(()=>{}))();});
@@ -2096,6 +2177,7 @@ document.addEventListener('keydown',e=>{
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
  if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
+ if(!NATIVE&&(e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&e.code==='KeyD'&&ctx&&!typing(e.target)){e.preventDefault();if(modalOpen())closeModal();audioDevMenu();return;}
  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&e.code==='KeyA'&&ctx&&!typing(e.target)){e.preventDefault();asToggle();return;}
  if(!ctx||e.ctrlKey||e.metaKey||e.altKey)return;
  if(!$('#hub').hidden){if(e.code==='Escape'&&!modalOpen()&&ctx){e.preventDefault();hideHub();}return;}
