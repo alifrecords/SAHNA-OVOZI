@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.5.0: sudrab joylash
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Kutubxona → SFX tugma | Ovozlar kutubxonasidagi sample'ni sichqoncha bilan ushlab (⠿) tugma ustiga tashlash — yuklanadi, tanlanadi va eshittiriladi; sudrash paytida kutubxona chetga suriladi |
+| Bank orqali | Sudrab borib bank yorlig'i ustida biroz to'xtatilsa — o'sha bank ochiladi, keyin tugmaga tashlanadi |
+| Kutubxona → Cue | Sample'ni SFX / Musiqa / Dublaj cue ustiga tashlash — cue ovozi almashadi |
+| Tugma ↔ tugma | SFX tugmani boshqa tugma ustiga sudrash — o'rinlari almashadi |
+| Kompyuterdan | Fayl tugmaga sudrab tashlansa — avvalgidek yuklanadi |
+
 ## 1.4.0: AZ VERB · har bir tugmada pauza/stop · to'lqinda belgilash · jonli gain
 
 | Bo'lim | Nima qilindi |

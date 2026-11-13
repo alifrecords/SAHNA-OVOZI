@@ -324,6 +324,16 @@ header .brand svg{width:24px;height:24px}
 .azviz span{position:absolute;right:8px;top:4px;font-size:10px;color:#9AA0A8}
 .swv{cursor:crosshair;touch-action:none}
 
+.lrow[draggable="true"]{cursor:grab}
+.lrow.dragging{opacity:.45}
+.grip{color:var(--muted);font-size:14px;padding:0 2px;cursor:grab}
+.pad[draggable="true"] .hit{cursor:pointer}
+.pad.dragging{opacity:.45}
+.pad.drag .hit{border-color:var(--teal);border-style:dashed;background:#10211F}
+.cue.dropin{box-shadow:0 0 0 2px var(--teal) inset}
+.bank.dropin{border-color:var(--teal);color:var(--teal)}
+#lib.peek{transform:translateX(38%);opacity:.92}
+body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;border-radius:12px}
 @media (max-width:640px){.faders{grid-template-columns:1fr}}
 @media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
 </style>
@@ -1064,6 +1074,37 @@ document.addEventListener('pointerup',()=>{
 });
 document.addEventListener('dblclick',e=>{if(!(e.target.closest&&e.target.closest('.swv')))return;const p=sbCur();if(!p||!p.trim)return;delete p.trim;saveShow();renderPads();toast('Belgi olib tashlandi — butun fayl');});
 
+/* ---------- sudrab tashlash: kutubxona -> SFX tugma / cue, tugma <-> tugma ---------- */
+let dragAsset=null,dragPad=null,bankHoverT=null;
+function dndClear(){dragAsset=null;dragPad=null;clearTimeout(bankHoverT);document.querySelectorAll('.pad.drag,.lrow.dragging,.pad.dragging,.cue.dropin,.bank.dropin').forEach(x=>x.classList.remove('drag','dragging','dropin'));document.body.classList.remove('dnd-asset');}
+document.addEventListener('dragstart',e=>{
+ const a=e.target.closest&&e.target.closest('[data-dasset]');
+ if(a){dragAsset=a.dataset.dasset;e.dataTransfer.effectAllowed='copy';try{e.dataTransfer.setData('text/plain',titleOf(dragAsset));}catch(_){}a.classList.add('dragging');document.body.classList.add('dnd-asset');
+  // kutubxona tugmalarni yopib qo'ymasin: sudrash boshlanganda biroz suriladi
+  $('#lib').classList.add('peek');return;}
+ const p=e.target.closest&&e.target.closest('.pad[data-dpad]');
+ if(p){dragPad=+p.dataset.dpad;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','pad');}catch(_){}p.classList.add('dragging');}
+});
+document.addEventListener('dragover',e=>{
+ if(dragAsset==null&&dragPad==null)return;
+ const bt=e.target.closest&&e.target.closest('.bank[data-bank]');
+ if(bt){e.preventDefault();if(!bt.classList.contains('dropin')){document.querySelectorAll('.bank.dropin').forEach(x=>x.classList.remove('dropin'));bt.classList.add('dropin');clearTimeout(bankHoverT);bankHoverT=setTimeout(()=>{if(dragPad!=null)return;bank=+bt.dataset.bank;renderPads();},450);}return;}
+ const c=dragAsset!=null&&e.target.closest&&e.target.closest('.cue[data-dcue]');
+ document.querySelectorAll('.cue.dropin').forEach(x=>{if(x!==c)x.classList.remove('dropin');});
+ if(c){const cu=show.cues[+c.dataset.dcue];if(cu&&cu.type!=='atmos'){e.preventDefault();e.dataTransfer.dropEffect='copy';c.classList.add('dropin');}return;}
+});
+document.addEventListener('drop',e=>{
+ if(dragAsset==null)return;const c=e.target.closest&&e.target.closest('.cue[data-dcue]');if(!c)return;e.preventDefault();e.stopPropagation();
+ const i=+c.dataset.dcue,cu=show.cues[i];if(cu&&cu.type!=='atmos'){cu.ref=dragAsset;delete cu.trim;saveShow();renderCues();toast('Q'+(i+1)+' · '+cu.name+' ← '+titleOf(dragAsset));logEvent('Cue ovozi: Q'+(i+1)+' ← '+titleOf(dragAsset));}
+ dndClear();$('#lib').classList.remove('peek');
+},true);
+document.addEventListener('dragend',()=>{dndClear();$('#lib').classList.remove('peek');});
+function padDrop(i,e){
+ if(dragAsset!=null){const id=dragAsset;setPadAsset(i,id,true);selectPad(i);toast('SFX '+KEYS[i][1]+' ← '+titleOf(id));logEvent('SFX '+KEYS[i][1]+' ← '+titleOf(id)+' (sudrab)');return true;}
+ if(dragPad!=null&&dragPad!==i){const P=show.banks[bank].pads,a=dragPad;[P[a],P[i]]=[P[i],P[a]];saveShow();selectPad(i);renderPads();toast('Almashtirildi: '+KEYS[a][1]+' ↔ '+KEYS[i][1]);logEvent('SFX tugmalar almashtirildi: '+KEYS[a][1]+' ↔ '+KEYS[i][1]);return true;}
+ return false;
+}
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
@@ -1320,7 +1361,7 @@ function renderPads(){
  $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
-  return '<div class="pad" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+  return '<div class="pad" data-pad="'+i+'" draggable="true" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+(p.loop?' <span class="muted">∞</span>':(p.t?' <span class="muted">↻</span>':''))+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
  renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
 }
 function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));const ps=!!p&&pausedPads.has(p);el.classList.toggle('paused',ps);const bt=el.querySelector('[data-ppause]');if(bt&&bt.dataset.st!==String(ps)){bt.dataset.st=ps;bt.innerHTML=ps?IC_PLAY:IC_PAUSE;}});}
@@ -1353,9 +1394,9 @@ function renderVoices(){
 }
 function renderLib(){
  const row=id=>{const m=META[id];const ov=overrides[id];const d=durOf(id);const user=m.kind==='user';
-  return '<div class="lrow"><span class="nm">'+esc(m.title)+'<small>'+(user?'fayl: '+esc(m.file||''):(ov?'o\'z fayli: '+esc(ov.name):(d?'tayyor namuna':'bo\'sh')))+(d?' · '+fmt(d):'')+(user&&!assetUsed(id)?' · ishlatilmagan':'')+'</small></span>'+(d?'<button type="button" class="btn" data-prev="'+id+'" aria-label="'+esc(m.title)+' ni tinglash">▶</button>':'')+'<button type="button" class="btn" data-repl="'+id+'">Almashtirish</button>'+(ov?'<button type="button" class="btn" data-reset="'+id+'">Asl</button>':'')+(user?'<button type="button" class="btn danger" data-udel="'+id+'">O\'chirish</button>':'')+'</div>';};
+  return '<div class="lrow"'+(d?' draggable="true" data-dasset="'+id+'" title="Sudrab SFX tugmasi yoki cue ustiga tashlang"':'')+'>'+(d?'<span class="grip" aria-hidden="true">⠿</span>':'')+'<span class="nm">'+esc(m.title)+'<small>'+(user?'fayl: '+esc(m.file||''):(ov?'o\'z fayli: '+esc(ov.name):(d?'tayyor namuna':'bo\'sh')))+(d?' · '+fmt(d):'')+(user&&!assetUsed(id)?' · ishlatilmagan':'')+'</small></span>'+(d?'<button type="button" class="btn" data-prev="'+id+'" aria-label="'+esc(m.title)+' ni tinglash">▶</button>':'')+'<button type="button" class="btn" data-repl="'+id+'">Almashtirish</button>'+(ov?'<button type="button" class="btn" data-reset="'+id+'">Asl</button>':'')+(user?'<button type="button" class="btn danger" data-udel="'+id+'">O\'chirish</button>':'')+'</div>';};
  const g={user:[],sfx:[],atmos:[],music:[],dub:[]};for(const id in META){const k=META[id].kind;(g[k.indexOf('atmos')===0?'atmos':k]||g.user).push(id);}
- let h='<div class="warn">Diqqat: ▶ oldindan tinglash zal karnaylariga chiqadi (brauzerda alohida quloqchin chiqishi yo\'q).</div>';
+ let h='<div class="warn" style="background:#141B29;border-color:#2C3B5C;color:#C9D7F7">Sample\'ni sichqoncha bilan ushlab, chapdagi <b>SFX tugmasi</b> yoki <b>cue</b> ustiga sudrab tashlang. Bank yorlig\'i ustida biroz to\'xtasangiz — o\'sha bank ochiladi.</div><div class="warn">Diqqat: ▶ oldindan tinglash zal karnaylariga chiqadi (brauzerda alohida quloqchin chiqishi yo\'q).</div>';
  h+='<div class="frow"><button type="button" class="btn primary" id="libAdd">+ Kutubxonaga fayl qo\'shish</button></div>';
  ['user','sfx','atmos','music','dub'].forEach(k=>{h+='<div class="lgroup"><h3>'+GROUP_N[k]+'</h3>'+(g[k].length?g[k].map(row).join(''):'<p class="hint">Hali fayl yo\'q.</p>')+'</div>';});
  $('#libBody').innerHTML=h;
@@ -2061,9 +2102,9 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>{if(ctx&&e.code==='Space'&&!typing(e.target)&&!modalOpen())e.preventDefault();},true);
 
 /* drag & drop onto pads */
-document.addEventListener('dragover',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p){e.preventDefault();p.classList.add('drag');}});
+document.addEventListener('dragover',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p){if(dragPad!=null&&+p.dataset.pad===dragPad)return;e.preventDefault();e.dataTransfer.dropEffect=dragAsset!=null?'copy':(dragPad!=null?'move':'copy');document.querySelectorAll('.pad.drag').forEach(x=>{if(x!==p)x.classList.remove('drag');});p.classList.add('drag');}});
 document.addEventListener('dragleave',e=>{const p=e.target.closest&&e.target.closest('.pad');if(p)p.classList.remove('drag');});
-document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest('.pad');if(!p)return;e.preventDefault();p.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)padUpload(+p.dataset.pad,f);});
+document.addEventListener('drop',e=>{const p=e.target.closest&&e.target.closest('.pad');if(!p)return;e.preventDefault();p.classList.remove('drag');if(padDrop(+p.dataset.pad,e)){dndClear();$('#lib').classList.remove('peek');return;}const f=e.dataTransfer.files[0];if(f)padUpload(+p.dataset.pad,f);});
 
 /* ---------- start ---------- */
 async function boot(){
