@@ -17,7 +17,7 @@ for l in open(os.path.join(R, 'src', 'i18n_dict.tsv'), encoding='utf-8'):
     d[k] = [ru, en]
 t = t.replace('/*__I18N_JS__*/', open(os.path.join(R, 'src', 'i18n.js'), encoding='utf-8').read().replace('/*__I18N__*/', json.dumps(d, ensure_ascii=False)))
 page = t.replace('/*__ASSETS__*/', json.dumps(assets)).replace('/*__META__*/', json.dumps(meta, ensure_ascii=False))
-FONTS = '''<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:">
+FONTS = '''<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:">
 <style>
 @font-face{font-family:Inter;src:url(fonts/InterRegular.otf);font-weight:400}
 @font-face{font-family:Inter;src:url(fonts/InterMedium.otf);font-weight:500}

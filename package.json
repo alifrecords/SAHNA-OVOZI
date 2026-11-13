@@ -1,7 +1,7 @@
 {
   "name": "sahna-ovozi",
   "productName": "Sahna Ovozi",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Sahna Ovozi — teatr va dublaj uchun jonli ovoz pulti (Azimxodjayev Music)",
   "author": "Azimxodjayev Music",
   "license": "UNLICENSED",
@@ -10,11 +10,16 @@
   "scripts": {
     "start": "electron .",
     "build:web": "python3 tools/build.py",
-    "pack:win": "electron-packager . \"Sahna Ovozi\" --platform=win32 --arch=x64 --icon=Resources/icon.ico --out=build --overwrite --asar --prune=true --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-copyright=\"Azimxodjayev Music\" --win32metadata.CompanyName=\"Azimxodjayev Music\" --win32metadata.FileDescription=\"Sahna Ovozi\" --win32metadata.ProductName=\"Sahna Ovozi\"",
-    "pack:mac": "electron-packager . \"Sahna Ovozi\" --platform=darwin --arch=universal --icon=Resources/icon.png --out=build --overwrite --asar --prune=true --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-bundle-id=com.azimxodjayevmusic.sahnaovozi --extend-info=installer/macos/extend-info.plist"
+    "pack:win": "electron-packager . \"Sahna Ovozi\" --platform=win32 --arch=x64 --icon=Resources/icon.ico --out=build --overwrite --asar.unpackDir=\"**/{audify,bindings,file-uri-to-path}\" --asar.unpack=\"**/{asio-host.js,*.node}\" --prune=true --ignore=\"/node_modules/audify/(vendor|src)/\" --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-copyright=\"Azimxodjayev Music\" --win32metadata.CompanyName=\"Azimxodjayev Music\" --win32metadata.FileDescription=\"Sahna Ovozi\" --win32metadata.ProductName=\"Sahna Ovozi\"",
+    "pack:mac": "electron-packager . \"Sahna Ovozi\" --platform=darwin --arch=universal --icon=Resources/icon.png --out=build --overwrite --asar.unpackDir=\"**/{audify,bindings,file-uri-to-path}\" --asar.unpack=\"**/{asio-host.js,*.node}\" --prune=true --ignore=\"/node_modules/audify/(vendor|src)/\" --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-bundle-id=com.azimxodjayevmusic.sahnaovozi --extend-info=installer/macos/extend-info.plist",
+    "pack:linux": "electron-packager . \"Sahna Ovozi\" --platform=linux --arch=x64 --icon=Resources/icon.png --out=build --overwrite --asar.unpackDir=\"**/{audify,bindings,file-uri-to-path}\" --asar.unpack=\"**/{asio-host.js,*.node}\" --prune=true --ignore=\"/node_modules/audify/(vendor|src)/\" --ignore=\"^/(src|tools|installer|build|docs|\\.github)\" --app-copyright=\"Azimxodjayev Music\" --win32metadata.CompanyName=\"Azimxodjayev Music\" --win32metadata.FileDescription=\"Sahna Ovozi\" --win32metadata.ProductName=\"Sahna Ovozi\"",
+    "fix:audify": "node tools/audify-napi.js"
   },
   "devDependencies": {
     "@electron/packager": "^18.3.6",
     "electron": "^33.4.11"
+  },
+  "optionalDependencies": {
+    "audify": "1.10.1"
   }
 }

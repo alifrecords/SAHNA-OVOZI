@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  APP_VERSION: 1.7.0
+  APP_VERSION: 1.8.0
 
 jobs:
   windows:
@@ -21,6 +21,8 @@ jobs:
         with: { node-version: 20 }
       - name: Paketlar
         run: npm install --no-audit --no-fund
+      - name: ASIO moduli (audify, N-API 8)
+        run: npm run fix:audify
       - name: Dastur (Electron) yig'ish
         run: npm run pack:win
       - name: O'rnatuvchi (Inno Setup)
@@ -45,6 +47,8 @@ jobs:
         with: { node-version: 20 }
       - name: Paketlar
         run: npm install --no-audit --no-fund
+      - name: ASIO moduli macOS'da kerak emas (Universal yig'ish uchun olib tashlanadi)
+        run: rm -rf node_modules/audify
       - name: Dastur (Universal) yig'ish
         run: npm run pack:mac
       - name: Paketlash

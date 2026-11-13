@@ -3,6 +3,19 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.8.0: ASIO (ASIO4ALL v2, M-Audio va boshqalar) · Audioni sozlash
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| **ASIO** | Yordam → Audio qurilma → **Dvigatel: ASIO drayver**. Kompyuterdagi barcha ASIO drayverlar ro'yxatda: **ASIO4ALL v2**, M-Audio, Focusrite, Steinberg, UAD, RME… |
+| ASIO sozlamalari | Chiqish kanallari (1–2, 3–4, …), mikrofon kirishi (dublaj uchun ASIO kirishi), chastota, bufer (drayver bo'yicha / 64…1024), xavfsizlik zaxirasi; holat: kechikish ≈ ms va uzilishlar soni |
+| Qanday ishlaydi | Pult Web Audio'da miks qiladi, Master signal AudioWorklet orqali alohida audio jarayonga (RtAudio) uzatiladi va ASIO drayverga yoziladi. Drayver xato bersa — dastur yopilmaydi, ovoz tizim chiqishiga o'tadi |
+| **Normalize** | Tanlangan parcha cho'qqisini −0.1 … −12 dBFS ga keltiradi (kerakli kuchaytirish ko'rsatiladi) |
+| **Avto balans** | Chap / o'ng kanal farqini (RMS) hisoblab tenglaydi; L−R farqi ko'rsatiladi |
+| **Maximizer** | Kuchaytirish 0–18 dB + ship (−0.1 … −3 dB): kompressor-limiter va yumshoq cheklash |
+| **Envelope** | To'lqin ostidagi chiziqda nuqtalar: bosish — qo'shish, sudrash — surish, 2× — o'chirish (+6 … −30 dB) |
+| Asl fayl | O'zgarmaydi — sozlamalar SFX tugma / cue bilan loyihada saqlanadi; "Yangi ovoz qilib saqlash" ishlov berilgan WAV yaratadi |
+
 ## 1.7.0: Audio qurilma (tashqi ovoz kartalari)
 
 | Bo'lim | Nima qilindi |

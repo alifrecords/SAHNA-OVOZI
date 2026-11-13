@@ -8,6 +8,7 @@ const { app, BrowserWindow, Menu, ipcMain, dialog, shell, session, systemPrefere
 const path = require('path');
 const fs = require('fs');
 const fsp = fs.promises;
+const asio = require('./asio');
 
 const APP_NAME = 'Sahna Ovozi';
 const VERSION = app.getVersion();
@@ -143,6 +144,7 @@ ipcMain.handle('dlg-open', async e => {
   });
   return r.canceled || !r.filePaths[0] ? null : r.filePaths[0];
 });
+const asioCtl = asio.register(() => win);
 ipcMain.handle('reveal', (_e, id) => { shell.showItemInFolder(resolveId(id)); return true; });
 ipcMain.handle('open-docs', () => shell.openPath(base()));
 ipcMain.on('version', e => { e.returnValue = VERSION; });
@@ -177,6 +179,7 @@ function createMain() {
     }
   });
   win.loadFile(path.join(ROOT, 'app', 'index.html'));
+  asioCtl.hook();
   win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) { e.preventDefault(); shell.openExternal(url); } });
   win.on('close', e => { if (allowClose) return; e.preventDefault(); win.webContents.send('close-request'); });
@@ -259,6 +262,7 @@ if (!app.requestSingleInstanceLock()) {
     if (win) { if (win.isMinimized()) win.restore(); win.focus(); if (f) win.webContents.send('open-file', f); }
   });
   app.on('open-file', (e, p) => { e.preventDefault(); if (win && win.isVisible()) win.webContents.send('open-file', p); else launchFile = p; }); // macOS
+  app.on('will-quit', () => asio.stop());
   app.whenReady().then(() => {
     // Jonli dublaj uchun mikrofon: faqat o'z sahifamizga ruxsat
     session.defaultSession.setPermissionRequestHandler((wc, perm, cb, details) => cb(perm === 'speaker-selection' || (perm === 'media' && (!details.mediaTypes || details.mediaTypes.every(t => t === 'audio')))));

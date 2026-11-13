@@ -25,7 +25,17 @@ contextBridge.exposeInMainWorld('azNative', {
   ready: () => ipcRenderer.send('ready'),
   closeNow: () => ipcRenderer.send('close-now'),
   setLang: l => ipcRenderer.send('set-lang', l),
+  asioList: api => ipcRenderer.invoke('asio-list', api),
+  asioStart: cfg => ipcRenderer.invoke('asio-start', cfg),
+  asioStop: () => ipcRenderer.invoke('asio-stop'),
+  asioInfo: () => ipcRenderer.invoke('asio-info'),
+  onAsioDead: cb => ipcRenderer.on('asio-dead', (_e, c) => cb(c)),
   onMenu: cb => ipcRenderer.on('menu', (_e, c) => cb(c)),
   onOpenFile: cb => ipcRenderer.on('open-file', (_e, p) => cb(p)),
   onCloseRequest: cb => ipcRenderer.on('close-request', () => cb())
+});
+
+// ASIO: sahifadagi AudioWorklet porti asosiy jarayonga to'g'ridan-to'g'ri uzatiladi
+window.addEventListener('message', e => {
+  if (e.data && e.data.azAsioPort && e.ports && e.ports[0]) ipcRenderer.postMessage('asio-port', null, [e.ports[0]]);
 });

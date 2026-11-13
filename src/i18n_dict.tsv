@@ -702,3 +702,52 @@ Ovoz kartasi uzildi:	Звуковая карта отключена:	Sound card 
 — standart chiqishga o'tildi	— переключено на выход по умолчанию	— switched to the default output
 Ovoz kartasi qayta ulandi:	Звуковая карта снова подключена:	Sound card reconnected:
 Qurilma	Устройство	Device
+🎚 Audioni sozlash	🎚 Обработка звука	🎚 Audio processing
+Normalize	Нормализация	Normalize
+Avto balans (L / R)	Автобаланс (L / R)	Auto balance (L / R)
+Maximizer	Максимайзер	Maximizer
+Kuchaytirish	Усиление	Drive
+Ship	Потолок	Ceiling
+Envelope (balandlik chizig'i)	Огибающая (линия громкости)	Envelope (volume line)
+Chiziqni tozalash	Сбросить линию	Reset line
+Envelope: bosish — nuqta qo'shish, sudrash — surish, 2× bosish — nuqtani o'chirish. Chiziq tanlangan parcha bo'yicha ishlaydi.	Огибающая: клик — добавить точку, перетаскивание — сдвинуть, двойной клик — удалить точку. Линия действует на выбранный фрагмент.	Envelope: click — add a point, drag — move, double-click — delete a point. The line applies to the selected fragment.
+cho'qqi	пик	peak
+mono — kerak emas	моно — не нужно	mono — not needed
+tuzatish	коррекция	correction
+sozlangan	обработан	processed
+Dvigatel	Движок	Engine
+Tizim (Windows / macOS ovoz tizimi)	Система (звуковая система Windows / macOS)	System (Windows / macOS audio)
+ASIO drayver	ASIO-драйвер	ASIO driver
+To'g'ridan-to'g'ri drayver	Прямой драйвер	Direct driver
+ASIO qurilma	ASIO-устройство	ASIO device
+chiq	вых	out
+kir	вх	in
+Chiqish kanallari	Выходные каналы	Output channels
+ishlatilmaydi	не используется	not used
+Chastota	Частота	Sample rate
+Bufer	Буфер	Buffer
+Drayver bo'yicha	По драйверу	Driver default
+Xavfsizlik zaxirasi	Запас безопасности	Safety buffer
+1 — eng tez	1 — самый быстрый	1 — fastest
+2 — tavsiya	2 — рекомендуется	2 — recommended
+3 — barqaror	3 — стабильно	3 — stable
+4 — kuchsiz kompyuter	4 — слабый компьютер	4 — weak computer
+ASIO holati	Состояние ASIO	ASIO status
+ishlayapti ✓ ·	работает ✓ ·	running ✓ ·
+Chastota · bufer	Частота · буфер	Sample rate · buffer
+namuna	сэмплов	samples
+Chiqish kechikishi	Задержка выхода	Output latency
+Uzilishlar	Пропуски	Dropouts
+ASIO hozir ishlamayapti — sozlang va “Qayta yuklash va qo'llash” ni bosing.	ASIO сейчас не работает — настройте и нажмите «Перезагрузить и применить».	ASIO is not running — set it up and press “Reload and apply”.
+ASIO yoqiq: Master ASIO qurilmasiga chiqadi; quyidagi tizim chiqishi ishlatilmaydi.	ASIO включён: Master идёт на ASIO-устройство; системный выход ниже не используется.	ASIO on: Master goes to the ASIO device; the system output below is not used.
+ASIO drayver topilmadi. ASIO4ALL v2 yoki kartangiz (M-Audio va h.k.) drayverini o'rnating va dasturni qayta oching.	ASIO-драйвер не найден. Установите ASIO4ALL v2 или драйвер вашей карты (M-Audio и т.д.) и перезапустите программу.	No ASIO driver found. Install ASIO4ALL v2 or your card's driver (M-Audio etc.) and restart the app.
+ASIO drayver (ASIO4ALL, M-Audio, Focusrite…)	ASIO-драйвер (ASIO4ALL, M-Audio, Focusrite…)	ASIO driver (ASIO4ALL, M-Audio, Focusrite…)
+ASIO faqat kompyuterga o'rnatilgan dasturda ishlaydi (Windows). Bu yerda tizim qurilmalari ishlatiladi.	ASIO работает только в установленной программе (Windows). Здесь используются системные устройства.	ASIO works only in the installed app (Windows). System devices are used here.
+ASIO moduli bu o'rnatishda topilmadi — dasturni yangi versiyaga yangilang.	Модуль ASIO не найден в этой установке — обновите программу.	The ASIO module is missing in this install — update the app.
+Drayverlar ro'yxatini olib bo'lmadi:	Не удалось получить список драйверов:	Could not list drivers:
+ASIO ishga tushmadi — tizim chiqishi ishlayapti.	ASIO не запустился — работает системный выход.	ASIO did not start — the system output is used.
+ASIO ishga tushmadi:	ASIO не запустился:	ASIO did not start:
+ASIO moduli topilmadi	Модуль ASIO не найден	ASIO module not found
+Qurilma topilmadi:	Устройство не найдено:	Device not found:
+kirish	вход	input
+ASIO drayver to'xtadi — ovoz tizim chiqishiga o'tkazildi	ASIO-драйвер остановился — звук переведён на системный выход	ASIO driver stopped — sound moved to the system output
