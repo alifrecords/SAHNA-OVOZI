@@ -4,6 +4,7 @@
 
 export const DEFAULT_SETTINGS = {
   card: { number: "", holder: "", system: "UZCARD" },
+  contact: { tg: "", phone: "" },
   tariffs: [
     { id: "STD", name: "Standart", plan: "std", days: 30, price: 25000, active: true },
     { id: "PRO", name: "Pro", plan: "pro", days: 30, price: 49000, active: true },
@@ -61,7 +62,7 @@ export async function getSettings(db) {
   const raw = await kvGet(db, "settings");
   let s = {};
   try { s = raw ? JSON.parse(raw) : {}; } catch { s = {}; }
-  return { ...DEFAULT_SETTINGS, ...s, card: { ...DEFAULT_SETTINGS.card, ...(s.card || {}) }, bot: { ...DEFAULT_SETTINGS.bot, ...(s.bot || {}) }, tariffs: Array.isArray(s.tariffs) && s.tariffs.length ? s.tariffs : DEFAULT_SETTINGS.tariffs, trialDays: Number.isFinite(+s.trialDays) ? Math.max(0, Math.min(30, Math.round(+s.trialDays))) : 1 };
+  return { ...DEFAULT_SETTINGS, ...s, card: { ...DEFAULT_SETTINGS.card, ...(s.card || {}) }, contact: { ...DEFAULT_SETTINGS.contact, ...(s.contact || {}) }, bot: { ...DEFAULT_SETTINGS.bot, ...(s.bot || {}) }, tariffs: Array.isArray(s.tariffs) && s.tariffs.length ? s.tariffs : DEFAULT_SETTINGS.tariffs, trialDays: Number.isFinite(+s.trialDays) ? Math.max(0, Math.min(30, Math.round(+s.trialDays))) : 1 };
 }
 export async function saveSettings(db, s) { await kvSet(db, "settings", JSON.stringify(s)); }
 

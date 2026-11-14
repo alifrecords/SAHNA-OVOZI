@@ -234,7 +234,8 @@ body.sfx-locked #sbox{opacity:.75}body.sfx-locked #sbPrev,body.sfx-locked #sbNex
 #licBtn{display:flex;align-items:center;gap:6px;white-space:nowrap}#licBtn.exp{border-color:#E5484D;color:#FF8A8D;background:rgba(229,72,77,.12)}#licBtn.ok{border-color:#2F6B63;color:#7FE0D3}
 #licWall{position:fixed;inset:0;z-index:44;background:rgba(8,9,11,.92);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:5vh 16px}#licWall[hidden]{display:none}#licWall .lwb{max-width:880px;width:100%;padding:24px 26px}
 @media (max-width:1500px){#licBtn:not(.exp) .lct{display:none}}
-.lcp .btn.sel{background:#3DD6C3;border-color:#3DD6C3;color:#0E0F12}.lcform{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}.lcform .inp{flex:1 1 150px}.lcthumb{display:block;max-height:120px;margin-top:8px;border-radius:8px;border:1px solid var(--line2)}.lcnote{margin-top:12px;border-radius:10px;padding:9px 12px;font-size:13px}.lcnote.tr{background:rgba(242,169,59,.12);color:#F2A93B}.lcnote.ex{background:rgba(229,72,77,.14);color:#FF8A8D}
+.lcp .btn.sel{background:#3DD6C3;border-color:#3DD6C3;color:#0E0F12}.lcform{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}.lcform .inp{flex:1 1 150px}.lcthumb{display:block;max-height:120px;margin-top:8px;border-radius:8px;border:1px solid var(--line2)}.lceasy{margin-top:12px;border:1px dashed #2F6B63;border-radius:12px;padding:10px 14px;font-size:13px;background:rgba(61,214,195,.05)}.lceasy ol{margin:6px 0 0;padding-left:20px}.lceasy li{margin:5px 0}.lceasy .btn{margin-left:6px;vertical-align:middle}
+.lcnote{margin-top:12px;border-radius:10px;padding:9px 12px;font-size:13px}.lcnote.tr{background:rgba(242,169,59,.12);color:#F2A93B}.lcnote.ex{background:rgba(229,72,77,.14);color:#FF8A8D}
 .lch{margin:0 0 6px;font-size:22px}.lcst{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:10px 0 14px}.lcdev{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.lcdev b{color:var(--text);font-size:15px;letter-spacing:.04em}
 .lcb{display:inline-block;border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:700}.lcb.ok{background:rgba(61,214,195,.15);color:#7FE0D3}.lcb.tr{background:rgba(242,169,59,.16);color:#F2A93B}.lcb.ex{background:rgba(229,72,77,.18);color:#FF8A8D}
 .lcplans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.lcp{position:relative;border:1px solid var(--line2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}.lcp.pro{border-color:#F2A93B;box-shadow:0 0 0 1px rgba(242,169,59,.25)}.lcp h3{margin:0;font-size:17px}.lcpr{font-size:24px;font-weight:700;color:#F2A93B}.lcpr small{font-size:12px;color:var(--muted);font-weight:500}.lcp ul{margin:0;padding-left:18px;font-size:13px;color:var(--muted);flex:1}.lcp li{margin:3px 0}.lctag{position:absolute;right:12px;top:12px;font-size:11px;font-weight:700;background:#F2A93B;color:#14110B;border-radius:6px;padding:2px 7px}
@@ -2302,7 +2303,7 @@ function showHub(page){if(page)hubPage=page;const H=$('#hub');H.hidden=false;doc
 const LIC=(()=>{
  const PUB={"kty":"EC","crv":"P-256","x":"oL_W_ndjs6oLvzvU3ovARMERq_B0j-rZgygAOzVrKKA","y":"08EaXauA7iS6_mW7RlgOeiC-Aq8jzQ3bU8fpN7juFD4"};
  const DEF_API='https://sahna-ovozi.pages.dev',DAY=864e5,REPO='alifrecords/SAHNA-OVOZI';
- const VER=(window.azNative&&window.azNative.version)||'1.10.0';
+ const VER=(window.azNative&&window.azNative.version)||'1.10.1';
  const K=k=>'sahnaOvozi.'+k;
  const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(K(k));if(v===null)localStorage.removeItem(K(k));else localStorage.setItem(K(k),v);}catch(_){}return null;};
  const sub=window.crypto&&crypto.subtle;
@@ -2383,8 +2384,8 @@ const LIC=(()=>{
   const bot=c.botUsername,card=c.card&&c.card.number?c.card:null;
   return (isWall?'<div class="between" style="margin-bottom:4px"><span></span><button type="button" class="btn sm" data-lc="hub">← Bosh sahifa</button></div><h2 class="lch">💎 Sahna Ovozi — davom etish uchun tarif tanlang</h2><p class="hint">'+trialDays()+' kunlik sinov muddati tugadi. Loyihalaringiz joyida — Bosh sahifadan ochib, saqlab qo\'yishingiz mumkin. Pult to\'lovdan keyin ochiladi.</p>':'')+
   '<div class="lcst">'+st+'<span class="lcdev">Qurilma kodi: <b class="mono" id="lcDev">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="copy">Nusxalash</button></span></div>'+
-  '<div class="lcplans">'+T.map(t=>'<div class="lcp'+(t.plan==='pro'?' pro':'')+'">'+(t.plan==='pro'?'<span class="lctag">To\'liq</span>':'')+'<h3>'+esc(t.name)+'</h3><div class="lcpr">'+money(t.price)+' <small>/ '+t.days+' kun</small></div><ul>'+FEAT[t.plan==='std'?'std':'pro'].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><button type="button" class="btn '+(t.plan==='pro'?'primary':'')+(PAY.t===t.id?' sel':'')+'" data-lc="pick" data-t="'+esc(t.id)+'">'+(PAY.t===t.id?'✓ Tanlandi':(ST.st==='active'?'Shu tarif bilan uzaytirish':'Tanlash'))+'</button></div>').join('')+'</div>'+payHtml(T,c)+
-  '<div class="lcact"><input class="inp mono" id="lcCode" placeholder="Faollashtirish kodi (botdan keladi)" spellcheck="false" autocomplete="off"><button type="button" class="btn primary" data-lc="act">Faollashtirish</button><button type="button" class="btn" data-lc="check">Holatni tekshirish</button></div>'+
+  '<div class="lcplans">'+T.map(t=>'<div class="lcp'+(t.plan==='pro'?' pro':'')+'">'+(t.plan==='pro'?'<span class="lctag">To\'liq</span>':'')+'<h3>'+esc(t.name)+'</h3><div class="lcpr">'+money(t.price)+' <small>/ '+t.days+' kun</small></div><ul>'+FEAT[t.plan==='std'?'std':'pro'].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><button type="button" class="btn '+(t.plan==='pro'?'primary':'')+(PAY.t===t.id?' sel':'')+'" data-lc="pick" data-t="'+esc(t.id)+'">'+(PAY.t===t.id?'✓ Tanlandi':(ST.st==='active'?'Shu tarif bilan uzaytirish':'Tanlash'))+'</button></div>').join('')+'</div>'+payHtml(T,c)+easyHtml(T,c)+
+  '<div class="lcact"><input class="inp mono" id="lcCode" placeholder="Faollashtirish kodi (admin yoki botdan keladi)" spellcheck="false" autocomplete="off"><button type="button" class="btn primary" data-lc="act">Faollashtirish</button><button type="button" class="btn" data-lc="check">Holatni tekshirish</button></div>'+
   '<div class="lcfoot"><span class="muted" id="lcNet"></span><span style="flex:1"></span><button type="button" class="lnk" data-lc="admin">'+(ST.st==='admin'?'Admin rejimidan chiqish':'Admin')+'</button><button type="button" class="lnk" data-lc="server">Server</button></div>';
  }
  let PAY={t:'',img:'',busy:false,last:null};
@@ -2398,6 +2399,14 @@ const LIC=(()=>{
    '<li>'+(card?'<b class="mono">'+esc(card.number)+'</b> ('+esc(card.system)+') · '+esc(card.holder)+' kartasiga <b>'+money(t.price)+'</b> o\'tkazing <button type="button" class="btn sm" data-lc="copycard">Raqamni nusxalash</button>':'Karta raqami hali kiritilmagan — admin bilan bog\'laning.')+'</li>'+
    '<li>Chek rasmini (skrinshot) tanlang va yuboring:<div class="lcform"><label class="btn sm"><input type="file" accept="image/*" id="lcImg" hidden>'+(PAY.img?'✓ Chek tanlandi':'📎 Chek rasmini tanlash')+'</label><input class="inp" id="lcName" placeholder="Ismingiz" maxlength="60" value="'+esc(LS('pname')||'')+'"><input class="inp" id="lcPhone" placeholder="Telefon (ixtiyoriy)" maxlength="30" value="'+esc(LS('pphone')||'')+'"><button type="button" class="btn primary" data-lc="send"'+(PAY.busy?' disabled':'')+'>'+(PAY.busy?'Yuborilmoqda…':'Chekni yuborish')+'</button></div>'+(PAY.img?'<img class="lcthumb" src="'+PAY.img+'" alt="">':'')+'</li>'+
    '<li>Admin tasdiqlagach pult <b>o\'zi faollashadi</b> (internet bo\'lsa 1–2 daqiqa).'+(bot?' Yoki <button type="button" class="lnk" data-lc="tg" data-t="'+esc(t.id)+'">Telegram bot @'+esc(bot)+' orqali</button> to\'lang.':'')+'</li></ol></div>';
+ }
+ function easyMsg(T){const t=T.find(x=>x.id===PAY.t);return 'Sahna Ovozi · qurilma kodi: '+fmtDev(dev())+(t?' · tarif: '+t.name+' ('+money(t.price)+')':'');}
+ function easyHtml(T,c){
+  const k=c.contact||{},tg=(k.tg||'').replace(/^@/,''),ph=k.phone||'';
+  return '<div class="lceasy"><b>✉ Chek yuborish qiyinmi? Oson yo\'l:</b><ol>'+
+   '<li>Qurilma kodingizni nusxalang: <b class="mono">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="easycopy">'+(PAY.t?'📋 Kod va tarifni nusxalash':'📋 Kodni nusxalash')+'</button></li>'+
+   '<li>'+(tg||ph?'To\'lovni qiling va nusxani adminga yuboring:':'To\'lovni qiling va nusxani adminga yuboring (Telegram, telefon yoki SMS orqali).')+(tg?' <button type="button" class="btn sm" data-lc="easytg">✈ Telegram: @'+esc(tg)+'</button>':'')+(ph?' <a class="btn sm" href="tel:'+esc(ph.replace(/[^\d+]/g,''))+'">📞 '+esc(ph)+'</a>':'')+'</li>'+
+   '<li>Admin shu kod bo\'yicha faollashtirish kodi yaratadi — pult ochiq bo\'lsa <b>o\'zi faollashadi</b>, yoki yuborilgan kodni pastga joylang.</li></ol></div>';
  }
  async function lastPay(){try{const r=await fetch(api()+'/api/pay?dev='+dev(),{cache:'no-store'});const j=await r.json();PAY.last=j.payment||null;}catch(_){}}
  function shrink(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height));const cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);let q=.8,u=cv.toDataURL('image/jpeg',q);while(u.length>900000&&q>.35){q-=.15;u=cv.toDataURL('image/jpeg',q);}res(u);};im.src=fr.result;};fr.readAsDataURL(file);});}
@@ -2439,6 +2448,8 @@ const LIC=(()=>{
   else if(a==='hub')showHub();
   else if(a==='pick'){PAY.t=PAY.t===b.dataset.t?'':b.dataset.t;reRender();}
   else if(a==='send')sendPay();
+  else if(a==='easycopy'){const m=easyMsg(cfg().tariffs||[]);try{await navigator.clipboard.writeText(m);toast('Nusxalandi — endi adminga yuboring');}catch(_){toast(m);}poll(true);}
+  else if(a==='easytg'){const c=cfg(),m=easyMsg(c.tariffs||[]);const u='https://t.me/'+String((c.contact||{}).tg||'').replace(/^@/,'')+'?text='+encodeURIComponent(m);try{await navigator.clipboard.writeText(m);}catch(_){}if(NATIVE&&window.azNative.openExternal)window.azNative.openExternal(u);else window.open(u,'_blank','noopener');poll(true);}
   else if(a==='admin')adminLogin();
   else if(a==='server'){const v=prompt('Server manzili (Cloudflare Pages):',api());if(v===null)return;LS('api',v.trim()?v.trim().replace(/\/+$/,''):null);fetchCfg();toast('Server: '+api());}
  });

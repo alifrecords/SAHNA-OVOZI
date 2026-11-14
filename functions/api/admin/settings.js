@@ -1,6 +1,7 @@
 import { adminOnly, json, readJson, getSettings, saveSettings } from "../_db.js";
 export const onRequestPut = adminOnly(async ({ request, env }) => {
   const db = env.DB, b = await readJson(request, 10000), s = await getSettings(db);
+  if (b.contact) s.contact = { tg: String(b.contact.tg || "").replace(/^@|https?:\/\/t\.me\//g, "").replace(/[^A-Za-z0-9_]/g, "").slice(0, 40), phone: String(b.contact.phone || "").replace(/[^\d+ ()-]/g, "").slice(0, 24) };
   if (b.card) {
     const digits = String(b.card.number || "").replace(/\D/g, "");
     if (digits && (digits.length < 16 || digits.length > 19)) return json({ error: "Karta raqami 16 xonali bo'lishi kerak" }, 400);

@@ -40,7 +40,7 @@ export async function issue(env, dev, tariffId, meta = {}) {
 
 export async function publicConfig(db) {
   const s = await getSettings(db);
-  return { card: s.card, tariffs: s.tariffs.filter((t) => t.active).map(({ id, name, plan, days, price }) => ({ id, name, plan, days, price })), botUsername: (await kvGet(db, "bot_username")) || "", trialDays: s.trialDays };
+  return { card: s.card, contact: s.contact, tariffs: s.tariffs.filter((t) => t.active).map(({ id, name, plan, days, price }) => ({ id, name, plan, days, price })), botUsername: (await kvGet(db, "bot_username")) || "", trialDays: s.trialDays };
 }
 
 /* ================= Telegram ================= */

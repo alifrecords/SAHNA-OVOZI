@@ -874,3 +874,14 @@ Avval chek rasmini tanlang	Сначала выберите фото чека	Cho
 Yuborib bo'lmadi	Не удалось отправить	Could not send
 Server bilan bog'lanib bo'lmadi	Не удалось связаться с сервером	Could not reach the server
 To'lov cheki yuborildi:	Чек об оплате отправлен:	Payment receipt sent:
+✉ Chek yuborish qiyinmi? Oson yo'l:	✉ Сложно отправить чек? Простой способ:	✉ Hard to send a receipt? Easy way:
+Qurilma kodingizni nusxalang:	Скопируйте код устройства:	Copy your device code:
+📋 Kodni nusxalash	📋 Скопировать код	📋 Copy code
+📋 Kod va tarifni nusxalash	📋 Скопировать код и тариф	📋 Copy code and plan
+To'lovni qiling va nusxani adminga yuboring:	Оплатите и отправьте копию админу:	Pay and send the copy to the admin:
+To'lovni qiling va nusxani adminga yuboring (Telegram, telefon yoki SMS orqali).	Оплатите и отправьте копию админу (Telegram, телефон или SMS).	Pay and send the copy to the admin (Telegram, phone or SMS).
+Admin shu kod bo'yicha faollashtirish kodi yaratadi — pult ochiq bo'lsa	Админ создаст код активации по этому коду — если пульт открыт, он	The admin creates an activation code for it — if the console is open it
+, yoki yuborilgan kodni pastga joylang.	, или вставьте присланный код ниже.	, or paste the code you receive below.
+Nusxalandi — endi adminga yuboring	Скопировано — теперь отправьте админу	Copied — now send it to the admin
+Faollashtirish kodi (admin yoki botdan keladi)	Код активации (от админа или бота)	Activation code (from the admin or bot)
+Karta va aloqani saqlash	Сохранить карту и контакты	Save card and contacts
