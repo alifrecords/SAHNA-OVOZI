@@ -23,13 +23,14 @@ export async function ensureSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS so_payments_status ON so_payments(status, created)"),
     db.prepare("CREATE TABLE IF NOT EXISTS so_sessions (uid INTEGER PRIMARY KEY, dev TEXT, tariff TEXT, step TEXT, ts INTEGER)"),
     db.prepare("CREATE TABLE IF NOT EXISTS so_fail (ip TEXT, ts INTEGER)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS so_receipts (id TEXT PRIMARY KEY, mime TEXT, data TEXT, created INTEGER)"),
     db.prepare("CREATE TABLE IF NOT EXISTS so_devices (dev TEXT PRIMARY KEY, first INTEGER, last INTEGER, trial INTEGER, st TEXT, plan TEXT, until INTEGER, ver TEXT, platform TEXT, lang TEXT, ip TEXT, hits INTEGER DEFAULT 1, note TEXT)"),
     db.prepare("CREATE INDEX IF NOT EXISTS so_devices_last ON so_devices(last)"),
   ]);
   ready = true;
 }
 
-const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
+const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
 export const json = (data, status = 200, extra = {}) =>
   new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...extra } });
 export const jsonPublic = (data, status = 200) => json(data, status, CORS);

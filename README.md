@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.10.1: Tarif tanlash va chekni pultdan yuborish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Tarif tanlash | 💎 oynasida har bir tarifda **Tanlash** (faol bo'lsa — **Shu tarif bilan uzaytirish**: muddat ustiga qo'shiladi) |
+| Chek yuborish | Tanlangan tarif summasi va karta raqami, chek rasmi (skrinshot), ism, telefon → **Chekni yuborish** — Telegram botsiz ham ishlaydi |
+| Admin | Chek "To'lovlar"ga rasmi bilan tushadi → **Tasdiqlash** → pult o'zi faollashadi; bot ulangan bo'lsa, Telegram'ga ham Tasdiqlash / Rad etish tugmalari bilan keladi |
+| Holat | Pultda oxirgi to'lov holati: tekshirilmoqda / rad etildi |
+| Server | `SAHNA_PRIV` matni buzilib joylansa ham (aqlli qo'shtirnoq, ko'rinmas belgilar) o'qiladi; noto'g'ri kalit bo'lsa admin sahifada aniq sabab |
+
 ## 1.10.0: Onlayn tizim — 1 kunlik sinov, tariflar, to'lov, admin (Daftar tuzilishida)
 
 | Bo'lim | Nima qilindi |

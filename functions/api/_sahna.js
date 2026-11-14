@@ -82,11 +82,11 @@ export async function approvePayment(env, id, by) {
   await db.prepare("UPDATE so_payments SET status = 'approved', decided = ? WHERE id = ?").bind(Date.now(), id).run();
   const until = new Date(lic.expires).toLocaleDateString("ru-RU");
   const warn = [];
-  try {
+  if (p.tg_user) try {
     await send(env, p.tg_user, [`<b>To'lov tasdiqlandi</b> ✅`, `Tarif: ${esc(lic.tariff.name)} · ${until} gacha`, ``,
       `Sahna Ovozi ochiq bo'lsa, faollashish o'zi bo'ladi (1–2 daqiqa). Bo'lmasa, quyidagi kodni 💎 Tarif oynasidagi «Faollashtirish kodi» maydoniga joylang:`, `<code>${lic.token}</code>`].join("\n"));
   } catch (e) { warn.push("Xaridorga yuborilmadi: " + e.message); }
-  try { if (p.admin_msg) await tg(env, "editMessageCaption", { chat_id: p.admin_chat, message_id: p.admin_msg, parse_mode: "HTML", caption: p.admin_caption + `\n\n<b>Tasdiqlandi.</b>` }); } catch (_) {}
+  try { if (p.admin_msg) await tg(env, p.photo_kind === "web" ? "editMessageText" : "editMessageCaption", { chat_id: p.admin_chat, message_id: p.admin_msg, parse_mode: "HTML", [p.photo_kind === "web" ? "text" : "caption"]: p.admin_caption + `\n\n<b>Tasdiqlandi.</b>` }); } catch (_) {}
   return { ok: true, until: lic.expires, warn };
 }
 
@@ -95,8 +95,8 @@ export async function rejectPayment(env, id) {
   const r = await db.prepare("UPDATE so_payments SET status = 'rejected', decided = ? WHERE id = ? AND status = 'pending'").bind(Date.now(), id).run();
   if (!r.meta || !r.meta.changes) return { error: "Bu to'lov allaqachon ko'rib chiqilgan yoki topilmadi" };
   const p = await db.prepare("SELECT * FROM so_payments WHERE id = ?").bind(id).first();
-  try { await send(env, p.tg_user, "Afsuski, to'lovingiz tasdiqlanmadi. Chekni tekshirib qayta yuboring yoki admin bilan bog'laning."); } catch (_) {}
-  try { if (p.admin_msg) await tg(env, "editMessageCaption", { chat_id: p.admin_chat, message_id: p.admin_msg, parse_mode: "HTML", caption: p.admin_caption + `\n\n<b>Rad etildi.</b>` }); } catch (_) {}
+  if (p.tg_user) try { await send(env, p.tg_user, "Afsuski, to'lovingiz tasdiqlanmadi. Chekni tekshirib qayta yuboring yoki admin bilan bog'laning."); } catch (_) {}
+  try { if (p.admin_msg) await tg(env, p.photo_kind === "web" ? "editMessageText" : "editMessageCaption", { chat_id: p.admin_chat, message_id: p.admin_msg, parse_mode: "HTML", [p.photo_kind === "web" ? "text" : "caption"]: p.admin_caption + `\n\n<b>Rad etildi.</b>` }); } catch (_) {}
   return { ok: true };
 }
 export { kvGet, kvSet, getSettings };

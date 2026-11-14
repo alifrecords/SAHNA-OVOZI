@@ -843,3 +843,34 @@ Maximizer, Normalize, Envelope va Avto balans — Pro tarifida.	Maximizer, Norma
 💎 ASIO / tashqi ovoz kartasi — Pro tarifida.	💎 ASIO / внешняя звуковая карта — в тарифе Pro.	💎 ASIO / external sound card — in the Pro plan.
 Quloqchin (monitor) chiqishi	Выход на наушники (монитор)	Headphone (monitor) output
 💎 Tarif	💎 Тариф	💎 Plan
+Tanlash	Выбрать	Choose
+✓ Tanlandi	✓ Выбран	✓ Selected
+Shu tarif bilan uzaytirish	Продлить этим тарифом	Renew with this plan
+Tarifni tanlang — keyin to'lov va chek yuborish oynasi chiqadi.	Выберите тариф — затем появится окно оплаты и отправки чека.	Choose a plan — then the payment and receipt form appears.
+Faol tarif ustiga yangi muddat qo'shiladi.	Новый срок добавится к действующему тарифу.	The new period is added on top of your active plan.
+kartasiga	на карту	card:
+o'tkazing	переведите	transfer
+Raqamni nusxalash	Скопировать номер	Copy number
+Karta raqami hali kiritilmagan — admin bilan bog'laning.	Номер карты ещё не указан — свяжитесь с админом.	Card number not set yet — contact the admin.
+Chek rasmini (skrinshot) tanlang va yuboring:	Выберите фото чека (скриншот) и отправьте:	Choose the receipt photo (screenshot) and send it:
+✓ Chek tanlandi	✓ Чек выбран	✓ Receipt selected
+📎 Chek rasmini tanlash	📎 Выбрать фото чека	📎 Choose receipt photo
+Ismingiz	Ваше имя	Your name
+Telefon (ixtiyoriy)	Телефон (необязательно)	Phone (optional)
+Chekni yuborish	Отправить чек	Send receipt
+Yuborilmoqda…	Отправляется…	Sending…
+Admin tasdiqlagach pult	После подтверждения админом пульт	Once the admin approves, the console
+(internet bo'lsa 1–2 daqiqa).	(при интернете 1–2 минуты).	(1–2 minutes when online).
+Yoki	Или	Or
+orqali	через	via
+to'lang.	оплатите.	pay.
+To'lov yuborilgan	Платёж отправлен	Payment sent
+— admin tekshiryapti. Tasdiqlangach pult o'zi faollashadi.	— админ проверяет. После подтверждения пульт активируется сам.	— the admin is checking it. The console activates by itself once approved.
+✖ Oxirgi to'lov tasdiqlanmadi — chekni tekshirib qayta yuboring.	✖ Последний платёж не подтверждён — проверьте чек и отправьте снова.	✖ The last payment was not approved — check the receipt and send it again.
+Rasmni o'qib bo'lmadi	Не удалось прочитать изображение	Could not read the image
+Avval chek rasmini tanlang	Сначала выберите фото чека	Choose the receipt photo first
+✓ Chek yuborildi:	✓ Чек отправлен:	✓ Receipt sent:
+— admin tasdiqlashini kuting	— ждите подтверждения админа	— wait for the admin to approve
+Yuborib bo'lmadi	Не удалось отправить	Could not send
+Server bilan bog'lanib bo'lmadi	Не удалось связаться с сервером	Could not reach the server
+To'lov cheki yuborildi:	Чек об оплате отправлен:	Payment receipt sent:
