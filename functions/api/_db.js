@@ -92,11 +92,32 @@ export const b64u = (buf) => { const bytes = new Uint8Array(buf); let s = ""; fo
 
 /* ---- Litsenziya: Sahna Ovozi mijozi tekshiradigan ECDSA P-256 token ---- */
 let keyCache = null;
+// Pult ichidagi ochiq kalitning x qismi — boshqa kalit (masalan Daftar kaliti) joylansa aniq xabar beriladi
+const PUB_X = "oL_W_ndjs6oLvzvU3ovARMERq_B0j-rZgygAOzVrKKA";
+// Cloudflare'ga joylashda matn buzilishi mumkin: BOM, “aqlli” qo'shtirnoqlar, ko'rinmas belgilar, qator uzilishi,
+// atrofdagi qo'shtirnoq yoki "SAHNA_PRIV=" prefiksi. Hammasini tozalab, { … } qismini olamiz.
+export function parsePriv(raw) {
+  if (!raw) return { ok: false, why: "missing" };
+  let t = String(raw).replace(/^\uFEFF/, "").replace(/[\u200B-\u200D\u2060\u00A0]/g, " ").replace(/[\u201C\u201D\u201E\u201F\u2033\u00AB\u00BB]/g, '"').replace(/[\u2018\u2019]/g, "'").trim();
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b <= a) return { ok: false, why: "json", len: t.length };
+  t = t.slice(a, b + 1).replace(/\\"/g, '"');
+  let j; try { j = JSON.parse(t); } catch { return { ok: false, why: "json", len: t.length }; }
+  if (!j || j.kty !== "EC" || !j.d || !j.x || !j.y) return { ok: false, why: "fields" };
+  if (j.x !== PUB_X) return { ok: false, why: "other" };
+  return { ok: true, jwk: { kty: "EC", crv: "P-256", x: j.x, y: j.y, d: j.d } };
+}
+export const PRIV_MSG = {
+  missing: "SAHNA_PRIV o'rnatilmagan: Cloudflare → Settings → Variables and secrets → + Add → Secret, nomi SAHNA_PRIV, qiymati SAHNA-ADMIN-KALIT.txt ichidagi matn",
+  json: "SAHNA_PRIV qiymati buzilgan — Cloudflare'da SAHNA_PRIV ni o'chirib, SAHNA-ADMIN-KALIT.txt matnini Bloknot (Notepad) orqali to'liq nusxalab qayta joylang",
+  fields: "SAHNA_PRIV ichida kalit to'liq emas (kty/x/y/d) — SAHNA-ADMIN-KALIT.txt matnini boshidan oxirigacha nusxalang",
+  other: "SAHNA_PRIV boshqa kalit (Daftar yoki eski kalit) — aynan SAHNA-ADMIN-KALIT.txt matnini joylang",
+};
 async function signKey(env) {
   if (keyCache) return keyCache;
-  if (!env.SAHNA_PRIV) throw Object.assign(new Error("SAHNA_PRIV o'rnatilmagan: Cloudflare → Settings → Variables → SAHNA-ADMIN-KALIT.txt ichidagi matnni (Secret sifatida) joylang"), { status: 503 });
-  let jwk; try { jwk = JSON.parse(env.SAHNA_PRIV); } catch { throw Object.assign(new Error("SAHNA_PRIV JSON emas — SAHNA-ADMIN-KALIT.txt matnini to'liq nusxalang"), { status: 503 }); }
-  keyCache = await crypto.subtle.importKey("jwk", jwk, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+  const p = parsePriv(env.SAHNA_PRIV);
+  if (!p.ok) throw Object.assign(new Error(PRIV_MSG[p.why]), { status: 503 });
+  keyCache = await crypto.subtle.importKey("jwk", p.jwk, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
   return keyCache;
 }
 // payload: {d: qurilma(12 belgi), x: tugash vaqti ms, p: 'std'|'pro', n: yaratilgan vaqt}

@@ -61,7 +61,7 @@ function show(){$('#login').hidden=!!TK;$('#app').hidden=!TK;if(TK)load()}
 async function load(){try{O=await api('overview');draw()}catch(e){if(TK){alert(e.message)}}}
 $('#go').onclick=async()=>{const t=$('#tk').value.trim();if(!t)return;TK=t;$('#lm').textContent='';try{await api('overview');LS('soa-token',t);$('#tk').value='';show()}catch(e){TK='';$('#lm').textContent=e.message}};
 $('#lo').onclick=()=>{LS('soa-token',null);TK='';location.reload()};$('#rl').onclick=load;$('#pf').onchange=drawPay;
-function draw(){const s=O.stats;$('#info').textContent='Repo: '+O.adminRepo;$('#keywarn').hidden=O.keyReady;
+function draw(){const s=O.stats;$('#info').textContent='Repo: '+O.adminRepo;$('#keywarn').hidden=O.keyReady;if(!O.keyReady&&O.keyWhy)$('#keywarn').innerHTML='<b>⚠ Imzo kaliti:</b> '+esc(O.keyWhy)+'. Saqlagach — Deployments → Retry deployment.';
  $('#stats').innerHTML=[['Kutilayotgan to‘lov',s.pending],['To‘lagan (faol)',s.active],['Sinovda',s.trial],['Bugun kirgan',s.today],['Jami qurilma',s.users],['Shu oy tushum',money(s.month)],['Jami tushum',money(s.all)]].map(x=>`<div class=st><span class="mut sm">${x[0]}</span><b>${x[1]}</b></div>`).join('');
  drawPay();drawUsers();$('#td').value=O.settings.trialDays;const T=O.settings.tariffs;$('#gt').innerHTML=T.map(t=>`<option value="${esc(t.id)}">${esc(t.name)} — ${t.days} kun</option>`).join('');
  const c=O.settings.card;$('#cn').value=c.number;$('#ch').value=c.holder;$('#cs').value=c.system;

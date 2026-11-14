@@ -1,4 +1,4 @@
-import { adminOnly, json, getSettings, kvGet, adminRepo } from "../_db.js";
+import { adminOnly, json, getSettings, kvGet, adminRepo, parsePriv, PRIV_MSG } from "../_db.js";
 import { codeState, fmtDev } from "../_sahna.js";
 export const onRequestGet = adminOnly(async ({ env }) => {
   const db = env.DB, now = Date.now();
@@ -19,7 +19,8 @@ export const onRequestGet = adminOnly(async ({ env }) => {
   };
   return json({
     stats, devices, payments: payments.map((p) => ({ ...p, hasPhoto: !!p.photo, photo: undefined, devFmt: p.dev ? fmtDev(p.dev) : "" })), codes, settings: s,
-    keyReady: !!env.SAHNA_PRIV,
+    keyReady: parsePriv(env.SAHNA_PRIV).ok,
+    keyWhy: (() => { const p = parsePriv(env.SAHNA_PRIV); return p.ok ? "" : PRIV_MSG[p.why]; })(),
     bot: { connected: !!(await kvGet(db, "bot_username")), username: (await kvGet(db, "bot_username")) || "", adminChat: !!(await kvGet(db, "admin_chat")), adminChatName: (await kvGet(db, "admin_chat_name")) || "" },
     adminRepo: adminRepo(env),
   });
