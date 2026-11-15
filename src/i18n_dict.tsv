@@ -885,3 +885,29 @@ Admin shu kod bo'yicha faollashtirish kodi yaratadi — pult ochiq bo'lsa	Адм
 Nusxalandi — endi adminga yuboring	Скопировано — теперь отправьте админу	Copied — now send it to the admin
 Faollashtirish kodi (admin yoki botdan keladi)	Код активации (от админа или бота)	Activation code (from the admin or bot)
 Karta va aloqani saqlash	Сохранить карту и контакты	Save card and contacts
+Nota	Тон	Key
+Yarim ton	Полутон	Semitone
+Nozik (sent)	Точно (центы)	Fine (cents)
+Akkompanement tonalligi	Тональность аккомпанемента	Accompaniment key
+Moslash	Подогнать	Match
+Hammasini moslash	Подогнать все	Match all
+Asl ton	Исходный тон	Original pitch
+↻ Aniqlash	↻ Определить	↻ Detect
+asl	исходный	original
+cue tanlanmagan	cue не выбран	no cue selected
+tugma tanlanmagan	кнопка не выбрана	no pad selected
+Atmosfera cue — nota siljimaydi	Cue атмосферы — тон не сдвигается	Atmosphere cue — pitch not shifted
+Bu cue'da fayl yo'q	У этого cue нет файла	This cue has no file
+Bu tugmada fayl yo'q	На этой кнопке нет файла	This pad has no file
+Temp o'zgarmaydi — faqat ton. Siljish oldindan tayyorlanadi. Mos kelmasa, quloq bilan yarim tonlab to'g'rilang.	Темп не меняется — только тон. Сдвиг готовится заранее. Если не совпадает, поправьте на слух по полутонам.	Tempo stays the same — only pitch changes. The shift is prepared in advance. If it doesn't fit, correct by ear in semitones.
+🎵 Nota siljishi hali tayyorlanmoqda — bu safar asl tonda chalindi	🎵 Сдвиг тона ещё готовится — на этот раз сыграно в исходном тоне	🎵 Pitch shift is still being prepared — played at original pitch this time
+Tonallik aniqlanmadi — bu ovoz asosan zarba/shovqin	Тональность не определена — звук в основном удар/шум	Key not detected — this sound is mostly percussive/noise
+Nota moslagich — akkompanement tonalligiga moslash	Подгонка тона — под тональность аккомпанемента	Key matcher — match to the accompaniment key
+Yarim ton pastga	Полутон вниз	Semitone down
+Yarim ton yuqoriga	Полутон вверх	Semitone up
+Siljish: yarim ton (¢ — sent)	Сдвиг: полутоны (¢ — центы)	Shift: semitones (¢ — cents)
+Tonallik aniq emas (shovqin yoki zarba ovozi)	Тональность неясна (шум или ударный звук)	Key unclear (noise or percussive sound)
+Tanlangan ovozni akkompanement tonalligiga moslash (eng yaqin yo'l, −6…+5)	Подогнать выбранный звук под тональность аккомпанемента (ближайший путь, −6…+5)	Match the selected sound to the accompaniment key (nearest way, −6…+5)
+Bo'limdagi tonalligi aniq barcha ovozlarni moslash	Подогнать все звуки раздела с определённой тональностью	Match all sounds in this section with a detected key
+Tonallikni qayta aniqlash	Определить тональность заново	Re-detect key
+Nota siljishi	Сдвиг тона	Pitch shift

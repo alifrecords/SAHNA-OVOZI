@@ -226,6 +226,23 @@ html.native .show-info{cursor:pointer}
 @media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:96px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
+.nmbar{border:1px solid #2A3140;background:#11151C;border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:6px}
+.nmhead{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:26px}
+.nmtgl{background:#1A2030;border:1px solid #33405A;color:#C9D7F7;border-radius:8px;padding:3px 8px;font-size:12px;cursor:pointer;display:flex;gap:4px;align-items:center}
+.nmtgl.on{border-color:#5AC8B0;color:#5AC8B0}
+.nmkey{font-weight:800;font-size:13px;color:#5AC8B0;min-width:26px;text-align:center;background:rgba(90,200,176,.1);border-radius:6px;padding:2px 6px}
+.nmkey.unk{color:#8A93A3;background:#1A1F28}
+.nmb{width:24px;height:24px;border-radius:6px;border:1px solid #33405A;background:#1A2030;color:#E6EAF2;font-weight:800;cursor:pointer;line-height:1}
+.nmb:disabled{opacity:.4;cursor:not-allowed}
+.nmps{min-width:34px;text-align:center;font-size:12px;color:#8A93A3}.nmps.on{color:var(--amber);font-weight:800}
+.nmres{font-size:12px;color:#8A93A3}.nmres b{color:#E6EAF2}
+.nmprog{font-size:11px;color:var(--amber)}.nmnone{font-size:11px}
+.nmbody{display:flex;flex-direction:column;gap:6px;border-top:1px dashed #2A3140;padding-top:6px}
+.nmrow{display:flex;align-items:center;gap:8px;font-size:12px;color:#B8C0CE;flex-wrap:wrap}.nmrow input[type=range]{flex:1;min-width:80px}.nmrow select{flex:1;min-width:110px;width:auto}
+.nmtitle{color:var(--amber);font-size:11px}.nmbtns{gap:6px}.nmhint{margin:0;font-size:10.5px}
+.col-l .nmbtns .btn{flex:1 1 45%}
+.cue .cps{color:#5AC8B0;font-weight:800}
+.pad .pps{position:absolute;right:8px;top:44px;font-size:10px;font-weight:800;color:#5AC8B0;pointer-events:none}
 #sfxLock{display:flex;align-items:center;gap:6px}#sfxLock .lk-closed{display:none}#sfxLock.on{border-color:#F2A93B;color:#F2A93B;background:rgba(242,169,59,.1)}#sfxLock.on .lk-closed{display:inline}#sfxLock.on .lk-open{display:none}
 body.sfx-locked #sbox{opacity:.75}body.sfx-locked #sbPrev,body.sfx-locked #sbNext,body.sfx-locked #sbGroup,body.sfx-locked #sbTrim,body.sfx-locked #sbFolder,body.sfx-locked #sbG{opacity:.4;pointer-events:none}body.sfx-locked .pad .up{display:none}body.sfx-locked .pad{cursor:default}
 .pctl button.lp.on{color:#14110B;background:#3DD6C3;border-color:#3DD6C3}
@@ -385,6 +402,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
   <div class="main">
     <section class="panel col-l" aria-label="Cue ro'yxati">
       <div class="between"><h2>Sahnalar ketma-ketligi</h2><span class="muted" style="font-size:12px" id="cueCount"></span></div>
+      <div class="nmbar" id="nm_cue"></div>
       <div id="cues" style="display:flex;flex-direction:column;gap:6px"></div>
       <button type="button" class="addbtn edit-only" id="cueAdd" style="justify-content:center;align-items:center">+ Yangi cue qo'shish</button>
       <div style="flex:1"></div>
@@ -422,6 +440,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
 
       <section class="panel" aria-label="SFX tugmalari" style="display:flex;flex-direction:column;gap:12px">
         <div class="between"><h2>Tezkor effektlar (SFX)</h2><span style="display:flex;align-items:center;gap:12px"><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span><button type="button" class="btn sm" id="sfxLock" aria-pressed="false"><svg class="lk-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg><svg class="lk-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lkt">Qulflash</span></button></span></div>
+        <div class="nmbar" id="nm_sfx"></div>
         <div class="banks" id="banks" role="group" aria-label="SFX banklari"></div>
         <div class="pads" id="pads"></div>
         <div class="sbox" id="sbox" aria-label="Tanlangan SFX tugmasi: sample brauzeri"></div>
@@ -1171,7 +1190,7 @@ const sfxLocked=()=>!!show.lockSfx;
 function lockToast(){toast('SFX banki qulflangan 🔒 — o\'zgartirish uchun qulfni oching');}
 function lockUI(){const b=$('#sfxLock');const on=sfxLocked();if(b){b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');b.querySelector('.lkt').textContent=on?'Qulflangan':'Qulflash';b.title=on?'SFX banki qulflangan: sample, kesish, daraja va effektlar o\'zgarmaydi · bosing — ochish':'SFX bankini qulflash — tanlangan sample va effektlar tasodifan o\'zgarmasin';}document.body.classList.toggle('sfx-locked',on);}
 function lockToggle(){show.lockSfx=show.lockSfx?0:1;saveShow();lockUI();renderPads();toast(show.lockSfx?'SFX banki qulflandi 🔒 — faqat ijro':'SFX banki ochildi 🔓');logEvent(show.lockSfx?'SFX banki qulflandi':'SFX banki ochildi');}
-function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();if(azvTarget==='pad')azvRefresh();}
+function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();if(azvTarget==='pad')azvRefresh();nmRender('sfx');}
 function azvRefresh(){const a=document.activeElement;if(a&&a.dataset&&a.dataset.azk)return;renderAzv();}
 function renderSB(){
  const box=$('#sbox');if(!box)return;const b=show.banks[bank];if(!b)return;const p=b.pads[selPad];
@@ -1382,7 +1401,7 @@ document.addEventListener('input',e=>{
 
 /* ---------- SFX tugmasi: pauza / stop, jonli gain, to'lqinda belgilash ---------- */
 const pausedPads=new Map();const IC_PAUSE='<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"></rect><rect x="14" y="4" width="5" height="16" rx="1"></rect></svg>',IC_PLAY='<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"></path></svg>',IC_STOP='<svg aria-hidden="true" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>';
-function padOpts(p,extra){return Object.assign({color:(CAT[p.cat]||CAT.zarba)[0],fadeIn:p.loop||p.t?Math.min(fadeT,1.5):0,loop:!!p.loop,level:dbToG(p.g||0),title:padTitle(p),trim:p.trim,verb:p.verb,pad:p},extra||{});}
+function padOpts(p,extra){return Object.assign({color:(CAT[p.cat]||CAT.zarba)[0],fadeIn:p.loop||p.t?Math.min(fadeT,1.5):0,loop:!!p.loop,level:dbToG(p.g||0),title:padTitle(p),trim:p.trim,verb:p.verb,pad:p,ps:+p.ps||0},extra||{});}
 function padVoices(p){return voices.filter(v=>v.padObj===p&&!v.stopping&&!v.preview);}
 function voicePos(v){let el=(v.off0||0)+ctx.currentTime-v.start;if(v.loop&&v.regLen)el=el%v.regLen;return el;}
 function padPause(i){
@@ -1452,9 +1471,210 @@ function padDrop(i,e){
  return false;
 }
 
+/* ---------- NOTA MOSLAGICH: tonallikni aniqlash + tempni saqlab ton siljitish ----------
+   cue.ps / pad.ps — yarim tonlarda siljish (masalan 2 yoki -1.15 = −1 yarim ton −15 sent).
+   show.nmKey = {cue:k, sfx:k} — akkompanement (maqsad) tonalligi, k: 0..11 major, 12..23 minor. */
+const NOTE=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const keyName=k=>k==null||k<0?'—':NOTE[k%12]+(k>=12?'m':'');
+const NM={cache:new WeakMap(),keys:{},q:Promise.resolve(),open:{cue:0,sfx:0},busy:0};
+try{NM.keys=JSON.parse(localStorage.getItem('sahnaOvozi.keys')||'{}')||{};}catch(e){NM.keys={};}
+function nmSaveKeys(){try{localStorage.setItem('sahnaOvozi.keys',JSON.stringify(NM.keys));}catch(e){}}
+const nmRatio=ps=>Math.pow(2,ps/12);
+function nmFmt(ps){ps=+ps||0;if(!ps)return '0';const st=Math.trunc(ps),ct=Math.round((ps-st)*100);return (ps>0?'+':'−')+Math.abs(st)+(ct?(st?' ':'')+(ct>0?'+':'−')+Math.abs(ct)+'¢':'');}
+function nmShiftKey(k,ps){if(k==null||k<0)return null;const s=Math.round(+ps||0),m=k>=12;return ((k%12+s)%12+12)%12+(m?12:0);}
+
+/* --- FFT (radix-2, joyida) --- */
+function nmFFT(re,im){const n=re.length;
+ for(let i=1,j=0;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){let t=re[i];re[i]=re[j];re[j]=t;t=im[i];im[i]=im[j];im[j]=t;}}
+ for(let len=2;len<=n;len<<=1){const h=len>>1,a=-2*Math.PI/len,wr=Math.cos(a),wi=Math.sin(a);
+  for(let i=0;i<n;i+=len){let cr=1,ci=0;for(let j=0;j<h;j++){const k=i+j,l=k+h,tr=re[l]*cr-im[l]*ci,ti=re[l]*ci+im[l]*cr;re[l]=re[k]-tr;im[l]=im[k]-ti;re[k]+=tr;im[k]+=ti;const t=cr*wr-ci*wi;ci=cr*wi+ci*wr;cr=t;}}}
+}
+/* --- tonallikni aniqlash: xromagramma + Krumhansl–Schmuckler profillari --- */
+const KP_MAJ=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88],KP_MIN=[6.33,2.68,3.52,5.38,2.60,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+function nmPearson(a,b){let ma=0,mb=0;for(let i=0;i<12;i++){ma+=a[i];mb+=b[i];}ma/=12;mb/=12;let n=0,da=0,db=0;for(let i=0;i<12;i++){const x=a[i]-ma,y=b[i]-mb;n+=x*y;da+=x*x;db+=y*y;}return da&&db?n/Math.sqrt(da*db):0;}
+function nmDetect(buf,t0,t1){
+ const sr=buf.sampleRate,D=Math.max(1,Math.round(sr/11025)),fs=sr/D;
+ const a=Math.max(0,Math.floor((t0||0)*sr)),b=Math.min(buf.length,Math.floor((t1||buf.duration)*sr)),total=Math.floor((b-a)/D);
+ const N=total>=4096*2?4096:2048;if(total<N)return null;
+ const nf=Math.max(1,Math.min(240,Math.floor(total/N))),step=nf>1?(total-N)/(nf-1):0;
+ const ch=[];for(let c=0;c<buf.numberOfChannels;c++)ch.push(buf.getChannelData(c));const nc=ch.length;
+ const win=new Float32Array(N);for(let i=0;i<N;i++)win[i]=.5-.5*Math.cos(2*Math.PI*i/(N-1));
+ const re=new Float64Array(N),im=new Float64Array(N),chroma=new Float64Array(12),fc=new Float64Array(12);
+ const kmin=Math.ceil(80*N/fs),kmax=Math.min(N/2-1,Math.floor(2200*N/fs)),pcOf=new Int8Array(N/2);
+ for(let k=kmin;k<=kmax;k++){const m=69+12*Math.log2(k*fs/N/440);pcOf[k]=((Math.round(m)%12)+12)%12;}
+ let used=0;
+ for(let f=0;f<nf;f++){const st=a+Math.round(f*step)*D;let en=0;
+  for(let i=0;i<N;i++){let s=0;const p=st+i*D;for(let c=0;c<nc;c++){const d=ch[c];for(let j=0;j<D;j++)s+=d[p+j]||0;}s/=nc*D;re[i]=s*win[i];im[i]=0;en+=s*s;}
+  if(en/N<1e-7)continue;nmFFT(re,im);fc.fill(0);let mx=0;
+  for(let k=kmin;k<=kmax;k++){const v=Math.sqrt(re[k]*re[k]+im[k]*im[k]);fc[pcOf[k]]+=v;}
+  for(let i=0;i<12;i++)if(fc[i]>mx)mx=fc[i];if(!mx)continue;for(let i=0;i<12;i++)chroma[i]+=fc[i]/mx;used++;
+ }
+ if(!used)return null;
+ let best=-2,bk=0,second=-2;const rot=new Float64Array(12);
+ for(let k=0;k<24;k++){const P=k<12?KP_MAJ:KP_MIN,r0=k%12;for(let i=0;i<12;i++)rot[(i+r0)%12]=P[i];const r=nmPearson(chroma,rot);if(r>best){second=best;best=r;bk=k;}else if(r>second)second=r;}
+ return {k:bk,c:+best.toFixed(3),m:+(best-second).toFixed(3)};
+}
+const nmSure=d=>!!d&&d.c>=0.5;
+function nmKeyId(id,tr){return id+(tr&&tr.e>tr.s?'@'+tr.s.toFixed(2)+'-'+tr.e.toFixed(2):'');}
+function nmKeyOf(id,tr,force){
+ const buf=buffers[id];if(!buf)return null;const kid=nmKeyId(id,tr);
+ if(!force&&NM.keys[kid]&&NM.keys[kid].dur===+buf.duration.toFixed(2))return NM.keys[kid];
+ const base=(!overrides[id]&&META[id]&&META[id].loop)?META[id].loopStart:0;
+ const d=tr&&tr.e>tr.s?nmDetect(buf,base+tr.s,base+tr.e):nmDetect(buf,0,buf.duration);
+ const r=d?Object.assign(d,{dur:+buf.duration.toFixed(2)}):{k:-1,c:0,m:0,dur:+buf.duration.toFixed(2)};
+ NM.keys[kid]=r;nmSaveKeys();return r;
+}
+
+/* --- tempni saqlab ton siljitish: WSOLA (vaqtni cho'zish) + brauzerning sifatli resempleri --- */
+const nmYield=()=>new Promise(r=>setTimeout(r,0));
+async function nmShift(buf,ps,onProg){
+ const r=nmRatio(ps),sr=buf.sampleRate,nc=buf.numberOfChannels,len=buf.length;
+ const N=sr>60000?4096:2048,Hs=N>>1,Ha=Hs/r,tol=N>>2,DEC=4;
+ const ch=[];for(let c=0;c<nc;c++)ch.push(buf.getChannelData(c));
+ // qidiruv uchun mono, 4 barobar siyraklashtirilgan
+ const ml=Math.ceil(len/DEC),md=new Float32Array(ml);
+ for(let i=0;i<ml;i++){let s=0;const p=i*DEC;for(let c=0;c<nc;c++){const d=ch[c];for(let j=0;j<DEC&&p+j<len;j++)s+=d[p+j];}md[i]=s;}
+ const K=Math.ceil(len/Ha)+1,Lo=K*Hs+N,out=[];for(let c=0;c<nc;c++)out.push(new Float32Array(Lo));
+ const w=new Float32Array(N);for(let i=0;i<N;i++)w[i]=.5-.5*Math.cos(2*Math.PI*i/N);
+ const HsD=Hs/DEC|0,tolD=tol/DEC|0;let prev=0;
+ for(let k=0;k<K;k++){
+  const pa=Math.round(k*Ha);let p=pa;
+  if(k>0){
+   const ref=prev+Hs,rD=ref/DEC|0;let bestV=-Infinity,bestD=0;
+   for(let dd=-tolD;dd<=tolD;dd++){const cD=(pa/DEC|0)+dd;if(cD<0||cD+HsD>=ml)continue;let s=0,e=1e-9;
+    for(let i=0;i<HsD;i++){const x=md[cD+i];s+=x*(md[rD+i]||0);e+=x*x;}const v=s/Math.sqrt(e);if(v>bestV){bestV=v;bestD=dd;}}
+   p=Math.max(0,pa+bestD*DEC);
+   // aniq qidiruv ±(DEC-1) namuna, to'liq aniqlikda
+   let bv=-Infinity,bp=p;const m0=ch[0];
+   for(let q=p-DEC+1;q<=p+DEC-1;q++){if(q<0)continue;let s=0;for(let i=0;i<Hs;i+=2)s+=(m0[q+i]||0)*(m0[ref+i]||0);if(s>bv){bv=s;bp=q;}}
+   p=bp;
+  }
+  const o=k*Hs;
+  for(let c=0;c<nc;c++){const d=ch[c],oc=out[c];for(let i=0;i<N;i++){const x=d[p+i];if(x!==undefined)oc[o+i]+=x*w[i];}}
+  prev=p;
+  if(k%400===399){onProg&&onProg(k/K*.9);await nmYield();}
+ }
+ // cho'zilgan ovozni sr*r tezlikda "o'qib", asl uzunlikka qaytaramiz → ton r barobar o'zgaradi
+ const outLen=Math.min(Lo,Math.ceil(len*r)+2),st=new AudioBuffer({numberOfChannels:nc,length:outLen,sampleRate:sr*r});
+ for(let c=0;c<nc;c++)st.copyToChannel(out[c].subarray(0,outLen),c);
+ onProg&&onProg(.93);await nmYield();
+ const oc=new OfflineAudioContext(nc,len,sr),s=oc.createBufferSource();s.buffer=st;s.connect(oc.destination);s.start(0);
+ const res=await oc.startRendering();onProg&&onProg(1);return res;
+}
+function nmEntry(buf,ps){let m=NM.cache.get(buf);if(!m){m=new Map();NM.cache.set(buf,m);}return [m,m.get(String(ps))];}
+function nmReady(buf,ps){if(!ps||!buf)return true;const e=nmEntry(buf,ps)[1];return !!(e&&e.out);}
+function nmEnsure(buf,ps){
+ if(!ps||!buf)return Promise.resolve(buf);const [m,e0]=nmEntry(buf,ps);if(e0)return e0.p;
+ const e={out:null,prog:0};m.set(String(ps),e);
+ while(m.size>4){const k=m.keys().next().value;m.delete(k);}
+ NM.busy++;nmPaint();
+ e.p=NM.q=NM.q.then(()=>nmShift(buf,ps,x=>{e.prog=x;nmProgPaint();})).then(o=>{e.out=o;return o;},err=>{m.delete(String(ps));console.warn('nota',err);toast('Nota siljitishda xato: '+(err&&err.message||err));return buf;}).finally(()=>{NM.busy--;nmPaint();});
+ return e.p;
+}
+/* play() shu orqali buferni tanlaydi: siljish tayyor bo'lsa — siljigan, bo'lmasa asl + ogohlantirish */
+function nmPick(id,buf,o){
+ const ps=+(o.ps!=null?o.ps:(o.cue&&o.cue.ps)||0)||0;if(!ps)return buf;
+ const e=nmEntry(buf,ps)[1];if(e&&e.out)return e.out;
+ nmEnsure(buf,ps);toast('🎵 Nota siljishi hali tayyorlanmoqda — bu safar asl tonda chalindi');return buf;
+}
+function nmWarm(){
+ for(const c of show.cues||[])if(c&&c.ps&&buffers[c.ref])nmEnsure(buffers[c.ref],c.ps);
+ for(const b of show.banks||[])for(const p of b.pads||[])if(p&&p.ps&&buffers[p.a])nmEnsure(buffers[p.a],p.ps);
+}
+
+/* --- panel: cue va SFX bo'limlarida alohida --- */
+function nmTarget(scope){
+ if(scope==='cue'){const i=Math.min(next,show.cues.length-1),c=show.cues[i];if(!c||c.type==='atmos'||!buffers[c.ref])return c?{none:c.type==='atmos'?'Atmosfera cue — nota siljimaydi':'Bu cue\'da fayl yo\'q',lbl:'Q'+(i+1)}:null;return {obj:c,id:c.ref,tr:c.trim,lbl:'Q'+(i+1)+' · '+c.name};}
+ const p=sbCur();if(!p||!buffers[p.a])return p?{none:'Bu tugmada fayl yo\'q',lbl:KEYS[selPad][1]}:null;return {obj:p,id:p.a,tr:p.trim,lbl:KEYS[selPad][1]+' · '+padTitle(p)};
+}
+function nmItems(scope){
+ if(scope==='cue')return show.cues.filter(c=>c&&c.type!=='atmos'&&buffers[c.ref]).map(c=>({obj:c,id:c.ref,tr:c.trim}));
+ return (show.banks[bank]?show.banks[bank].pads:[]).filter(p=>p&&buffers[p.a]).map(p=>({obj:p,id:p.a,tr:p.trim}));
+}
+const NM_KEYOPTS=()=>'<option value="-1">—</option>'+[...Array(24).keys()].map(k=>'<option value="'+k+'">'+keyName(k)+(k<12?' (major)':' (minor)')+'</option>').join('');
+function nmHtml(scope){
+ return '<div class="nmbar" id="nm_'+scope+'" data-nm="'+scope+'"></div>';
+}
+function nmPaint(){['cue','sfx'].forEach(nmRender);}
+function nmRender(scope){
+ const el=document.getElementById('nm_'+scope);if(!el)return;
+ const a=document.activeElement;if(a&&el.contains(a)&&a.tagName==='INPUT'&&a.type==='range')return;
+ const t=nmTarget(scope),open=NM.open[scope],tk=show.nmKey&&show.nmKey[scope]!=null?show.nmKey[scope]:-1;
+ let h='<div class="nmhead"><button type="button" class="nmtgl'+(open?' on':'')+'" data-nmtgl="'+scope+'" aria-expanded="'+(open?'true':'false')+'" title="Nota moslagich — akkompanement tonalligiga moslash">🎵 <b>Nota</b></button>';
+ if(!t){el.innerHTML=h+'<span class="muted nmnone">'+(scope==='cue'?'cue tanlanmagan':'tugma tanlanmagan')+'</span></div>';return;}
+ if(t.none){el.innerHTML=h+'<span class="muted nmnone">'+esc(t.lbl)+' · '+esc(t.none)+'</span></div>';return;}
+ const d=nmKeyOf(t.id,t.tr),ps=+t.obj.ps||0,sure=nmSure(d),src=sure?d.k:null,res=nmShiftKey(src,ps);
+ const ready=nmReady(buffers[t.id],ps),e=ps?nmEntry(buffers[t.id],ps)[1]:null,lk=scope==='sfx'&&sfxLocked();
+ h+='<span class="nmkey'+(sure?'':' unk')+'" title="'+(sure?'Aniqlangan tonallik · ishonch '+Math.round(d.c*100)+'%':'Tonallik aniq emas (shovqin yoki zarba ovozi)')+'">'+(sure?keyName(src):'?')+'</span>'+
+  '<button type="button" class="nmb" data-nmstep="'+scope+',-1"'+(lk?' disabled':'')+' aria-label="Yarim ton pastga">−</button>'+
+  '<span class="nmps mono'+(ps?' on':'')+'" title="Siljish: yarim ton (¢ — sent)">'+nmFmt(ps)+'</span>'+
+  '<button type="button" class="nmb" data-nmstep="'+scope+',1"'+(lk?' disabled':'')+' aria-label="Yarim ton yuqoriga">+</button>'+
+  '<span class="nmres">→ <b>'+(sure?keyName(res):(ps?nmFmt(ps):'asl'))+'</b></span>'+
+  (ps&&!ready?'<span class="nmprog mono" id="nmp_'+scope+'">'+Math.round((e?e.prog:0)*100)+'%</span>':'')+'</div>';
+ if(open){
+  const ct=Math.round((ps-Math.trunc(ps))*100),stn=Math.trunc(ps);
+  h+='<div class="nmbody">'+
+   '<div class="nmrow nmtitle mono">'+esc(t.lbl)+'</div>'+
+   '<label class="nmrow">Yarim ton <input type="range" min="-12" max="12" step="1" value="'+stn+'" data-nmst="'+scope+'"'+(lk?' disabled':'')+'><b class="mono">'+(stn>0?'+':'')+stn+'</b></label>'+
+   '<label class="nmrow">Nozik (sent) <input type="range" min="-50" max="50" step="1" value="'+ct+'" data-nmct="'+scope+'"'+(lk?' disabled':'')+'><b class="mono">'+(ct>0?'+':'')+ct+'¢</b></label>'+
+   '<div class="nmrow">Akkompanement tonalligi <select class="inp sm" data-nmtk="'+scope+'">'+NM_KEYOPTS().replace('value="'+tk+'"','value="'+tk+'" selected')+'</select></div>'+
+   '<div class="nmrow nmbtns">'+
+    '<button type="button" class="btn sm primary" data-nmfit="'+scope+'"'+(lk||tk<0||!sure?' disabled':'')+' title="Tanlangan ovozni akkompanement tonalligiga moslash (eng yaqin yo\'l, −6…+5)">Moslash</button>'+
+    '<button type="button" class="btn sm" data-nmall="'+scope+'"'+(lk||tk<0?' disabled':'')+' title="Bo\'limdagi tonalligi aniq barcha ovozlarni moslash">Hammasini moslash</button>'+
+    '<button type="button" class="btn sm" data-nmplay="'+scope+'">▶ Tinglash</button>'+
+    '<button type="button" class="btn sm" data-nm0="'+scope+'"'+(lk||!ps?' disabled':'')+'>Asl ton</button>'+
+    '<button type="button" class="btn sm" data-nmdet="'+scope+'" title="Tonallikni qayta aniqlash">↻ Aniqlash</button>'+
+   '</div>'+
+   '<p class="hint nmhint">Temp o\'zgarmaydi — faqat ton. Siljish oldindan tayyorlanadi'+(NM.busy?' ('+NM.busy+' ta navbatda)':'')+'. Mos kelmasa, quloq bilan yarim tonlab to\'g\'rilang.</p>'+
+  '</div>';
+ }
+ el.innerHTML=h;
+}
+function nmProgPaint(){['cue','sfx'].forEach(s=>{const el=document.getElementById('nmp_'+s);if(!el)return;const t=nmTarget(s);if(!t||!t.obj)return;const e=nmEntry(buffers[t.id],+t.obj.ps||0)[1];if(e)el.textContent=Math.round(e.prog*100)+'%';});}
+window.SAHNA_NM={detect:(...a)=>nmDetect(...a),shift:(...a)=>nmShift(...a),keyName,show:()=>show,ctx:()=>ctx,bank:()=>bank};
+function nmFitPs(src,tk){ // tonallik bo'yicha eng yaqin siljish; major/minor farqli bo'lsa — parallel (relative) tonallikka
+ const rel=k=>k<12?k:(k-12+3)%12;let d=((rel(tk)-rel(src))%12+12)%12;if(d>5)d-=12;return d;
+}
+function nmSet(scope,obj,ps){
+ ps=Math.max(-12.5,Math.min(12.5,Math.round(ps*100)/100));if(Math.abs(ps)<0.005)delete obj.ps;else obj.ps=ps;
+ saveShow();if(obj.ps){const id=scope==='cue'?obj.ref:obj.a;nmEnsure(buffers[id],obj.ps);}
+ if(scope==='cue')renderCues();else renderPads();nmRender(scope);
+}
+function nmGuard(scope){if(scope==='sfx'&&sfxLocked()){lockToast();return false;}return true;}
+document.addEventListener('click',e=>{
+ const b=e.target.closest&&e.target.closest('[data-nmtgl],[data-nmstep],[data-nmfit],[data-nmall],[data-nmplay],[data-nm0],[data-nmdet]');if(!b)return;
+ e.stopPropagation();const ds=b.dataset;
+ if(ds.nmtgl){NM.open[ds.nmtgl]=NM.open[ds.nmtgl]?0:1;nmRender(ds.nmtgl);return;}
+ const scope=ds.nmstep?ds.nmstep.split(',')[0]:(ds.nmfit||ds.nmall||ds.nmplay||ds.nm0||ds.nmdet),t=nmTarget(scope);
+ if(ds.nmall!=null){if(!nmGuard(scope))return;const tk=show.nmKey&&show.nmKey[scope];if(tk==null||tk<0)return;let n=0,skip=0;
+  for(const it of nmItems(scope)){const d=nmKeyOf(it.id,it.tr);if(!nmSure(d)){skip++;continue;}const ps=nmFitPs(d.k,tk);if(ps)it.obj.ps=ps;else delete it.obj.ps;n++;}
+  saveShow();nmWarm();if(scope==='cue')renderCues();else renderPads();nmRender(scope);
+  toast('🎵 '+keyName(tk)+' tonalligiga moslandi: '+n+' ta'+(skip?' · '+skip+' tasi zarba/shovqin — o\'zgarmadi':''));logEvent('Nota: '+(scope==='cue'?'cue\'lar':'SFX bank')+' → '+keyName(tk));return;}
+ if(!t||!t.obj)return;
+ if(ds.nmstep){if(!nmGuard(scope))return;nmSet(scope,t.obj,(+t.obj.ps||0)+(+ds.nmstep.split(',')[1]));return;}
+ if(ds.nm0!=null){if(!nmGuard(scope))return;nmSet(scope,t.obj,0);toast('Asl ton: '+t.lbl);return;}
+ if(ds.nmdet!=null){const d=nmKeyOf(t.id,t.tr,true);nmRender(scope);toast(nmSure(d)?'Tonallik: '+keyName(d.k)+' · ishonch '+Math.round(d.c*100)+'%':'Tonallik aniqlanmadi — bu ovoz asosan zarba/shovqin');return;}
+ if(ds.nmfit!=null){if(!nmGuard(scope))return;const d=nmKeyOf(t.id,t.tr),tk=show.nmKey[scope];if(!nmSure(d))return;const ps=nmFitPs(d.k,tk);nmSet(scope,t.obj,ps);toast('🎵 '+t.lbl+': '+keyName(d.k)+' → '+keyName(nmShiftKey(d.k,ps))+' ('+nmFmt(ps)+')');return;}
+ if(ds.nmplay!=null){if(!ctx)return;
+  if(scope==='sfx')padPreview(selPad);
+  else{const c=t.obj;play(c.ref,c.type==='dub'?'dub':'sfx',{title:'▶ '+c.name,preview:true,trim:c.trim,verb:c.verb,cue:c});}}
+},true);
+document.addEventListener('input',e=>{
+ const r=e.target;if(!r.dataset||(r.dataset.nmst==null&&r.dataset.nmct==null))return;const scope=r.dataset.nmst||r.dataset.nmct,t=nmTarget(scope);if(!t||!t.obj)return;
+ const box=document.getElementById('nm_'+scope),st=+box.querySelector('[data-nmst]').value,ct=+box.querySelector('[data-nmct]').value;
+ const lb=r.parentNode.querySelector('b');if(lb)lb.textContent=r.dataset.nmct!=null?(ct>0?'+':'')+ct+'¢':(st>0?'+':'')+st;
+ const ps=st+ct/100,pse=box.querySelector('.nmps');if(pse){pse.textContent=nmFmt(ps);pse.classList.toggle('on',!!ps);}
+});
+document.addEventListener('change',e=>{
+ const r=e.target;if(!r.dataset)return;
+ if(r.dataset.nmtk!=null){const s=r.dataset.nmtk;show.nmKey=show.nmKey||{};show.nmKey[s]=+r.value;saveShow();nmRender(s);return;}
+ if(r.dataset.nmst==null&&r.dataset.nmct==null)return;const scope=r.dataset.nmst||r.dataset.nmct,t=nmTarget(scope);if(!t||!t.obj)return;if(!nmGuard(scope)){nmRender(scope);return;}
+ const box=document.getElementById('nm_'+scope);r.blur();nmSet(scope,t.obj,+box.querySelector('[data-nmst]').value+(+box.querySelector('[data-nmct]').value)/100);
+});
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
- o=o||{};const buf=buffers[id];if(!buf||!ctx)return null;
+ o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
  const src=ctx.createBufferSource();src.buffer=buf;const g=ctx.createGain();
  const lvl0=dbToG(gainFor(id))*(o.level==null?1:o.level),lvl=lvl0*(o.cue?dbToG(o.cue.g||0):1),now=ctx.currentTime,fi=o.fadeIn||0;
  if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
@@ -1683,11 +1903,11 @@ function cueLen(c){if(c.type==='atmos'){const s=show.scenes[c.ref];return s?s.na
 function renderCues(){
  const C=show.cues;if(next>C.length)next=C.length;if(cur>=C.length)cur=-1;
  $('#cues').innerHTML=C.length?C.map((c,i)=>{const T=TYPE[c.type]||TYPE.sfx;const st=i===cur?'live':(i===next?'next':(i<cur?'done':''));const tag=i===cur?'JONLI':(i===next?'KEYINGI':(i<cur?'TUGADI':''));
-  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+(c.verb&&c.verb.on?'<span class="cv">R</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.note?' · '+esc(c.note):'')+'</span></span>'+(c.type!=='atmos'?'<span class="clp'+(c.loop?' on':'')+'" role="button" tabindex="-1" data-cloop="'+i+'" aria-pressed="'+(c.loop?'true':'false')+'" title="Takrorlash (loop): '+(c.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</span>':'');
+  const inner='<span class="num mono">Q'+(i+1)+'</span><span class="bar" style="background:'+T.c+'"></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="nm">'+esc(c.name)+'</span>'+(c.g?'<span class="cg">'+dbStr(c.g)+'</span>':'')+(c.verb&&c.verb.on?'<span class="cv">R</span>':'')+'<span class="sub">'+T.n+' · '+esc(cueLen(c))+(c.ps&&c.type!=='atmos'?' · <b class="cps">♪'+nmFmt(c.ps)+'</b>':'')+(c.note?' · '+esc(c.note):'')+'</span></span>'+(c.type!=='atmos'?'<span class="clp'+(c.loop?' on':'')+'" role="button" tabindex="-1" data-cloop="'+i+'" aria-pressed="'+(c.loop?'true':'false')+'" title="Takrorlash (loop): '+(c.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</span>':'');
   if(editing)return '<div class="cue editrow '+st+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="ctools"><button type="button" data-cmove="'+i+',-1" aria-label="Q'+(i+1)+' ni yuqoriga">↑</button><button type="button" data-cmove="'+i+',1" aria-label="Q'+(i+1)+' ni pastga">↓</button><button type="button" data-cedit="'+i+'" aria-label="Q'+(i+1)+' ni tahrirlash">✎</button></span></div>';
   return '<button type="button" class="cue '+st+'" data-cue="'+i+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
- if(typeof azvTarget!=='undefined'&&azvTarget==='cue')azvRefresh();
+ if(typeof azvTarget!=='undefined'&&azvTarget==='cue')azvRefresh();nmRender('cue');
  $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
 }
 function renderNow(){
@@ -1711,8 +1931,8 @@ function renderPads(){
  $('#pads').innerHTML=show.banks[bank].pads.map((p,i)=>{
   if(!p)return '<div class="pad vacant" data-pad="'+i+'"><button type="button" class="hit" data-hit="'+i+'"><span class="top"><span class="cat" style="background:#3A3F48"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm muted">Bo\'sh</span><span class="muted" style="font-size:10px">fayl yuklang yoki sudrang</span></button><button type="button" class="up" data-up="'+i+'" aria-label="'+KEYS[i][1]+' tugmasiga fayl yuklash">'+ICON_UP+'</button></div>';
   const own=META[p.a]&&(META[p.a].kind==='user'||overrides[p.a]);
-  return '<div class="pad" data-pad="'+i+'" draggable="'+(sfxLocked()?'false':'true')+'" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+''+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom · Home (tanlangan tugma)">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button><button type="button" class="lp'+(p.loop?' on':'')+'" data-ploop="'+i+'" aria-pressed="'+(p.loop?'true':'false')+'" aria-label="'+esc(padTitle(p))+' — takrorlash" title="Takrorlash (loop): '+(p.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
- renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();
+  return '<div class="pad" data-pad="'+i+'" draggable="'+(sfxLocked()?'false':'true')+'" data-dpad="'+i+'"><button type="button" class="hit" data-hit="'+i+'" aria-keyshortcuts="'+KEYS[i][1]+'"><span class="top"><span class="cat" style="background:'+(CAT[p.cat]||CAT.zarba)[0]+'"></span><span class="key mono">'+KEYS[i][1]+'</span></span><span class="nm">'+esc(padTitle(p))+''+'</span>'+(own?'<span class="own">o\'z fayli · '+fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':'')+'</span>':'<span class="muted" style="font-size:10px">'+(durOf(p.a)?fmt(p.trim?trimLen(p.trim):durOf(p.a))+(p.trim?' ✂':''):'fayl yo\'q')+'</span>')+'</button><span class="pctl"><button type="button" data-ppause="'+i+'" aria-label="'+esc(padTitle(p))+' — pauza / davom" title="Pauza / davom · Home (tanlangan tugma)">'+(pausedPads.has(p)?IC_PLAY:IC_PAUSE)+'</button><button type="button" data-pstop="'+i+'" aria-label="'+esc(padTitle(p))+' — to\'xtatish" title="To\'xtatish">'+IC_STOP+'</button><button type="button" class="lp'+(p.loop?' on':'')+'" data-ploop="'+i+'" aria-pressed="'+(p.loop?'true':'false')+'" aria-label="'+esc(padTitle(p))+' — takrorlash" title="Takrorlash (loop): '+(p.loop?'yoqiq':'o\'chiq')+'">'+IC_LOOP+'</button></span><span class="pg">'+(p.g?dbStr(p.g):'')+'</span>'+(p.ps?'<span class="pps" title="Nota siljishi">♪'+nmFmt(p.ps)+'</span>':'')+(p.verb&&p.verb.on?'<span class="pv" title="AZ VERB yoqiq">R</span>':'')+'<button type="button" class="up" data-up="'+i+'" aria-label="'+esc(padTitle(p))+' uchun o\'z faylingizni yuklash">'+ICON_UP+'</button></div>';}).join('');
+ renderPadStates();document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();nmRender('sfx');
 }
 function renderPadStates(){const b=show.banks[bank];if(!b)return;document.querySelectorAll('.pad').forEach(el=>{const p=b.pads[+el.dataset.pad];el.classList.toggle('playing',!!p&&voices.some(v=>v.ref===p.a&&!v.stopping&&!v.preview));const ps=!!p&&pausedPads.has(p);el.classList.toggle('paused',ps);const bt=el.querySelector('[data-ppause]');if(bt&&bt.dataset.st!==String(ps)){bt.dataset.st=ps;bt.innerHTML=ps?IC_PLAY:IC_PAUSE;}});}
 function hitPad(i){
@@ -1751,7 +1971,7 @@ function renderLib(){
  ['user','sfx','atmos','music','dub'].forEach(k=>{h+='<div class="lgroup"><h3>'+GROUP_N[k]+'</h3>'+(g[k].length?g[k].map(row).join(''):'<p class="hint">Hali fayl yo\'q.</p>')+'</div>';});
  $('#libBody').innerHTML=h;
 }
-function renderAll(){renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();}
+function renderAll(){renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();nmWarm();}
 function setEditing(on){editing=on;document.body.classList.toggle('editing',on);const b=$('#editBtn');b.classList.toggle('edit-on',on);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Tugatish':'✎ Tahrirlash';renderCues();renderPads();}
 
 /* ---------- meters & clock loop ---------- */

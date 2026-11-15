@@ -3,6 +3,17 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.11.0: Nota moslagich (tonallikka moslash)
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sahnalar ketma-ketligi | Ro'yxat tepasida alohida **🎵 Nota** paneli: tanlangan (keyingi) cue'ning tonalligi, −/+ yarim ton, natija tonallik; cue qatorida `♪+2` belgisi |
+| Tezkor effektlar (SFX) | Bo'lim tepasida alohida **🎵 Nota** paneli tanlangan tugma uchun; tugmada `♪+2` belgisi; SFX qulflanganda o'zgarmaydi |
+| Aniqlash | Tonallik avtomatik aniqlanadi (xromagramma + Krumhansl profillari), kesilgan parcha bo'yicha; zarba/shovqin ovozlar «?» deb ko'rsatiladi |
+| Siljitish | ±12 yarim ton va ±50 sent, **temp o'zgarmaydi** (WSOLA + sifatli resempl). Oldindan tayyorlanadi, GO darhol chaladi |
+| Moslash | «Akkompanement tonalligi»ni tanlab — **Moslash** (tanlangan ovoz) yoki **Hammasini moslash** (bo'limdagi barcha tonal ovozlar), eng yaqin yo'l −6…+5, major/minor parallel tonallik hisobga olinadi |
+| Saqlash | Siljish cue/tugma ichida saqlanadi — `.sahna` faylga ham tushadi |
+
 ## 1.10.2: Oson yo'l — qurilma kodini adminga yuborish
 
 | Bo'lim | Nima qilindi |
