@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.12.2: Android va iPhone telefonlar
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Yoqilishi | Sensorli telefonda ham planshet rejimi o'zi yoqiladi (📱 bilan o'chirsa bo'ladi) |
+| Pastki panel | Ixcham: **‹** · **GO** · **Musiqa / Sahna so'ndirish** · **■ STOP** |
+| Sarlavha | Bitta qatorga yig'ildi va barmoq bilan yonga suriladi |
+| Vertikal | Cue ro'yxati ekranning ~46% ida o'z ichida suriladi, SFX tugmalari 2 ustunda |
+| Yotqizilgan | Cue ro'yxati chapda, ixcham panel pastda |
+
 ## 1.12.1: Planshet rejimi — keng ekran va masshtab
 
 | Bo'lim | Nima qilindi |

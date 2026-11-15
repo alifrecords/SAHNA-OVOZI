@@ -272,6 +272,24 @@ body.tab .btn.sm{min-height:40px;padding:0 14px}
 body.tab input[type=range]{min-height:32px}
 body.tab .zoomc{display:none}
 body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+/* telefon (eni < 600 px): ixcham pastki panel */
+body.tab.tab-phone{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+body.tab.tab-phone #tabBar{gap:6px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+body.tab.tab-phone #tabBar button{min-height:58px;padding:0 6px;font-size:12px;border-radius:10px}
+body.tab.tab-phone #tabBar [data-tb="atm"],body.tab.tab-phone #tabBar .tbw{display:none}
+body.tab.tab-phone #tabBar .tbback{width:46px;font-size:26px}
+body.tab.tab-phone #tabBar .tbgo b{font-size:22px}body.tab.tab-phone #tabBar .tbgo span{font-size:10.5px}
+body.tab.tab-phone #tabBar .tbstop{min-width:58px}
+body.tab.tab-phone #toast{bottom:calc(84px + env(safe-area-inset-bottom))!important;max-width:92vw}
+body.tab.tab-phone #cues{max-height:46vh;max-height:46dvh}
+body.tab.tab-phone .cuehead{justify-content:space-between}
+body.tab.tab-phone .cfseg button{padding:8px 7px;font-size:12px;min-width:34px}
+body.tab.tab-phone .pads{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.tab.tab-phone .pad .hit{min-height:108px}
+body.tab.tab-phone .col-r{grid-template-columns:1fr}
+body.tab.tab-phone header{flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-top:8px;padding-bottom:8px}body.tab.tab-phone header::-webkit-scrollbar{display:none}body.tab.tab-phone header>*{flex:0 0 auto}
+body.tab.tab-phone.tab-land .col-l{max-height:calc(var(--tabvh,100dvh) - 96px)}
+body.tab.tab-phone #lib{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 /* gorizontal: cue ro'yxati chapda yopishgan, o'z ichida suriladi */
 body.tab.tab-land .col-l{flex:0 0 280px;position:sticky;top:10px;align-self:flex-start;max-height:calc(100vh - 124px);max-height:calc(var(--tabvh,100dvh) - 124px);overflow:auto;overscroll-behavior:contain}
 body.tab.tab-land .col-c{flex:1 1 0}
@@ -1881,7 +1899,7 @@ document.addEventListener('change',e=>{
    body.tab — barmoq uchun katta tugmalar, pastda doimiy GO / so'ndirish paneli, ustunlar planshetga moslashadi.
    Avtomatik: sensorli ekran va eni ≥ 600 px; sarlavhadagi 📱 tugma bilan qo'lda yoqiladi / o'chiriladi. */
 const TAB={wl:null};
-function tabAuto(){try{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c&&m>=600;}catch(e){return false;}}
+function tabAuto(){try{return matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)>=320;}catch(e){return false;}}
 function tabOn(){let v=null;try{v=localStorage.getItem('sahnaOvozi.tab');}catch(e){}return v==null?tabAuto():v==='1';}
 function tabApply(){
  const on=tabOn();document.body.classList.toggle('tab',on);
@@ -1889,7 +1907,7 @@ function tabApply(){
  const bar=$('#tabBar');if(bar)bar.hidden=!on;
  tabOrient();tabGoSync();if(on)tabWake();else tabWakeOff();
 }
-function tabOrient(){const z=(typeof uiZoom==='number'&&uiZoom>0)?uiZoom:1;document.documentElement.style.setProperty('--tabvh',(innerHeight/z)+'px');const p=innerHeight>innerWidth;document.body.classList.toggle('tab-port',p);document.body.classList.toggle('tab-land',!p);}
+function tabOrient(){const z=(typeof uiZoom==='number'&&uiZoom>0)?uiZoom:1;document.documentElement.style.setProperty('--tabvh',(innerHeight/z)+'px');const p=innerHeight>innerWidth;document.body.classList.toggle('tab-phone',innerWidth/z<600||innerHeight/z<500);document.body.classList.toggle('tab-port',p);document.body.classList.toggle('tab-land',!p);}
 function tabGoSync(){const s=$('#tbGoNext'),g=$('#goNext');if(s&&g)s.textContent=g.textContent.replace(/ · Probel$/,'').replace(/ · Space$/,'').replace(/ · Пробел$/,'');}
 /* ekran o'chib qolmasin — iOS/Android'da ekran o'chsa ovoz ham to'xtaydi */
 async function tabWake(){
