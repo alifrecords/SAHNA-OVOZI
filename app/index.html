@@ -233,7 +233,7 @@ html.native .show-info{cursor:pointer}
 @media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:96px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
-.cuehead{flex-wrap:wrap;gap:6px}.cfbox{display:flex;flex-direction:column;align-items:center;gap:2px}
+#cues .cue{scroll-margin:90px 0 120px}.cuehead{flex-wrap:wrap;gap:6px}.cfbox{display:flex;flex-direction:column;align-items:center;gap:2px}
 .cflbl{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A93A3;white-space:nowrap}
 .cfseg{display:flex;border:1px solid #2A3140;border-radius:6px;overflow:hidden}
 .cfseg button{background:#11151C;border:0;border-left:1px solid #2A3140;color:#B8C0CE;font-size:10px;padding:3px 5px;cursor:pointer;white-space:nowrap}
@@ -2053,7 +2053,15 @@ function renderCues(){
   return '<button type="button" class="cue '+st+'" data-cue="'+i+'" draggable="true" data-dcue="'+i+'">'+inner+'<span class="tag">'+tag+'</span></button>';}).join(''):'<div class="empty">Cue yo\'q. Tahrirlash rejimida “+ Yangi cue qo\'shish”.</div>';
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
  if(typeof azvTarget!=='undefined'&&azvTarget==='cue')azvRefresh();nmRender('cue');
+ cueFollow();
  $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
+}
+/* tanlov (keyingi cue) o'zgarganda — u ko'rinadigan joyga suriladi: ro'yxat ham, butun pult oynasi ham */
+let cueFollowLast=null;
+function cueFollow(){
+ if(cueFollowLast===next)return;const first=cueFollowLast===null;cueFollowLast=next;if(first)return;
+ const el=document.querySelector('#cues .cue.next')||document.querySelector('#cues .cue.live');if(!el)return;
+ requestAnimationFrame(()=>{try{el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});}catch(e){el.scrollIntoView(false);}});
 }
 function renderNow(){
  const nl=$('#nowLoop');if(nl){const cc=show.cues[cur];nl.hidden=!cc||cc.type==='atmos';if(cc){nl.classList.toggle('on',!!cc.loop);nl.setAttribute('aria-pressed',cc.loop?'true':'false');nl.title='Takrorlash (loop): '+(cc.loop?'yoqiq':'o\'chiq')+' · L';}}

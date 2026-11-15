@@ -3,6 +3,12 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.11.3: Tanlangan cue ortidan oyna suriladi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sahnalar ketma-ketligi | ↑ ↓ strelkalar (yoki GO) bilan tanlov qayerga borsa, pult oynasi ham o'sha tomonga silliq suriladi — tanlangan cue doim ko'rinib turadi |
+
 ## 1.11.2: So'ndirish tugmalari cue o'tish vaqtiga bog'landi
 
 | Bo'lim | Nima qilindi |
