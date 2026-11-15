@@ -911,3 +911,5 @@ Tanlangan ovozni akkompanement tonalligiga moslash (eng yaqin yo'l, −6…+5)	�
 Bo'limdagi tonalligi aniq barcha ovozlarni moslash	Подогнать все звуки раздела с определённой тональностью	Match all sounds in this section with a detected key
 Tonallikni qayta aniqlash	Определить тональность заново	Re-detect key
 Nota siljishi	Сдвиг тона	Pitch shift
+O'tish (fade) vaqti	Время перехода (fade)	Transition (fade) time
+Cue'lar o'tish vaqti	Время перехода cue	Cue transition time

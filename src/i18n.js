@@ -46,6 +46,7 @@ const PAT=[
  [/^“(.+)” uchun ovoz fayli yo'q — Tahrirlash rejimida ✎ orqali biriktiring\.$/,'У «$1» нет аудиофайла — привяжите через ✎ в режиме редактирования.','“$1” has no audio file — attach one via ✎ in edit mode.'],
  [/^Tonallik: (.+) · ishonch (\d+)%$/,'Тональность: $1 · уверенность $2%','Key: $1 · confidence $2%'],
  [/^Aniqlangan tonallik · ishonch (\d+)%$/,'Определённая тональность · уверенность $1%','Detected key · confidence $1%'],
+ [/^Cue'lar o'tish vaqti: (.+)$/,'Время перехода cue: $1','Cue transition time: $1'],
  [/^Asl ton: (.+)$/,'Исходный тон: $1','Original pitch: $1'],
  [/^🎵 (\S+) tonalligiga moslandi: (\d+) ta( · (\d+) tasi zarba\/shovqin — o'zgarmadi)?$/,'🎵 Подогнано под $1: $2','🎵 Matched to $1: $2'],
  [/^Nota siljitishda xato: (.+)$/,'Ошибка сдвига тона: $1','Pitch shift error: $1'],

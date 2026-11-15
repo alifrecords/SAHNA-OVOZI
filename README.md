@@ -3,6 +3,14 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.11.1: Cue'lar uchun alohida o'tish (fade) vaqti
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sahnalar ketma-ketligi | Sarlavhada alohida **O'tish (fade) vaqti**: Darhol / 1 / 3 / 5 / 8 s. GO bilan musiqa almashishi va atmosfera kirishi shu vaqt bilan bo'ladi |
+| Umumiy vaqt | Markazdagi o'tish vaqti SFX, «so'ndirish» tugmalari va End / Num tugmalari uchun qoladi |
+| Saqlash | Spektakl ichida (`.sahna` faylda ham) saqlanadi |
+
 ## 1.11.0: Nota moslagich (tonallikka moslash)
 
 | Bo'lim | Nima qilindi |
