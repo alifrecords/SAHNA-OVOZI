@@ -993,3 +993,36 @@ Fikringiz, taklifingiz yoki savolingiz — adminga boradi	Ваш отзыв, п�
 ✉ Administrator bilan yozishmani ochish (javoblar shu yerda)	✉ Открыть переписку с администратором (ответы здесь)	✉ Open the chat with the administrator (replies are here)
 ✉ Administratordan yangi javob	✉ Новый ответ от администратора	✉ New reply from the administrator
 ✓ Fikringiz adminga yuborildi — rahmat! Javob «✉ Administrator» da keladi	✓ Ваш отзыв отправлен — спасибо! Ответ придёт в «✉ Администратор»	✓ Feedback sent — thank you! The reply will come in “✉ Administrator”
+Video	Видео	Video
+🎬 Video ovozlashtirish	🎬 Озвучивание видео	🎬 Video sound design
+Video ovozlashtirish — alohida oyna (boshqa monitorga sudrab olib boring)	Озвучивание видео — отдельное окно (перетащите на другой монитор)	Video sound design — separate window (drag it to another monitor)
+video tanlanmagan	видео не выбрано	no video selected
+Videoni shu yerga sudrab tashlang	Перетащите видео сюда	Drag a video here
+yoki	или	or
+📂 Video tanlash	📂 Выбрать видео	📂 Choose video
+Videosiz ham yozish mumkin — REC bosing	Можно записывать и без видео — нажмите REC	You can record without a video too — press REC
+Video ovozi	Звук видео	Video audio
+◆ Belgi	◆ Метка	◆ Marker
+⇢ Cue ro'yxatiga	⇢ В список cue	⇢ To cue list
+Yozib olish	Запись	Recording
+Yozilmoqda…	Идёт запись…	Recording…
+pult chiqishi o'z ichiga yoziladi · Shift+R	выход пульта записывается внутрь · Shift+R	the console output is recorded internally · Shift+R
+Manba	Источник	Source
+Master + stemlar	Мастер + стемы	Master + stems
+Video bilan sinxron (REC → video ham boshlanadi)	Синхронно с видео (REC → видео тоже стартует)	Sync with video (REC → video starts too)
+Punch In / Out (I → O orasini yozish)	Punch In / Out (запись между I → O)	Punch In / Out (record between I → O)
+Kechikish kompensatsiyasi	Компенсация задержки	Latency compensation
+Dublilar (take)	Дубли (take)	Takes
+Eksport	Экспорт	Export
+Video 00:00 dan (DAW'da 0 ga qo'ysa — sinxron)	С 00:00 видео (в DAW ставьте на 0 — синхронно)	From video 00:00 (place at 0 in your DAW — in sync)
+Videoning asl ovozini ham qo'shish	Добавить и оригинальный звук видео	Include the video's original audio
+🎞 Videoga birlashtirish	🎞 Свести с видео	🎞 Merge into video
+Belgilar	Метки	Markers
+Hali yozuv yo'q. REC bosing — pultda chalingan hamma narsa (SFX, atmosfera, musiqa, dublaj) yoziladi.	Записей пока нет. Нажмите REC — запишется всё, что звучит в пульте (SFX, атмосфера, музыка, дубляж).	No takes yet. Press REC — everything played on the console (SFX, atmosphere, music, dubbing) is recorded.
+Pult ichiga qaytarish	Вернуть в пульт	Dock into the console
+Alohida oyna — boshqa monitorga sudrab olib boring	Отдельное окно — перетащите на другой монитор	Separate window — drag it to another monitor
+🎞 Video	🎞 Видео	🎞 Video
+◆ Belgilar	◆ Метки	◆ Markers
+🔊 Video ovozi	🔊 Звук видео	🔊 Video audio
+● Yozuv	● Запись	● Recording
+Belgi yo'q —	Меток нет —	No markers —

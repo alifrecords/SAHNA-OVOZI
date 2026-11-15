@@ -97,7 +97,7 @@ function walk(root){
  if(root.nodeType===3){doText(root);return;}
  if(root.nodeType!==1&&root.nodeType!==11)return;
  if(root.nodeType===1){if(skipEl(root))return;ATTRS.forEach(a=>root.hasAttribute(a)&&doAttr(root,a));}
- const tw=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeType===1&&(SKIP.test(n.tagName)||n.hasAttribute('data-notr'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+ const tw=(root.ownerDocument||document).createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeType===1&&(SKIP.test(n.tagName)||n.hasAttribute('data-notr'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
  let n;while((n=tw.nextNode())){if(n.nodeType===3)doText(n);else ATTRS.forEach(a=>n.hasAttribute(a)&&doAttr(n,a));}
 }
 let titleSrc=null,titleOut=null;
@@ -129,7 +129,8 @@ function setLang(l){
 }
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang);});
 document.addEventListener('change',e=>{const s=e.target;if(s&&s.classList&&s.classList.contains('langSel'))setLang(s.value);});
-window.AZ_I18N={tr,setLang,get lang(){return L;},loc:()=>L==='ru'?'ru-RU':L==='en'?'en-GB':'uz-UZ'};
+function observe(doc){try{walk(doc.body);new MutationObserver(list=>{for(const r of list){if(r.type==='characterData')doText(r.target);else if(r.type==='attributes')doAttr(r.target,r.attributeName);else r.addedNodes.forEach(walk);}}).observe(doc.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:ATTRS});}catch(e){}}
+window.AZ_I18N={tr,observe,setLang,get lang(){return L;},loc:()=>L==='ru'?'ru-RU':L==='en'?'en-GB':'uz-UZ'};
 try{window.azNative&&window.azNative.setLang&&window.azNative.setLang(L);}catch(e){}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

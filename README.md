@@ -3,6 +3,23 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.17.0: 🎬 Video ovozlashtirish (pultga qo'shimcha)
+
+Pultning ko'rinishi o'zgarmadi — sarlavhaga faqat **🎬 Video** tugmasi qo'shildi.
+
+| Bo'lim | Nima qiladi |
+|---|---|
+| Oyna | Alohida oyna — boshqa monitor / proyektorga sudrab olib boriladi (⇲ bilan pult ichiga suriladigan panel bo'lib qaytadi). Desktop dasturda ham alohida oyna |
+| Video | 📂 yoki istalgan joydan sudrab tashlash: MP4, MOV, MKV, WEBM, AVI, M4V, MPEG, 3GP… (brauzer kodeki qo'llamasa — sababi bilan xabar). Vaqt kodi (fps tanlanadi), subtitr .srt / .vtt |
+| Transport | Play (Probel / K), ±5 s (J / L), kadr (, .), loop I → O, tezlik 0.5× / 1× / 1.5× (ton o'zgarmaydi), video ovozi, DUCK, to'liq ekran |
+| Belgilar | M — belgi; video ijrosida bosilgan SFX / GO o'zi belgiga aylanadi; ⇢ Cue ro'yxatiga |
+| ● REC | Pult chiqishi (limiterdan keyin) o'z ichiga yoziladi: **Master** yoki **Master + stemlar** (Atmosfera, SFX, Musiqa, Dublaj, Mikrofon). Video bilan sinxron, count-in 3·2·1, punch I → O, kechikish kompensatsiyasi (avto) |
+| Take'lar | Har yozuv saqlanadi, ⭐ eng yaxshisi, ▶ video bilan tinglash |
+| Vaqt chizig'i | Video kadrlari, belgilar, I/O, video ovozi, yozilgan master va stemlar; bosib / sudrab o'tish |
+| Eksport | WAV 48k/24-bit (video 00:00 dan — DAW'da 0 ga qo'ysa sinxron), Stemlar ZIP + belgilar.csv, 🎞 Videoga birlashtirish (MP4 / WEBM, real vaqtda) |
+| Pult tugmalari | Video oynasida bosilgan SFX / Num / End tugmalari pultga o'tadi |
+| Saqlash | Documents bazasi ulangan bo'lsa — `yozuvlar/` papkasiga |
+
 ## 1.16.0: Administrator bilan yozishma, fikr va takliflar
 
 | Bo'lim | Nima qilindi |

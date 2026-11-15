@@ -288,6 +288,7 @@ body.tab-phone #chatBox{left:8px;right:8px;width:auto;bottom:calc(80px + env(saf
 .chb2.u{align-self:flex-end;background:rgba(242,169,59,.16);border:1px solid rgba(242,169,59,.4)}.chb2.a{align-self:flex-start;background:#1f2633;border:1px solid #2c3647}
 .chf{padding:8px;border-top:1px solid #2A3140;display:flex;flex-direction:column;gap:6px}.chrow{display:flex;gap:6px}.chrow textarea{flex:1;resize:none;min-height:44px;height:44px;font-family:inherit}.chrow .btn{width:50px;font-size:18px}
 .lcfb{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;flex-direction:column;gap:6px}.lcfbr{display:flex;gap:8px}.lcfbr .inp{flex:1}
+#vidBtn{display:inline-flex;align-items:center;gap:6px}#vidBtn.on{border-color:#2F6B5F!important;color:#5AC8B0}#vidBtn.rec{border-color:#E5484D!important;color:#fff;background:#7A1F23;animation:chpulse 1.1s infinite}
 .tabproj{display:none}
 body.tab .tabproj{display:flex;align-items:center;gap:8px}
 .mpt{font-size:13px;white-space:nowrap}.mpd{color:var(--amber);font-weight:800}.mpok{color:#5AC8B0;font-weight:800}
@@ -501,6 +502,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <button class="btn instb" type="button" id="instHdr" title="Ilova sifatida o'rnatish (PC, iPad, planshet, Android)" aria-label="Ilova sifatida o'rnatish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg><span class="ihl">O'rnatish</span></button>
     <button type="button" class="show-info" id="showBtn" aria-label="Spektakl ma'lumotlari"><span class="lbl">Spektakl</span><span style="font-size:14px;font-weight:600;color:var(--text)" id="showName">—</span></button>
     <button type="button" class="btn chbtn" id="chatBtn" aria-label="Administrator bilan yozishma"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span class="chl">Administrator</span><span class="chn" hidden>0</span></button>
+    <button type="button" class="btn" id="vidBtn" title="Video ovozlashtirish — alohida oyna (boshqa monitorga sudrab olib boring)" aria-label="Video ovozlashtirish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M17 10l5-3v10l-5-3z"/></svg><span class="vbl">Video</span></button>
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
@@ -1767,7 +1769,7 @@ function nmRender(scope){
  el.innerHTML=h;
 }
 function nmProgPaint(){['cue','sfx'].forEach(s=>{const el=document.getElementById('nmp_'+s);if(!el)return;const t=nmTarget(s);if(!t||!t.obj)return;const e=nmEntry(buffers[t.id],+t.obj.ps||0)[1];if(e)el.textContent=Math.round(e.prog*100)+'%';});}
-window.SAHNA_NM={detect:(...a)=>nmDetect(...a),shift:(...a)=>nmShift(...a),keyName,show:()=>show,ctx:()=>ctx,bank:()=>bank};
+window.SAHNA_NM={master:()=>masterIn,detect:(...a)=>nmDetect(...a),shift:(...a)=>nmShift(...a),keyName,show:()=>show,ctx:()=>ctx,bank:()=>bank};
 function nmFitPs(src,tk){ // tonallik bo'yicha eng yaqin siljish; major/minor farqli bo'lsa — parallel (relative) tonallikka
  const rel=k=>k<12?k:(k-12+3)%12;let d=((rel(tk)-rel(src))%12+12)%12;if(d>5)d-=12;return d;
 }
@@ -2041,6 +2043,459 @@ document.addEventListener('click',async e=>{
 },true);
 document.addEventListener('keydown',e=>{if(e.target&&e.target.id==='chText'){e.stopPropagation();if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const s=document.querySelector('[data-ch="send"]');if(s)s.click();}if(e.key==='Escape')chToggle(false);}},true);
 
+/* ---------- 🎬 VIDEO OVOZLASHTIRISH ----------
+   Pultga qo'shimcha: alohida oyna (boshqa monitorga sudraladi) yoki pult ichida suriladigan panel.
+   Video ochish / sudrab tashlash · vaqt kodi · transport · belgilar (M) · pult signalini yozib olish (master + stemlar)
+   · take'lar · vaqt chizig'i · eksport: WAV 24-bit, stemlar ZIP, videoga birlashtirish. */
+const VS={doc:null,win:null,mode:null,root:null,url:null,file:null,name:'',dur:0,fps:25,vw:0,vh:0,
+ markers:[],takes:[],sel:null,io:{i:null,o:null},loop:false,rates:[.5,1,1.5],rate:1,vvol:.8,duck:true,duckG:1,
+ subs:[],rec:null,mux:null,opt:{stems:false,stemSel:{atmos:1,sfx:1,music:1,dub:1,mic:0},sync:true,count:true,punch:false,pad0:true,vaudio:true},
+ peaksV:null,thumbs:[],raf:0,kw:null,mt:null,lu:{buf:[],an:null},n:0,tlW:0,drag:null,lastHit:{}};
+const VS_CSS=".vs{display:flex;flex-direction:column;background:#101318;color:var(--text,#E6EAF2);font-family:inherit;font-size:13px}\n.vs-popbody{margin:0;background:#0B0D11;overflow:hidden}\n.vs-pop{position:fixed;inset:0}\n.vs-dock{position:fixed;z-index:85;border:1px solid #3A4A66;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;resize:both;min-width:760px;min-height:500px;max-width:100vw;max-height:100vh}\n.vs kbd{font:10px ui-monospace,Consolas,monospace;background:#232a36;border:1px solid #33405A;border-radius:4px;padding:0 4px;color:#9AA3B2}\n.vs-title{display:flex;align-items:center;gap:10px;padding:7px 10px 7px 14px;background:#161B24;border-bottom:1px solid #262E3C;flex:none;user-select:none}\n.vs-dock .vs-title{cursor:move}\n.vs-dot{width:9px;height:9px;border-radius:50%;background:#3A4458;flex:none}.vs-dot.on{background:#E5484D;box-shadow:0 0 8px #E5484D;animation:vsblink 1s infinite}\n@keyframes vsblink{50%{opacity:.35}}\n.vs-fn{color:#8A93A3;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.vs-sp{flex:1}\n.vs-fps{font-size:11px;color:#8A93A3;display:flex;align-items:center;gap:4px}.vs-fps select{background:#11151C;color:#E6EAF2;border:1px solid #2A3140;border-radius:6px;font-size:11px;padding:2px 4px}\n.vs-ic{width:30px;height:28px;border-radius:7px;border:1px solid #2A3140;background:#11151C;color:#C9D1DE;font-size:13px;cursor:pointer}.vs-ic:hover{border-color:#4A5A78}.vs-x:hover{background:#4c1d1d;border-color:#7A2A31}\n.vs-body{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px}\n.vs-left{display:flex;flex-direction:column;min-width:0;min-height:0;border-right:1px solid #262E3C}\n.vs-video{position:relative;flex:1;min-height:170px;background:#000;overflow:hidden}\n.vs-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}\n.vs-video:fullscreen{display:block}\n.vs-tc{position:absolute;left:12px;top:10px;font:600 15px ui-monospace,Consolas,monospace;background:rgba(0,0,0,.62);padding:3px 8px;border-radius:6px;letter-spacing:.06em;pointer-events:none}\n.vs-recb{position:absolute;right:12px;top:10px;font:700 13px ui-monospace,Consolas,monospace;background:rgba(229,72,77,.92);padding:4px 10px;border-radius:6px;color:#fff;pointer-events:none}\n.vs-mk{position:absolute;left:12px;top:44px;font-size:12px;font-weight:700;background:rgba(90,200,176,.92);color:#062a23;padding:3px 9px;border-radius:6px;pointer-events:none}\n.vs-sub{position:absolute;left:5%;right:5%;bottom:18px;text-align:center;font-size:clamp(14px,2.2vw,22px);font-weight:600;text-shadow:0 2px 6px #000,0 0 2px #000;white-space:pre-line;pointer-events:none}\n.vs-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 120px/1 'Space Grotesk',system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.45);text-shadow:0 4px 30px rgba(229,72,77,.8)}\n.vs-busy{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(16,19,24,.94);border:1px solid #3A4A66;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:700;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}.vs-busy small{font-weight:500;color:#8A93A3;font-size:11px}\n.vs-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#B8C0CE;border:2px dashed #2A3140;margin:12px;border-radius:12px;text-align:center;padding:10px}\n.vs-empty[hidden],.vs-drop[hidden],.vs-count[hidden],.vs-busy[hidden],.vs-mk[hidden],.vs-recb[hidden]{display:none}\n.vs-ei{font-size:44px}.vs-empty b{font-size:16px;color:#E6EAF2}.vs-empty small{color:#6B7486;font-size:11px}.vs-note{color:#8A93A3!important;max-width:420px}\n.vs-drop{position:absolute;inset:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#5AC8B0;background:rgba(10,30,26,.85);border:2px dashed #5AC8B0;border-radius:12px;z-index:3}\n.vs-trans,.vs-mrow{display:flex;align-items:center;gap:5px;padding:7px 10px;background:#13171E;flex:none;border-top:1px solid #1E2430}\n.vs-b{min-width:34px;height:32px;border-radius:8px;border:1px solid #2A3140;background:#1A2030;color:#E6EAF2;font-size:13px;padding:0 8px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:5px}\n.vs-b:hover{border-color:#4A5A78}.vs-b.on{border-color:#5AC8B0;color:#5AC8B0}.vs-play{min-width:48px;background:#2563eb;border-color:#3b82f6;font-size:15px}\n.vs-duck{font-size:10px;font-weight:800;letter-spacing:.04em}.vs-duck.on{color:#F2A93B;border-color:#6b4f1f}\n.vs-sep{width:1px;height:22px;background:#2A3140;margin:0 3px;flex:none}\n.vs-vol{display:flex;align-items:center;gap:6px;font-size:12px;color:#B8C0CE;white-space:nowrap}.vs-vol input{width:90px}\n.vs-addm{color:#5AC8B0;border-color:#2F6B5F}\n.vs-ml{flex:1;display:flex;gap:6px;overflow-x:auto;min-width:0;scrollbar-width:thin}\n.vs-chip{font-size:11px;font-weight:700;padding:4px 7px 4px 8px;border-radius:6px;white-space:nowrap;border-left:2px solid;cursor:pointer;display:inline-flex;align-items:center;gap:3px;flex:none}\n.vs-chip i{font-style:normal;font-weight:500;opacity:.75;font-family:ui-monospace,monospace}.vs-chip b{opacity:.5;margin-left:3px;padding:0 2px}.vs-chip b:hover{opacity:1;color:#ff8a8d}.vs-chip em{font-style:normal;outline:none}\n.k-m{background:rgba(230,234,242,.08);color:#E6EAF2}.k-sfx{background:rgba(242,169,59,.15);color:#F2A93B}.k-atmos{background:rgba(90,200,176,.15);color:#5AC8B0}.k-music{background:rgba(160,120,255,.15);color:#b79cff}.k-dub{background:rgba(229,72,77,.15);color:#ff8a8d}\n.vs-hint{padding:6px 12px;font-size:11px;color:#7D8696;background:#0F1217;border-top:1px solid #1E2430;flex:none;line-height:1.6}\n.vs-none{color:#6B7486;font-size:11.5px;align-self:center}\n.vs-rp>*{flex:none}.vs-rp{padding:12px;display:flex;flex-direction:column;gap:7px;background:#12161D;font-size:12px;overflow:auto;min-height:0}\n.vs-rechead{display:flex;gap:10px;align-items:center}.vs-rechead small{display:block;color:#8A93A3;font-size:10.5px}\n.vs-recbtn{height:44px;min-width:92px;padding:0 14px;border-radius:10px;border:0;background:#E5484D;color:#fff;font-weight:800;font-size:15px;cursor:pointer}\n.vs-recbtn.on{background:#7A1F23;box-shadow:0 0 0 4px rgba(229,72,77,.3);animation:vsrec 1.2s infinite}@keyframes vsrec{50%{box-shadow:0 0 0 9px rgba(229,72,77,.06)}}\n.vs-meter{display:flex;flex-direction:column;gap:3px}.vs-mtr{position:relative;height:9px;border-radius:3px;background:#1d222b;overflow:hidden}.vs-mtr i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e 0 160px,#eab308 160px 230px,#ef4444 230px);transition:width .06s}.vs-mtr span{position:absolute;right:4px;top:-2px;font-size:9px;color:#8A93A3}\n.vs-lufs{font-size:11px;color:#8A93A3}.vs-lufs b{color:#E6EAF2}\n.vs-fl{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#8A93A3;margin-top:5px}\n.vs-seg{display:flex;border:1px solid #2A3140;border-radius:8px;overflow:hidden}.vs-seg button{flex:1;padding:7px 0;font-weight:600;font-size:12px;background:transparent;border:0;color:#B8C0CE;cursor:pointer}.vs-seg button.on{background:rgba(242,169,59,.16);color:#F2A93B}\n.vs-stems{display:flex;flex-wrap:wrap;gap:4px}.vs-stems button{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid #2A3140;color:#8A93A3;background:transparent;cursor:pointer}.vs-stems button.on{border-color:#3A6B8F;color:#9ecbff;background:rgba(59,130,246,.12)}\n.vs-opt{display:flex;gap:7px;align-items:flex-start;color:#C9D1DE;line-height:1.35;cursor:pointer}.vs-opt input{margin:2px 0 0;accent-color:#5AC8B0}.vs-lat{cursor:default;justify-content:space-between}.vs-lat b{color:#5AC8B0}\n.vs-warn{font-size:11px;color:#F2A93B;background:rgba(242,169,59,.08);border:1px solid rgba(242,169,59,.3);border-radius:8px;padding:6px 8px}\n.vs-takes{display:flex;flex-direction:column;gap:5px}\n.vs-take{display:flex;align-items:center;gap:4px;padding:6px 6px 6px 9px;border:1px solid #2A3140;border-radius:8px;cursor:pointer}.vs-take.on{border-color:#F2A93B;background:rgba(242,169,59,.07)}\n.vs-tk1{flex:1;min-width:0;display:flex;flex-direction:column}.vs-tk1 span{font-size:10.5px;color:#8A93A3}\n.vs-tb{width:28px;height:28px;border-radius:7px;border:1px solid #2A3140;background:#1A2030;color:#E6EAF2;font-size:12px;cursor:pointer;flex:none}\n.vs-exp{display:grid;grid-template-columns:1fr 1fr;gap:6px}\n.vs-exp button,.vs-mux{height:42px;border-radius:8px;border:1px solid #2A3140;background:#1A2030;color:#E6EAF2;font-weight:700;font-size:12.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;cursor:pointer}\n.vs-exp small,.vs-mux small{font-weight:500;font-size:9.5px;color:#8A93A3}\n.vs-mux{background:linear-gradient(135deg,#F2A93B,#E5484D);border:0;color:#1A1206;height:46px;font-size:13.5px}.vs-mux small{color:#3a2306}\n.vs-exp button:disabled,.vs-mux:disabled{opacity:.4;cursor:not-allowed}\n.vs-tl{position:relative;flex:none;border-top:1px solid #262E3C;background:#0E1116;max-height:38%;overflow-y:auto;overflow-x:hidden}\n.vs-tl canvas{display:block;width:100%;cursor:pointer}\n.vs-ph{position:absolute;top:0;width:2px;background:#fff;box-shadow:0 0 8px rgba(255,255,255,.6);pointer-events:none;left:124px}.vs-ph::before{content:'';position:absolute;top:0;left:-5px;border:6px solid transparent;border-top-color:#fff}\n@media (max-width:900px){.vs-body{grid-template-columns:1fr}.vs-rp{max-height:42vh}.vs-left{border-right:0}}\n#vidBtn{display:inline-flex;align-items:center;gap:6px}#vidBtn.on{border-color:#2F6B5F!important;color:#5AC8B0}#vidBtn.rec{border-color:#E5484D!important;color:#fff;background:#7A1F23;animation:chpulse 1.1s infinite}\n";
+const VS_STEMS=[['atmos','Atmosfera','#5AC8B0'],['sfx','SFX','#F2A93B'],['music','Musiqa','#B79CFF'],['dub','Dublaj','#FF8A8D'],['mic','Mikrofon','#9ECBFF']];
+const VS_VEXT='video/*,.mp4,.m4v,.mov,.mkv,.webm,.avi,.mpg,.mpeg,.3gp,.ts,.mts,.m2ts,.ogv,.wmv,.flv';
+const vsE=id=>VS.doc&&VS.doc.getElementById(id);
+const vsV=()=>vsE('vsV');
+function vsTC(t,fps){fps=fps||VS.fps;t=Math.max(0,t||0);const f=Math.floor(t*fps+1e-6),ff=f%fps,s=Math.floor(f/fps),h=Math.floor(s/3600),m=Math.floor(s/60)%60,ss=s%60,p=n=>String(n).padStart(2,'0');return p(h)+':'+p(m)+':'+p(ss)+':'+p(ff);}
+function vsShort(t){t=Math.max(0,t||0);const m=Math.floor(t/60),s=Math.floor(t%60);return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function vsLatMs(){if(!ctx)return 0;return Math.round(((ctx.outputLatency||0)+(ctx.baseLatency||0))*1000);}
+
+/* ===== oyna: alohida (boshqa monitor) yoki pult ichida ===== */
+function vsOpen(mode){
+ if(!ctx){toast('Avval ovozni yoqing');return;}
+ if(VS.doc&&VS.mode===mode){if(VS.win)VS.win.focus();return;}
+ if(VS.doc)vsUnmount();
+ if(mode==='pop'&&!IS_FRAME){
+  let w=null;try{w=window.open('','sahnaovozi_video','popup=yes,width=1260,height=860');}catch(e){}
+  if(!w){toast('Brauzer alohida oynani to\'sdi — pult ichida ochildi. Manzil satridagi 🚫 belgisidan «oynalarga ruxsat» bering');return vsOpen('dock');}
+  w.document.open();w.document.write('<!DOCTYPE html><html lang="'+(document.documentElement.lang||'uz')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>🎬 Video ovozlashtirish — Sahna Ovozi</title></head><body class="vs-popbody"></body></html>');w.document.close();
+  document.querySelectorAll('head style').forEach(s=>w.document.head.appendChild(s.cloneNode(true)));
+  VS.win=w;VS.doc=w.document;VS.mode='pop';
+  const st=w.document.createElement('style');st.textContent=VS_CSS;w.document.head.appendChild(st);
+  w.document.body.innerHTML='<div class="vs vs-pop" id="vsRoot" tabindex="-1"></div>';
+  w.addEventListener('pagehide',()=>{if(VS.win===w){vsSaveTime();VS.win=null;VS.doc=null;VS.mode=null;VS.root=null;vsBtnUI();}});
+  w.addEventListener('resize',()=>vsDrawTL());
+  vsWireDoc(w.document);
+ }else{
+  VS.win=null;VS.doc=document;VS.mode='dock';
+  if(!document.getElementById('vsCss')){const st=document.createElement('style');st.id='vsCss';st.textContent=VS_CSS;document.head.appendChild(st);}
+  const d=document.createElement('div');d.className='vs vs-dock';d.id='vsRoot';d.tabIndex=-1;
+  const r=VS.dockRect||{x:Math.max(10,(innerWidth-1100)/2),y:110,w:Math.min(1100,innerWidth-20),h:Math.min(780,innerHeight-130)};
+  Object.assign(d.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
+  document.body.appendChild(d);
+  new ResizeObserver(()=>{if(VS.root===d){VS.dockRect={x:d.offsetLeft,y:d.offsetTop,w:d.offsetWidth,h:d.offsetHeight};vsDrawTL();}}).observe(d);
+  vsWireRoot(d);
+ }
+ VS.root=vsE('vsRoot');VS.thumbs=[];vsRender();vsBtnUI();vsLoop();
+ try{if(window.AZ_I18N&&AZ_I18N.observe&&VS.mode==='pop')AZ_I18N.observe(VS.doc);}catch(e){}
+ logEvent('Video bo\'limi ochildi ('+(VS.mode==='pop'?'alohida oyna':'pult ichida')+')');
+}
+function vsUnmount(){
+ vsSaveTime();const v=vsV();if(v){try{v.pause();}catch(e){}}
+ if(VS.mode==='pop'&&VS.win){const w=VS.win;VS.win=null;VS.doc=null;VS.mode=null;VS.root=null;try{w.close();}catch(e){}}
+ else if(VS.root){VS.root.remove();VS.doc=null;VS.mode=null;VS.root=null;}
+ vsBtnUI();
+}
+function vsClose(){if(VS.rec){toast('Avval yozishni to\'xtating (● REC)');return;}vsUnmount();}
+function vsSaveTime(){const v=vsV();if(v&&!isNaN(v.currentTime))VS.t=v.currentTime;}
+addEventListener('pagehide',()=>{try{if(VS.win)VS.win.close();}catch(e){}});
+function vsBtnUI(){const b=$('#vidBtn');if(!b)return;b.classList.toggle('on',!!VS.doc);b.classList.toggle('rec',!!VS.rec);const s=b.querySelector('.vbl');if(s)s.textContent=VS.rec?'● REC '+vsShort(VS.rec.capT0!=null&&ctx?ctx.currentTime-VS.rec.capT0:0):'Video';}
+
+/* ===== UI ===== */
+function vsRender(){
+ const R=VS.root;if(!R)return;const pop=VS.mode==='pop';
+ R.innerHTML='<div class="vs-title" data-vsdrag="1"><span class="vs-dot'+(VS.rec?' on':'')+'"></span><b>🎬 Video ovozlashtirish</b><span class="vs-fn" id="vsFn"></span><span class="vs-sp"></span>'+
+  '<label class="vs-fps" title="Kadr tezligi (vaqt kodi uchun)">fps <select id="vsFps">'+[23.976,24,25,29.97,30,50,60].map(f=>'<option value="'+f+'"'+(Math.abs(f-VS.fps)<.01?' selected':'')+'>'+f+'</option>').join('')+'</select></label>'+
+  (pop?'<button type="button" class="vs-ic" data-vs="dock" title="Pult ichiga qaytarish">⇲</button>':'<button type="button" class="vs-ic" data-vs="pop" title="Alohida oyna — boshqa monitorga sudrab olib boring">⧉</button>')+
+  '<button type="button" class="vs-ic vs-x" data-vs="close" title="Yopish">✕</button></div>'+
+ '<div class="vs-body"><div class="vs-left">'+
+  '<div class="vs-video" id="vsVBox"><video id="vsV" playsinline preload="auto"></video>'+
+   '<div class="vs-tc" id="vsTc">00:00:00:00</div><div class="vs-recb" id="vsRecB" hidden></div><div class="vs-mk" id="vsMk" hidden></div><div class="vs-sub" id="vsSub"></div><div class="vs-count" id="vsCount" hidden></div><div class="vs-busy" id="vsBusy" hidden></div>'+
+   '<div class="vs-empty" id="vsEmpty"><div class="vs-ei">🎬</div><b>Videoni shu yerga sudrab tashlang</b><span>yoki</span><button type="button" class="btn primary" data-vs="open">📂 Video tanlash</button><small>MP4 · MOV · MKV · WEBM · AVI · M4V · MPEG · 3GP …</small><small class="vs-note">Videosiz ham yozish mumkin — REC bosing</small></div>'+
+   '<div class="vs-drop" id="vsDrop" hidden>⤓ Tashlang — video ochiladi</div></div>'+
+  '<div class="vs-trans">'+
+   '<button type="button" class="vs-b" data-vs="open" title="Video ochish (yoki sudrab tashlang)">📂</button>'+
+   '<button type="button" class="vs-b" data-vs="subs" title="Subtitr / dialog matni (.srt, .vtt)">💬</button><span class="vs-sep"></span>'+
+   '<button type="button" class="vs-b'+(VS.loop?' on':'')+'" data-vs="loop" title="Loop: I → O orasini qaytarish">⟲</button>'+
+   '<button type="button" class="vs-b" data-vs="start" title="Boshiga">⏮</button><button type="button" class="vs-b" data-vs="fb" title="1 kadr orqaga  ,">‹</button><button type="button" class="vs-b" data-vs="b5" title="−5 s  J">◀◀</button>'+
+   '<button type="button" class="vs-b vs-play" data-vs="play" id="vsPlay" title="Play / Pauza — Probel yoki K">▶</button>'+
+   '<button type="button" class="vs-b" data-vs="f5" title="+5 s  L">▶▶</button><button type="button" class="vs-b" data-vs="ff" title="1 kadr oldinga  .">›</button><button type="button" class="vs-b" data-vs="end" title="Oxiriga">⏭</button><span class="vs-sep"></span>'+
+   '<button type="button" class="vs-b vs-rate" data-vs="rate" id="vsRate" title="Tezlik (ton o\'zgarmaydi)">'+VS.rate+'×</button>'+
+   '<span class="vs-sp"></span>'+
+   '<label class="vs-vol" title="Video ovozi (faqat eshitish uchun — yozuvga tushmaydi)">🔊 <span>Video ovozi</span><input type="range" id="vsVol" min="0" max="100" value="'+Math.round(VS.vvol*100)+'"></label>'+
+   '<button type="button" class="vs-b vs-duck'+(VS.duck?' on':'')+'" data-vs="duck" title="SFX / musiqa chalinganda video ovozini pasaytirish">DUCK</button>'+
+   '<button type="button" class="vs-b" data-vs="fs" title="To\'liq ekran">⛶</button></div>'+
+  '<div class="vs-mrow"><button type="button" class="vs-b vs-addm" data-vs="mark" title="Videoning shu joyiga belgi">◆ Belgi <kbd>M</kbd></button>'+
+   '<button type="button" class="vs-b" data-vs="in" title="In nuqtasi (punch / loop boshlanishi)">I</button><button type="button" class="vs-b" data-vs="out" title="Out nuqtasi">O</button>'+
+   '<div class="vs-ml" id="vsMl"></div>'+
+   '<button type="button" class="vs-b" data-vs="tocue" title="SFX bosilgan belgilarni Sahnalar ketma-ketligiga cue qilib qo\'shish">⇢ Cue ro\'yxatiga</button></div>'+
+  '<div class="vs-hint">🎯 Video ijro etilayotganda bosilgan SFX tugmalari va GO vaqt chizig\'iga o\'zi yoziladi · <kbd>Probel</kbd>/<kbd>K</kbd> play · <kbd>J</kbd> <kbd>L</kbd> ±5 s · <kbd>,</kbd> <kbd>.</kbd> kadr · <kbd>M</kbd> belgi · <kbd>I</kbd> <kbd>O</kbd> punch · <kbd>Shift+R</kbd> yozish'+(pop?' · qolgan tugmalar (SFX, Num) pultga o\'tadi':'')+'</div>'+
+ '</div><div class="vs-rp" id="vsRp"></div></div>'+
+ '<div class="vs-tl" id="vsTl"><canvas id="vsCv"></canvas><div class="vs-ph" id="vsPh"></div></div>'+
+ '<input type="file" id="vsFile" accept="'+VS_VEXT+'" hidden><input type="file" id="vsSubF" accept=".srt,.vtt,text/vtt" hidden>';
+ const v=vsV();
+ v.addEventListener('loadedmetadata',vsOnMeta);
+ v.addEventListener('error',()=>vsVidErr());
+ v.addEventListener('play',()=>vsPlayUI());v.addEventListener('pause',()=>vsPlayUI());
+ v.preservesPitch=true;v.volume=VS.vvol;
+ if(VS.url){v.src=VS.url;}
+ vsE('vsFile').addEventListener('change',e=>{if(e.target.files[0])vsLoadFile(e.target.files[0]);});
+ vsE('vsSubF').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;VS.subs=vsParseSubs(await f.text());toast('💬 Subtitr: '+VS.subs.length+' qator');});
+ vsRP();vsMarkers();vsHead();
+ setTimeout(vsDrawTL,30);
+}
+function vsHead(){const f=vsE('vsFn');if(f)f.textContent=VS.file?VS.name+(VS.vw?' · '+VS.vw+'×'+VS.vh:'')+(VS.dur?' · '+vsShort(VS.dur):''):'video tanlanmagan';const e=vsE('vsEmpty');if(e)e.hidden=!!VS.url;}
+function vsPlayUI(){const v=vsV(),b=vsE('vsPlay');if(b&&v)b.textContent=v.paused?'▶':'⏸';}
+function vsRP(){
+ const P=vsE('vsRp');if(!P)return;const o=VS.opt,R=VS.rec,lat=vsLatMs();
+ const mem=VS.dur?Math.round(VS.dur*(ctx?ctx.sampleRate:48000)*2*4*(1+(o.stems?Object.values(o.stemSel).filter(Boolean).length:0))/1048576):0;
+ P.innerHTML='<div class="vs-rechead"><button type="button" class="vs-recbtn'+(R?' on':'')+'" data-vs="rec" id="vsRecBtn">'+(R?'■ STOP':'● REC')+'</button><div><b>'+(R?'Yozilmoqda…':'Yozib olish')+'</b><small>'+(R?'to\'xtatish — shu tugma yoki Shift+R':'pult chiqishi o\'z ichiga yoziladi · Shift+R')+'</small></div></div>'+
+  '<div class="vs-meter"><div class="vs-mtr"><i id="vsML"></i><span>L</span></div><div class="vs-mtr"><i id="vsMR"></i><span>R</span></div><div class="vs-lufs" id="vsLufs">≈ — LUFS · peak — dB</div></div>'+
+  '<div class="vs-fl">Manba</div><div class="vs-seg"><button type="button" data-vso="stems:0" class="'+(!o.stems?'on':'')+'"'+(R?' disabled':'')+'>Master</button><button type="button" data-vso="stems:1" class="'+(o.stems?'on':'')+'"'+(R?' disabled':'')+'>Master + stemlar</button></div>'+
+  (o.stems?'<div class="vs-stems">'+VS_STEMS.map(([k,n])=>'<button type="button" data-vst="'+k+'" class="'+(o.stemSel[k]?'on':'')+'"'+(R?' disabled':'')+'>'+n+'</button>').join('')+'</div>':'')+
+  [['sync','Video bilan sinxron (REC → video ham boshlanadi)'],['count','Count-in 3·2·1'],['punch','Punch In / Out (I → O orasini yozish)']].map(([k,t])=>'<label class="vs-opt"><input type="checkbox" data-vsc="'+k+'"'+(o[k]?' checked':'')+(R?' disabled':'')+'><span>'+t+'</span></label>').join('')+
+  '<div class="vs-opt vs-lat"><span>Kechikish kompensatsiyasi</span><b>avto · '+lat+' ms</b></div>'+
+  (mem>600?'<div class="vs-warn">Bu video uzunligida yozuv ~'+mem+' MB xotira oladi'+(o.stems?' — kerakli stemlarnigina yoqing':'')+'</div>':'')+
+  '<div class="vs-fl">Dublilar (take)</div><div class="vs-takes">'+(VS.takes.length?VS.takes.slice().reverse().map(t=>'<div class="vs-take'+(VS.sel===t.id?' on':'')+'" data-vstk="'+t.id+'"><div class="vs-tk1"><b>'+(t.star?'⭐ ':'')+esc(t.name)+'</b><span>'+vsTC(t.start).slice(3)+' · '+vsShort(t.dur)+' · '+(Object.keys(t.stems).length?'master + '+Object.keys(t.stems).length+' stem':'master')+(t.punch?' · punch':'')+'</span></div><button type="button" class="vs-tb" data-vsp="'+t.id+'" title="Video bilan tinglash">'+(VS.tplay&&VS.tplay.id===t.id?'■':'▶')+'</button><button type="button" class="vs-tb" data-vsstar="'+t.id+'" title="Eng yaxshisi">⭐</button><button type="button" class="vs-tb" data-vsdel="'+t.id+'" title="O\'chirish (2 marta bosing)">🗑</button></div>').join(''):'<div class="vs-none">Hali yozuv yo\'q. REC bosing — pultda chalingan hamma narsa (SFX, atmosfera, musiqa, dublaj) yoziladi.</div>')+'</div>'+
+  '<div class="vs-fl">Eksport'+(VS.sel?' · '+esc((VS.takes.find(x=>x.id===VS.sel)||{}).name||''):'')+'</div>'+
+  '<label class="vs-opt"><input type="checkbox" data-vsc="pad0"'+(o.pad0?' checked':'')+'><span>Video 00:00 dan (DAW\'da 0 ga qo\'ysa — sinxron)</span></label>'+
+  '<div class="vs-exp"><button type="button" data-vs="wav"'+(VS.sel?'':' disabled')+'>⬇ WAV<small>48k · 24-bit</small></button><button type="button" data-vs="zip"'+(VS.sel?'':' disabled')+'>⬇ Stemlar<small>ZIP · belgilar.csv</small></button></div>'+
+  '<label class="vs-opt"><input type="checkbox" data-vsc="vaudio"'+(o.vaudio?' checked':'')+'><span>Videoning asl ovozini ham qo\'shish</span></label>'+
+  '<button type="button" class="vs-mux" data-vs="mux"'+(VS.sel&&VS.url?'':' disabled')+'>🎞 Videoga birlashtirish<small>'+vsMuxMime().label+' · video + yozilgan ovoz</small></button>';
+}
+function vsMarkers(){
+ const L=vsE('vsMl');if(!L)return;const M=VS.markers.slice().sort((a,b)=>a.t-b.t);
+ L.innerHTML=M.length?M.map(m=>'<span class="vs-chip k-'+(m.kind==='hit'?(m.bus||'sfx'):'m')+'" data-vsm="'+m.id+'" title="Bosing — o\'tish · 2 marta — nomini o\'zgartirish">'+(m.kind==='hit'?'♪ ':'◆ ')+'<em>'+esc(m.name)+'</em> <i>'+vsShort(m.t)+'</i><b data-vsmd="'+m.id+'" title="O\'chirish">×</b></span>').join(''):'<span class="vs-none">Belgi yo\'q — <kbd>M</kbd> bosing yoki video ijrosida SFX tugmalarini bosing</span>';
+ vsDrawTL();
+}
+
+/* ===== video yuklash ===== */
+function vsLoadFile(f){
+ if(!f)return;if(VS.rec){toast('Yozish paytida video almashtirilmaydi');return;}
+ const ok=/^video\//.test(f.type)||/\.(mp4|m4v|mov|mkv|webm|avi|mpe?g|3gp|ts|mts|m2ts|ogv|wmv|flv)$/i.test(f.name);
+ if(!ok){toast('Bu video fayl emas: '+f.name);return;}
+ if(VS.url)URL.revokeObjectURL(VS.url);
+ VS.file=f;VS.name=f.name;VS.url=URL.createObjectURL(f);VS.dur=0;VS.t=0;VS.peaksV=null;VS.thumbs=[];VS.vw=VS.vh=0;
+ const v=vsV();if(v){v.src=VS.url;v.load();}
+ vsHead();logEvent('Video ochildi: '+f.name+' ('+Math.round(f.size/1048576)+' MB)');
+}
+function vsOnMeta(){
+ const v=vsV();if(!v)return;VS.dur=v.duration||0;VS.vw=v.videoWidth;VS.vh=v.videoHeight;
+ if(VS.t&&VS.t<VS.dur)v.currentTime=VS.t;
+ vsHead();vsRP();vsDrawTL();
+ if(!VS.vw)toast('Videoda tasvir yo\'q yoki kodek qo\'llanmaydi — faqat ovozi ochildi');
+ if(!VS.thumbs.length)vsThumbs();if(!VS.peaksV)vsVPeaks();
+}
+function vsVidErr(){
+ const v=vsV();if(!v||!VS.url)return;const ext=(VS.name.split('.').pop()||'').toUpperCase();
+ toast('Bu videoni ochib bo\'lmadi ('+ext+'): kodek brauzerda qo\'llanmaydi. MP4 (H.264) yoki WEBM ga o\'tkazing — masalan HandBrake yoki «Format Factory» bilan');
+ const e=vsE('vsEmpty');if(e){e.hidden=false;const s=e.querySelector('.vs-note');if(s)s.textContent='⚠ '+VS.name+' — kodek qo\'llanmaydi (ProRes, DivX, eski AVI). MP4 H.264 ga o\'tkazib, qayta oching.';}
+ logEvent('Video ochilmadi: '+VS.name);VS.url=null;
+}
+async function vsThumbs(){
+ const D=VS.doc,url=VS.url;if(!D||!url||!VS.dur||!VS.vw)return;
+ const tv=D.createElement('video');tv.muted=true;tv.preload='auto';tv.src=url;const N=24,out=[];
+ const cv=D.createElement('canvas'),h=36,w=Math.round(h*VS.vw/VS.vh)||64;cv.width=w;cv.height=h;const c2=cv.getContext('2d');
+ try{await new Promise((r,j)=>{tv.onloadeddata=r;tv.onerror=j;setTimeout(j,8000);});
+  for(let i=0;i<N;i++){if(VS.url!==url)return;await new Promise(r=>{tv.onseeked=r;tv.currentTime=(i+.5)*VS.dur/N;setTimeout(r,1500);});
+   c2.drawImage(tv,0,0,w,h);const im=D.createElement('canvas');im.width=w;im.height=h;im.getContext('2d').drawImage(cv,0,0);out.push(im);VS.thumbs=out.slice();if(i%4===3)vsDrawTL();}
+ }catch(e){}tv.removeAttribute('src');tv.load();vsDrawTL();
+}
+async function vsVPeaks(){
+ const f=VS.file,url=VS.url;if(!f||f.size>400*1048576)return;
+ try{const ab=await f.arrayBuffer();const b=await ctx.decodeAudioData(ab);if(VS.url!==url)return;VS.peaksV=vsPeaks([b.getChannelData(0)],b.sampleRate,b.duration);vsDrawTL();}catch(e){}
+}
+function vsPeaks(chs,sr,dur,n){n=n||1600;const L=chs[0].length,out=new Float32Array(n),step=L/n;
+ for(let i=0;i<n;i++){let m=0;const a=Math.floor(i*step),b=Math.min(L,Math.floor((i+1)*step));for(const c of chs)for(let j=a;j<b;j+=4){const x=Math.abs(c[j]);if(x>m)m=x;}out[i]=m;}return out;}
+
+/* ===== subtitr (.srt / .vtt) ===== */
+function vsParseSubs(txt){
+ const L=[],tt=s=>{const m=s.trim().replace(',','.').match(/(?:(\d+):)?(\d+):(\d+)\.(\d+)/);return m?(+(m[1]||0))*3600+(+m[2])*60+(+m[3])+(+('0.'+m[4])):0;};
+ txt.replace(/\r/g,'').split(/\n\n+/).forEach(b=>{const ln=b.split('\n'),i=ln.findIndex(x=>x.includes('-->'));if(i<0)return;const [a,z]=ln[i].split('-->');L.push({a:tt(a),z:tt(z.split(' ')[1]?z.trim().split(' ')[0]:z),t:ln.slice(i+1).join('\n').replace(/<[^>]+>/g,'')});});
+ return L;
+}
+
+/* ===== transport ===== */
+function vsSeek(t){const v=vsV();if(!v||!VS.dur)return;v.currentTime=Math.max(0,Math.min(VS.dur-.001,t));}
+function vsPlay(force){const v=vsV();if(!v||!VS.url)return;if(force===true||(force!==false&&v.paused)){const p=v.play();if(p&&p.catch)p.catch(()=>{});}else v.pause();}
+function vsMark(name,kind,extra){
+ const v=vsV();const t=v&&VS.url?v.currentTime:(VS.rec&&VS.rec.capT0!=null?ctx.currentTime-VS.rec.capT0+VS.rec.start:0);
+ VS.n++;const m=Object.assign({id:uid('m'),t,name:name||('M'+(VS.markers.filter(x=>x.kind==='m').length+1)),kind:kind||'m'},extra||{});VS.markers.push(m);vsMarkers();return m;
+}
+/* pult play() dan: video ijrosida yoki yozishda bosilgan SFX / GO belgisi */
+function vsHit(id,bus,o){
+ if(!VS.doc||(o&&o.preview))return;const v=vsV();const playing=v&&VS.url&&!v.paused;if(!playing&&!VS.rec)return;
+ const k=id+'|'+bus,now=performance.now();if(VS.lastHit[k]&&now-VS.lastHit[k]<150)return;VS.lastHit[k]=now;
+ vsMark((o&&o.title)||titleOf(id),'hit',{id,bus});
+}
+function vsToCues(){
+ const M=VS.markers.filter(m=>m.kind==='hit'&&m.id&&META[m.id]).sort((a,b)=>a.t-b.t);
+ if(!M.length){toast('SFX bosilgan belgi yo\'q — video ijrosida SFX tugmalarini bosing, ular shu yerda belgi bo\'ladi');return;}
+ for(const m of M)show.cues.push({id:uid('c'),name:m.name,type:m.bus==='music'?'music':m.bus==='dub'?'dub':m.bus==='atmos'?'sfx':'sfx',ref:m.id,note:'video '+vsTC(m.t)});
+ saveShow();renderCues();toast('⇢ '+M.length+' ta belgi Sahnalar ketma-ketligiga cue bo\'lib qo\'shildi');logEvent('Video belgilaridan '+M.length+' ta cue');
+}
+
+/* ===== yozib olish: pult chiqishi (limiterdan keyin) + stemlar ===== */
+const VS_WK=`class R extends AudioWorkletProcessor{constructor(){super();this.on=false;this.at=-1;this.n=0;this.bl=8192;this.L=new Float32Array(this.bl);this.R=new Float32Array(this.bl);
+ this.port.onmessage=e=>{const d=e.data;if(d.start!=null){this.at=d.start;this.on=false;}if(d.stop){this.flush();this.on=false;this.at=-1;this.port.postMessage({done:true});}};}
+ flush(){if(this.n){this.port.postMessage({L:this.L.slice(0,this.n),R:this.R.slice(0,this.n)});this.n=0;}}
+ process(inp){const i=inp[0];if(!this.on&&this.at>=0&&currentFrame+128>this.at){this.on=true;this.at=-1;this.port.postMessage({started:currentFrame});}
+  if(this.on){const a=i[0],b=i[1]||i[0];if(a){for(let k=0;k<a.length;k++){this.L[this.n]=a[k];this.R[this.n]=b[k];this.n++;if(this.n===this.bl)this.flush();}}else{for(let k=0;k<128;k++){this.L[this.n]=0;this.R[this.n]=0;this.n++;if(this.n===this.bl)this.flush();}}}
+  return true;}}registerProcessor('vs-rec',R);`;
+let vsWkReady=null;
+function vsWk(){if(!vsWkReady)vsWkReady=ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([VS_WK],{type:'application/javascript'})));return vsWkReady;}
+function vsSink(){if(!VS.sink){VS.sink=ctx.createGain();VS.sink.gain.value=0;VS.sink.connect(ctx.destination);}return VS.sink;}
+async function vsTap(src,k){
+ if(!VS.noWk){try{await vsWk();
+  const n=new AudioWorkletNode(ctx,'vs-rec',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1],channelCount:2,channelCountMode:'explicit',channelInterpretation:'speakers'});n.connect(vsSink());
+  const t={k,node:n,port:n.port,ch:[],len:0,src,started:null,done:null};
+  n.port.onmessage=e=>{const d=e.data;if(d.L){t.ch.push([d.L,d.R]);t.len+=d.L.length;}else if(d.started!=null)t.started=d.started;else if(d.done&&t.done)t.done();};
+  src.connect(n);return t;}catch(e){VS.noWk=true;vsWkReady=null;}}
+ // zaxira: AudioWorklet yuklanmasa (masalan fayl sifatida ochilganda)
+ const sp=ctx.createScriptProcessor(4096,2,1),t={k,node:sp,ch:[],len:0,src,on:false,at:-1,done:null};
+ sp.onaudioprocess=e=>{const ib=e.inputBuffer;if(!t.on&&t.at>=0&&e.playbackTime>=t.at-.0005){t.on=true;t.at=-1;if(k==='master'&&VS.rec)VS.rec.capT0=e.playbackTime;}
+  if(!t.on)return;const L=ib.getChannelData(0).slice(),R=(ib.numberOfChannels>1?ib.getChannelData(1):ib.getChannelData(0)).slice();t.ch.push([L,R]);t.len+=L.length;};
+ t.port={postMessage:d=>{if(d.start!=null)t.at=d.start/ctx.sampleRate;if(d.stop){t.on=false;t.at=-1;setTimeout(()=>t.done&&t.done(),0);}}};
+ src.connect(sp);sp.connect(vsSink());return t;
+}
+function vsTapsOf(){
+ const T=[['master',limiter]];
+ if(VS.opt.stems)for(const [k] of VS_STEMS){if(!VS.opt.stemSel[k])continue;if(k==='mic'){if(mic&&mic.src)T.push([k,mic.src]);}else if(buses[k])T.push([k,buses[k].mute]);}
+ return T;
+}
+async function vsRecStart(){
+ if(VS.rec||VS.mux)return;if(!ctx){toast('Avval ovozni yoqing');return;}
+ if(ctx.state!=='running')try{await ctx.resume();}catch(e){}
+ const v=vsV(),hasV=!!(v&&VS.url&&VS.dur),o=VS.opt;
+ if(o.punch&&(!hasV||VS.io.i==null||VS.io.o==null||VS.io.o<=VS.io.i)){toast('Punch uchun videoda I va O nuqtalarini belgilang (I / O tugmalari)');return;}
+ let taps;try{taps=[];for(const [k,s] of vsTapsOf())taps.push(await vsTap(s,k));}catch(e){toast('Yozib bo\'lmadi: '+(e.message||e));return;}
+ VS.rec={taps,start:0,capT0:null,samples:[],punch:o.punch,lat:vsLatMs()/1000,stage:'pre'};vsRP();vsRender2();vsBtnUI();
+ const begin=()=>{
+  const at=Math.round((ctx.currentTime+.03)*ctx.sampleRate);VS.rec.capT0=at/ctx.sampleRate;VS.rec.stage='rec';
+  for(const t of taps)t.port.postMessage({start:at});
+  if(hasV&&o.sync&&!o.punch){if(v.paused)vsPlay(true);}
+  VS.rec.vt0=hasV?v.currentTime:0;vsRender2();vsBtnUI();
+  logEvent('● Yozish boshlandi'+(hasV?' · video '+vsTC(v.currentTime):'')+(o.stems?' · stemlar':''));
+ };
+ if(o.punch){VS.rec.stage='arm';vsSeek(Math.max(0,VS.io.i-2));setTimeout(()=>vsPlay(true),120);VS.rec.begin=begin;return;}
+ if(o.count){await vsCount();if(!VS.rec)return;}
+ begin();
+}
+async function vsCount(){
+ const c=vsE('vsCount');for(let i=3;i>=1;i--){if(!VS.rec)break;if(c){c.hidden=false;c.textContent=i;}
+  try{const os=ctx.createOscillator(),g=ctx.createGain();os.frequency.value=i===1?1320:880;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.18,ctx.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+.15);os.connect(g);g.connect(ctx.destination);os.start();os.stop(ctx.currentTime+.16);}catch(e){}
+  await new Promise(r=>setTimeout(r,1000));}
+ if(c)c.hidden=true;
+}
+async function vsRecStop(){
+ const R=VS.rec;if(!R)return;
+ if(R.stage!=='rec'){for(const t of R.taps){try{t.port.postMessage({stop:true});t.node.disconnect();t.src.disconnect(t.node);}catch(e){}}VS.rec=null;vsRP();vsRender2();vsBtnUI();toast('Yozish bekor qilindi');return;}
+ R.stage='stop';const v=vsV();
+ await Promise.all(R.taps.map(t=>new Promise(r=>{t.done=r;t.port.postMessage({stop:true});setTimeout(r,1500);})));
+ for(const t of R.taps){try{t.src.disconnect(t.node);t.node.disconnect();}catch(e){}}
+ if(v&&VS.url&&VS.opt.sync&&!v.paused)v.pause();
+ // video vaqtiga bog'lash: yozuv boshlanganda video qayerda edi (o'lchovlar medianasi) + chiqish kechikishi
+ let start=R.vt0||0;if(R.samples.length){const s=R.samples.slice().sort((a,b)=>a-b);start=s[Math.floor(s.length/2)];}
+ start+=R.lat;
+ const sr=ctx.sampleRate,cat=t=>{const L=new Float32Array(t.len),Rr=new Float32Array(t.len);let o=0;for(const [a,b] of t.ch){L.set(a,o);Rr.set(b,o);o+=a.length;}return [L,Rr];};
+ const m=R.taps.find(t=>t.k==='master');if(!m||!m.len){VS.rec=null;vsRP();vsRender2();vsBtnUI();toast('Yozuv bo\'sh chiqdi');return;}
+ const take={id:uid('t'),name:'Take '+(VS.takes.length+1),start,dur:m.len/sr,sr,master:cat(m),stems:{},star:false,punch:R.punch,video:VS.name,created:Date.now()};
+ for(const t of R.taps)if(t.k!=='master'&&t.len)take.stems[t.k]=cat(t);
+ take.peaks=vsPeaks(take.master,sr,take.dur,1200);for(const k in take.stems)take.stems[k].peaks=vsPeaks(take.stems[k],sr,take.dur,1200);
+ VS.takes.push(take);VS.sel=take.id;VS.rec=null;
+ vsRP();vsRender2();vsBtnUI();vsDrawTL();
+ toast('✓ '+take.name+' yozildi: '+vsShort(take.dur)+(Object.keys(take.stems).length?' · '+Object.keys(take.stems).length+' stem':'')+' — eksport qilishingiz mumkin');
+ logEvent('■ Yozish tugadi: '+take.name+' · '+vsShort(take.dur));
+}
+function vsRender2(){const b=vsE('vsRecB'),dot=VS.root&&VS.root.querySelector('.vs-dot');if(dot)dot.classList.toggle('on',!!VS.rec);if(!b)return;b.hidden=!VS.rec;if(!VS.rec)return;b.textContent=VS.rec.stage==='arm'?'◌ PUNCH — I kutilmoqda':VS.rec.stage==='pre'?'● REC tayyor':'● REC 00:00';}
+
+/* ===== take: tinglash, eksport ===== */
+function vsTakeBuf(t,which){const d=which?t.stems[which]:t.master;const b=ctx.createBuffer(2,d[0].length,t.sr);b.copyToChannel(d[0],0);b.copyToChannel(d[1],1);return b;}
+function vsTakePlay(id){
+ if(VS.tplay){try{VS.tplay.src.stop();}catch(e){}const was=VS.tplay.id;VS.tplay=null;const v=vsV();if(v)v.pause();vsRP();if(was===id)return;}
+ const t=VS.takes.find(x=>x.id===id);if(!t)return;VS.sel=id;const v=vsV();
+ const src=ctx.createBufferSource();src.buffer=vsTakeBuf(t);src.connect(ctx.destination);
+ let off=0;if(v&&VS.url){const vt=Math.max(0,t.start);off=Math.max(0,vt-t.start);v.currentTime=vt;}
+ let st=false;const go=()=>{if(st)return;st=true;src.start(ctx.currentTime+.05,off);if(v&&VS.url)setTimeout(()=>vsPlay(true),50);};
+ if(v&&VS.url){v.addEventListener('seeked',go,{once:true});setTimeout(go,700);}else go();
+ src.onended=()=>{if(VS.tplay&&VS.tplay.src===src){VS.tplay=null;vsRP();}};VS.tplay={id,src};vsRP();vsDrawTL();
+}
+function vsWav(chs,sr,lead){
+ const n=chs[0].length,ld=Math.max(0,lead|0),N=n+ld,bps=3,ba=2*bps,size=N*ba,buf=new ArrayBuffer(44+size),dv=new DataView(buf);
+ const W=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+ W(0,'RIFF');dv.setUint32(4,36+size,true);W(8,'WAVE');W(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,2,true);dv.setUint32(24,sr,true);dv.setUint32(28,sr*ba,true);dv.setUint16(32,ba,true);dv.setUint16(34,24,true);W(36,'data');dv.setUint32(40,size,true);
+ const u=new Uint8Array(buf);let p=44+ld*ba;const [L,R]=chs;
+ for(let i=0;i<n;i++){for(const c of [L,R]){let x=c[i];x=x>1?1:x<-1?-1:x;let v=Math.round(x*8388607);if(v<0)v+=16777216;u[p++]=v&255;u[p++]=(v>>8)&255;u[p++]=(v>>16)&255;}}
+ return new Uint8Array(buf);
+}
+function vsTrimLead(t,chs){ // pad0: yozuv video 00:00 dan joylashadi; manfiy start — boshidan kesiladi
+ if(!VS.opt.pad0)return {chs,lead:0};const s=Math.round(t.start*t.sr);
+ if(s>=0)return {chs,lead:s};return {chs:[chs[0].subarray(-s),chs[1].subarray(-s)],lead:0};
+}
+function vsBase(t){return (VS.name?VS.name.replace(/\.[^.]+$/,''):(show.title||'Sahna').replace(/[\[\]]/g,'').trim())+'_'+t.name.replace(/\s+/g,'')+'_'+vsTC(VS.opt.pad0?0:t.start).replace(/:/g,'-');}
+async function vsSave(blob,name){
+ if(Store.mode==='folder'&&FS.root){try{const d=await FS.root.getDirectoryHandle('yozuvlar',{create:true});await FS.write(d,name,blob);toast('✓ Saqlandi: '+(NATIVE?'Hujjatlar':'Documents')+' / '+FS.root.name+' / yozuvlar / '+name);logEvent('Video bo\'limi: saqlandi '+name);return;}catch(e){}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),8000);toast('⬇ '+name);logEvent('Video bo\'limi: yuklab olindi '+name);
+}
+function vsBusy(txt){const b=vsE('vsBusy');if(!b)return;b.hidden=!txt;if(txt)b.innerHTML=txt;}
+async function vsExportWav(){const t=VS.takes.find(x=>x.id===VS.sel);if(!t)return;vsBusy('⏳ WAV tayyorlanmoqda…');await nmYield();
+ const {chs,lead}=vsTrimLead(t,t.master);await vsSave(new Blob([vsWav(chs,t.sr,lead)],{type:'audio/wav'}),vsBase(t)+'_master.wav');vsBusy('');}
+async function vsExportZip(){const t=VS.takes.find(x=>x.id===VS.sel);if(!t)return;vsBusy('⏳ Stemlar tayyorlanmoqda…');await nmYield();
+ const F=[];const add=(nm,chs)=>{const r=vsTrimLead(t,chs);F.push({name:nm,data:vsWav(r.chs,t.sr,r.lead)});};
+ add('00_master.wav',t.master);let i=1;for(const [k,n] of VS_STEMS)if(t.stems[k]){add(String(i).padStart(2,'0')+'_'+n.toLowerCase()+'.wav',t.stems[k]);i++;await nmYield();}
+ const csv='#,nomi,turi,vaqt_kodi,soniya\n'+VS.markers.slice().sort((a,b)=>a.t-b.t).map((m,j)=>[j+1,'"'+String(m.name).replace(/"/g,'""')+'"',m.kind==='hit'?(m.bus||'sfx'):'belgi',vsTC(m.t),m.t.toFixed(3)].join(',')).join('\n');
+ F.push({name:'belgilar.csv',data:new TextEncoder().encode('﻿'+csv)});
+ F.push({name:'OQING.txt',data:new TextEncoder().encode('Sahna Ovozi — video ovozlashtirish\nVideo: '+(VS.name||'—')+'\nTake: '+t.name+' · '+vsShort(t.dur)+'\nBoshlanishi: video '+vsTC(t.start)+' ('+VS.fps+' fps)\n'+(VS.opt.pad0?'Barcha WAV fayllar video 00:00 dan boshlanadi — DAW\'da hammasini 0 ga qo\'ying, video bilan sinxron bo\'ladi.\n':'WAV fayllar take boshlanishidan ('+vsTC(t.start)+') boshlanadi.\n')+'Format: 48 kHz / 24-bit stereo WAV.\n')});
+ await vsSave(zipBuild(F),vsBase(t)+'_stemlar.zip');vsBusy('');}
+function vsMuxMime(){const L=[['video/mp4;codecs=avc1.42E01E,mp4a.40.2','MP4','mp4'],['video/mp4','MP4','mp4'],['video/webm;codecs=vp9,opus','WEBM','webm'],['video/webm','WEBM','webm']];
+ try{for(const x of L)if(window.MediaRecorder&&MediaRecorder.isTypeSupported(x[0]))return {mime:x[0],label:x[1],ext:x[2]};}catch(e){}return {mime:'',label:'—',ext:'webm'};}
+async function vsMux(){
+ const t=VS.takes.find(x=>x.id===VS.sel),v=vsV();if(!t||!v||!VS.url||VS.mux||VS.rec)return;
+ const cap=v.captureStream||v.mozCaptureStream;const M=vsMuxMime();if(!cap||!M.mime){toast('Bu brauzer videoni birlashtira olmaydi — Chrome yoki Edge ishlating, yoki WAV ni montaj dasturida qo\'shing');return;}
+ const s0=Math.max(0,t.start),s1=Math.min(VS.dur,t.start+t.dur);if(s1-s0<.2){toast('Take video uzunligidan tashqarida');return;}
+ if(!v.paused)v.pause();v.currentTime=s0;await new Promise(r=>{v.addEventListener('seeked',r,{once:true});setTimeout(r,1500);});
+ const vs=cap.call(v),vt=vs.getVideoTracks()[0];if(!vt){toast('Videodan tasvir olib bo\'lmadi');return;}
+ const dest=ctx.createMediaStreamDestination(),src=ctx.createBufferSource();src.buffer=vsTakeBuf(t);src.connect(dest);
+ let va=null;const at=vs.getAudioTracks()[0];if(VS.opt.vaudio&&at){try{va=ctx.createMediaStreamSource(new MediaStream([at]));const g=ctx.createGain();g.gain.value=VS.vvol;va.connect(g);g.connect(dest);}catch(e){}}
+ const out=new MediaStream([vt,dest.stream.getAudioTracks()[0]]);const parts=[];
+ let mr;try{mr=new MediaRecorder(out,{mimeType:M.mime,videoBitsPerSecond:VS.vh>=1080?10e6:6e6,audioBitsPerSecond:320000});}catch(e){toast('Birlashtirib bo\'lmadi: '+e.message);return;}
+ mr.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data);};
+ VS.mux={mr,src,stop:false};
+ const fin=new Promise(r=>mr.onstop=r);mr.start(1000);src.start(ctx.currentTime,Math.max(0,s0-t.start));vsPlay(true);
+ const tick=()=>{if(!VS.mux)return;const p=(v.currentTime-s0)/(s1-s0);vsBusy('🎞 Birlashtirilmoqda… '+Math.min(99,Math.round(p*100))+'% <small>real vaqtda ijro etiladi ('+vsShort(s1-s0)+')</small> <button type="button" class="btn sm" data-vs="muxstop">Bekor</button>');if(v.currentTime>=s1-.05||v.paused&&v.currentTime>s0+.5||VS.mux.stop){v.pause();try{src.stop();}catch(e){}if(mr.state!=='inactive')mr.stop();return;}requestAnimationFrame(tick);};tick();
+ await fin;const cancelled=VS.mux.stop;VS.mux=null;vsBusy('');try{va&&va.disconnect();}catch(e){}
+ if(cancelled){toast('Birlashtirish bekor qilindi');return;}
+ await vsSave(new Blob(parts,{type:M.mime.split(';')[0]}),vsBase(t)+'.'+M.ext);
+}
+
+/* ===== vaqt chizig'i (canvas) ===== */
+const VS_LH={ruler:18,thumbs:34,marks:28,vaud:26,take:34,stem:22};
+function vsLanes(){const L=[['thumbs','🎞 Video'],['marks','◆ Belgilar'],['vaud','🔊 Video ovozi']];const t=VS.takes.find(x=>x.id===VS.sel);if(t){L.push(['take','● '+t.name+' · master']);for(const [k,n] of VS_STEMS)if(t.stems[k])L.push(['stem:'+k,n]);}else L.push(['take','● Yozuv']);return L;}
+function vsTotal(){const t=VS.takes.find(x=>x.id===VS.sel);return Math.max(VS.dur||0,t?t.start+t.dur:0,VS.rec&&VS.rec.capT0!=null?(VS.rec.vt0||0)+(ctx.currentTime-VS.rec.capT0):0,10);}
+function vsDrawTL(){
+ const cv=vsE('vsCv'),box=vsE('vsTl');if(!cv||!box)return;const D=VS.doc,dpr=(D.defaultView||window).devicePixelRatio||1;
+ const lanes=vsLanes(),H=VS_LH.ruler+lanes.reduce((a,[k])=>a+(VS_LH[k.split(':')[0]]||24),0)+4,W=box.clientWidth;if(!W)return;VS.tlW=W;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+ const LX=124,TW=W-LX-10,T=vsTotal(),x=t=>LX+t/T*TW;VS.tlGeo={LX,TW,T,H};
+ g.font='10px ui-monospace,Consolas,monospace';g.fillStyle='#6B7486';g.textBaseline='middle';
+ const step=[5,10,15,30,60,120,300,600].find(s=>T/s<=10)||900;for(let s=0;s<=T;s+=step){g.fillText(vsShort(s),x(s)+2,9);g.fillStyle='#1E2430';g.fillRect(x(s),14,1,H);g.fillStyle='#6B7486';}
+ if(VS.io.i!=null&&VS.io.o!=null){g.fillStyle='rgba(90,200,176,.08)';g.fillRect(x(VS.io.i),VS_LH.ruler,x(VS.io.o)-x(VS.io.i),H);}
+ for(const k of ['i','o'])if(VS.io[k]!=null){g.fillStyle='#5AC8B0';g.fillRect(x(VS.io[k]),VS_LH.ruler,1.5,H);g.fillText(k.toUpperCase(),x(VS.io[k])+3,VS_LH.ruler+6);}
+ let y=VS_LH.ruler;g.font='11px system-ui,sans-serif';
+ const wave=(pk,x0,x1,yy,h,col)=>{if(!pk)return;g.fillStyle=col;const n=pk.length,w=x1-x0;for(let i=0;i<w;i++){const v=pk[Math.min(n-1,Math.floor(i/w*n))];const hh=Math.max(1,v*(h-4));g.fillRect(x0+i,yy+h/2-hh/2,1,hh);}};
+ for(const [k,label] of lanes){const kk=k.split(':')[0],h=VS_LH[kk]||24;g.fillStyle='#161B23';g.fillRect(0,y+h-1,W,1);g.fillStyle=kk==='take'?'#FF8A8D':'#9AA3B2';{let lb=label;try{if(window.AZ_I18N&&AZ_I18N.lang!=='uz')lb=AZ_I18N.tr(label);}catch(e){}g.fillText(lb.length>17?lb.slice(0,16)+'…':lb,10,y+h/2);}
+  if(kk==='thumbs'){if(VS.thumbs.length&&VS.dur){const n=VS.thumbs.length,w=(x(VS.dur)-LX)/n;VS.thumbs.forEach((im,i)=>{try{g.drawImage(im,LX+i*w,y+3,w-1,h-6);}catch(e){}});}else{g.fillStyle='#1A1F28';g.fillRect(LX,y+3,VS.dur?x(VS.dur)-LX:TW,h-6);}}
+  else if(kk==='marks'){let lx=-1e9;for(const m of VS.markers.slice().sort((a,b)=>a.t-b.t)){const c=m.kind==='hit'?(VS_STEMS.find(s=>s[0]===m.bus)||VS_STEMS[1])[2]:'#E6EAF2';const xx=x(m.t);g.fillStyle=c;g.fillRect(xx,y+3,1.5,h-6);if(m.kind==='m'){g.beginPath();g.moveTo(xx,y+4);g.lineTo(xx+6,y+8);g.lineTo(xx,y+12);g.fill();}if(xx-lx>70){g.font='10px system-ui,sans-serif';g.fillText(String(m.name).slice(0,12),xx+4,y+h-8);g.font='11px system-ui,sans-serif';lx=xx;}}}
+  else if(kk==='vaud'){if(VS.peaksV&&VS.dur)wave(VS.peaksV,LX,x(VS.dur),y,h,'#3D4656');}
+  else if(kk==='take'){const t=VS.takes.find(z=>z.id===VS.sel);if(t){g.fillStyle='rgba(229,72,77,.08)';g.fillRect(x(Math.max(0,t.start)),y+2,x(t.start+t.dur)-x(Math.max(0,t.start)),h-4);wave(t.peaks,x(Math.max(0,t.start)),x(t.start+t.dur),y,h,'#E5484D');}
+   if(VS.rec&&VS.rec.capT0!=null){const s=VS.rec.vt0||0,e=s+(ctx.currentTime-VS.rec.capT0);g.fillStyle='rgba(229,72,77,.35)';g.fillRect(x(s),y+4,Math.max(2,x(e)-x(s)),h-8);}}
+  else if(kk==='stem'){const t=VS.takes.find(z=>z.id===VS.sel),sk=k.split(':')[1],st=t&&t.stems[sk];if(st)wave(st.peaks,x(Math.max(0,t.start)),x(t.start+t.dur),y,h,(VS_STEMS.find(s=>s[0]===sk)||[])[2]||'#888');}
+  y+=h;}
+ vsPh();
+}
+function vsPh(){const p=vsE('vsPh'),G=VS.tlGeo,v=vsV();if(!p||!G)return;let t=v&&VS.url?v.currentTime:0;if(VS.rec&&VS.rec.capT0!=null&&!VS.url)t=ctx.currentTime-VS.rec.capT0;p.style.left=(G.LX+t/G.T*G.TW)+'px';p.style.height=G.H+'px';}
+
+/* ===== doimiy sikl: vaqt kodi, playhead, duck, punch, o'lchagich ===== */
+function vsLoop(){
+ cancelAnimationFrame(VS.raf);const W=(VS.doc&&VS.doc.defaultView)||window;let last=0;
+ const f=ts=>{if(!VS.doc)return;VS.raf=W.requestAnimationFrame(f);const v=vsV();
+  if(v&&VS.url){const t=v.currentTime;const tc=vsE('vsTc');if(tc)tc.textContent=vsTC(t);
+   if(VS.loop&&VS.io.i!=null&&VS.io.o!=null&&!VS.rec&&t>=VS.io.o)v.currentTime=VS.io.i;
+   const R=VS.rec;if(R){if(R.stage==='arm'&&t>=VS.io.i&&R.begin){const b=R.begin;R.begin=null;b();R.vt0=VS.io.i;}
+    if(R.stage==='rec'){if(R.capT0!=null&&!v.paused&&R.samples.length<40&&ctx.currentTime>R.capT0+.15)R.samples.push(t-(ctx.currentTime-R.capT0));if(R.punch&&t>=VS.io.o)vsRecStop();}}
+   const sb=vsE('vsSub');if(sb){const c=VS.subs.find(s=>t>=s.a&&t<=s.z);const tx=c?c.t:'';if(sb.textContent!==tx)sb.textContent=tx;}
+   const mk=vsE('vsMk');if(mk){const m=VS.markers.filter(x=>x.t<=t+.02&&t-x.t<1.2).pop();mk.hidden=!m;if(m)mk.textContent=(m.kind==='hit'?'♪ ':'◆ ')+m.name;}
+   const busy=voices.some(x=>!x.preview&&!x.stopping&&(x.bus==='sfx'||x.bus==='music'||x.bus==='dub'));const tg=VS.duck&&busy?.3:1;VS.duckG+=(tg-VS.duckG)*.15;if(!VS.mux)v.volume=Math.max(0,Math.min(1,VS.vvol*VS.duckG));
+  }
+  if(ts-last>60){last=ts;vsPh();vsMeter();if(VS.rec&&VS.rec.capT0!=null){const b=vsE('vsRecB');if(b)b.textContent='● REC '+vsShort(ctx.currentTime-VS.rec.capT0);vsBtnUI();if(Math.floor(ts/500)!==VS.rdl){VS.rdl=Math.floor(ts/500);vsDrawTL();}}}
+ };VS.raf=W.requestAnimationFrame(f);
+}
+function vsMeter(){
+ if(!ctx||!buses.master)return;const L=vsE('vsML'),R=vsE('vsMR'),T=vsE('vsLufs');if(!L)return;
+ const pl=peakOf(buses.master.aL),pr=peakOf(buses.master.aR),pc=p=>Math.max(0,Math.min(100,(20*Math.log10(p+1e-6)+60)/60*100));L.style.width=pc(pl)+'%';R.style.width=pc(pr)+'%';
+ if(!VS.lu.an){const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=38;const hs=ctx.createBiquadFilter();hs.type='highshelf';hs.frequency.value=1500;hs.gain.value=4;const an=ctx.createAnalyser();an.fftSize=2048;limiter.connect(hp);hp.connect(hs);hs.connect(an);VS.lu.an=an;VS.lu.d=new Float32Array(2048);}
+ const an=VS.lu.an,d=VS.lu.d;an.getFloatTimeDomainData(d);let s=0;for(let i=0;i<d.length;i++)s+=d[i]*d[i];VS.lu.buf.push(s/d.length*2);if(VS.lu.buf.length>50)VS.lu.buf.shift();
+ const ms=VS.lu.buf.reduce((a,b)=>a+b,0)/VS.lu.buf.length,lu=ms>1e-9?-0.691+10*Math.log10(ms):-70,pk=20*Math.log10(Math.max(pl,pr)+1e-6);
+ T.innerHTML='≈ <b>'+(lu<-69?'—':lu.toFixed(1))+'</b> LUFS · peak '+(pk<-59?'—':pk.toFixed(1))+' dB';
+}
+
+/* ===== hodisalar ===== */
+function vsWireRoot(R){
+ R.addEventListener('click',vsClick);R.addEventListener('dblclick',vsDbl);R.addEventListener('input',vsInput);R.addEventListener('change',vsChange);
+ R.addEventListener('dragover',e=>{if([...(e.dataTransfer.types||[])].includes('Files')){e.preventDefault();e.stopPropagation();const d=vsE('vsDrop');if(d)d.hidden=false;}});
+ R.addEventListener('dragleave',e=>{if(e.target===vsE('vsDrop')){const d=vsE('vsDrop');if(d)d.hidden=true;}});
+ R.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const d=vsE('vsDrop');if(d)d.hidden=true;const f=[...e.dataTransfer.files].find(x=>/^video\//.test(x.type)||/\.(mp4|m4v|mov|mkv|webm|avi|mpe?g|3gp|ts|mts|m2ts|ogv|wmv|flv)$/i.test(x.name));const s=[...e.dataTransfer.files].find(x=>/\.(srt|vtt)$/i.test(x.name));if(f)vsLoadFile(f);else if(s)s.text().then(t=>{VS.subs=vsParseSubs(t);toast('💬 Subtitr: '+VS.subs.length+' qator');});else toast('Video fayl tashlang (MP4, MOV, MKV, WEBM, AVI…)');});
+ R.addEventListener('keydown',e=>{if(vsKey(e)){e.preventDefault();e.stopPropagation();}else if(VS.mode==='dock'&&!/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)&&(e.key===' '||e.code==='Space'))e.stopPropagation();});
+ R.addEventListener('pointerdown',vsPtr);
+}
+function vsWireDoc(D){
+ D.addEventListener('DOMContentLoaded',()=>{});
+ const R=()=>D.getElementById('vsRoot');setTimeout(()=>{vsWireRoot(R());},0);
+ D.addEventListener('dragover',e=>e.preventDefault());D.addEventListener('drop',e=>e.preventDefault());
+ // video oynasida bosilgan pult tugmalari (SFX, Num, End …) asosiy pultga uzatiladi
+ const fwd=type=>e=>{if(e.defaultPrevented||/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;if(type==='keydown'&&vsKey(e)){e.preventDefault();return;}
+  const ev=new KeyboardEvent(type,{key:e.key,code:e.code,location:e.location,repeat:e.repeat,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,bubbles:true,cancelable:true});
+  document.body.dispatchEvent(ev);if(ev.defaultPrevented)e.preventDefault();};
+ D.addEventListener('keydown',fwd('keydown'));D.addEventListener('keyup',fwd('keyup'));
+}
+function vsKey(e){
+ if(/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)||e.target.isContentEditable||e.ctrlKey||e.metaKey||e.altKey)return false;
+ const k=e.key,v=vsV();
+ if(k===' '||k==='k'||k==='K'){if(e.shiftKey)return false;vsPlay();return true;}
+ if(k==='j'||k==='J'){vsSeek((v?v.currentTime:0)-5);return true;}
+ if(k==='l'||k==='L'){vsSeek((v?v.currentTime:0)+5);return true;}
+ if(k===','){if(v)v.pause();vsSeek((v?v.currentTime:0)-1/VS.fps);return true;}
+ if(k==='.'){if(v)v.pause();vsSeek((v?v.currentTime:0)+1/VS.fps);return true;}
+ if(k==='m'||k==='M'){vsMark();return true;}
+ if(k==='i'||k==='I'){VS.io.i=v?v.currentTime:0;vsDrawTL();toast('I: '+vsTC(VS.io.i));return true;}
+ if(k==='o'||k==='O'){VS.io.o=v?v.currentTime:0;vsDrawTL();toast('O: '+vsTC(VS.io.o));return true;}
+ if((k==='R')&&e.shiftKey){VS.rec?vsRecStop():vsRecStart();return true;}
+ return false;
+}
+function vsPtr(e){
+ const cv=vsE('vsCv');if(e.target===cv&&VS.tlGeo){const G=VS.tlGeo,rc=cv.getBoundingClientRect(),toT=cx=>Math.max(0,(cx-rc.left-G.LX)/G.TW*G.T);if(e.clientX-rc.left<G.LX)return;
+  vsSeek(toT(e.clientX));const W=VS.doc.defaultView,mv=ev=>vsSeek(toT(ev.clientX)),up=()=>{W.removeEventListener('pointermove',mv);W.removeEventListener('pointerup',up);};W.addEventListener('pointermove',mv);W.addEventListener('pointerup',up);return;}
+ if(VS.mode==='dock'&&e.target.closest('[data-vsdrag]')&&!e.target.closest('button,select,label')){const R=VS.root,sx=e.clientX-R.offsetLeft,sy=e.clientY-R.offsetTop;
+  const mv=ev=>{R.style.left=Math.max(-R.offsetWidth+120,Math.min(innerWidth-120,ev.clientX-sx))+'px';R.style.top=Math.max(0,Math.min(innerHeight-40,ev.clientY-sy))+'px';},up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);VS.dockRect={x:R.offsetLeft,y:R.offsetTop,w:R.offsetWidth,h:R.offsetHeight};};addEventListener('pointermove',mv);addEventListener('pointerup',up);}
+}
+function vsClick(e){
+ const b=e.target.closest('[data-vs],[data-vso],[data-vst],[data-vsm],[data-vsmd],[data-vsp],[data-vsstar],[data-vsdel],[data-vstk]');if(!b)return;const d=b.dataset,v=vsV();
+ if(d.vsmd){VS.markers=VS.markers.filter(m=>m.id!==d.vsmd);vsMarkers();return;}
+ if(d.vsm){const m=VS.markers.find(x=>x.id===d.vsm);if(m)vsSeek(m.t);return;}
+ if(d.vsp){vsTakePlay(d.vsp);return;}
+ if(d.vsstar){const t=VS.takes.find(x=>x.id===d.vsstar);if(t){t.star=!t.star;vsRP();}return;}
+ if(d.vsdel){const t=VS.takes.find(x=>x.id===d.vsdel);if(!t)return;if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='✓?';setTimeout(()=>{if(b.isConnected){b.dataset.arm='';b.textContent='🗑';}},2500);return;}
+  VS.takes=VS.takes.filter(x=>x!==t);if(VS.sel===t.id)VS.sel=VS.takes.length?VS.takes[VS.takes.length-1].id:null;vsRP();vsDrawTL();return;}
+ if(d.vstk){VS.sel=d.vstk;vsRP();vsDrawTL();return;}
+ if(d.vso){const [k,val]=d.vso.split(':');VS.opt[k]=val==='1';vsRP();return;}
+ if(d.vst){VS.opt.stemSel[d.vst]=VS.opt.stemSel[d.vst]?0:1;vsRP();return;}
+ const a=d.vs;
+ if(a==='open'){const i=vsE('vsFile');i.value='';i.click();}
+ else if(a==='subs'){const i=vsE('vsSubF');i.value='';i.click();}
+ else if(a==='play')vsPlay();
+ else if(a==='start')vsSeek(0);else if(a==='end')vsSeek(VS.dur);
+ else if(a==='b5')vsSeek((v?v.currentTime:0)-5);else if(a==='f5')vsSeek((v?v.currentTime:0)+5);
+ else if(a==='fb'){if(v)v.pause();vsSeek((v?v.currentTime:0)-1/VS.fps);}else if(a==='ff'){if(v)v.pause();vsSeek((v?v.currentTime:0)+1/VS.fps);}
+ else if(a==='loop'){VS.loop=!VS.loop;b.classList.toggle('on',VS.loop);if(VS.loop&&(VS.io.i==null||VS.io.o==null))toast('Loop uchun I va O nuqtalarini belgilang');}
+ else if(a==='rate'){const i=VS.rates.indexOf(VS.rate);VS.rate=VS.rates[(i+1)%VS.rates.length];if(v)v.playbackRate=VS.rate;b.textContent=VS.rate+'×';}
+ else if(a==='duck'){VS.duck=!VS.duck;b.classList.toggle('on',VS.duck);}
+ else if(a==='fs'){const x=vsE('vsVBox');if(VS.doc.fullscreenElement)VS.doc.exitFullscreen();else if(x&&x.requestFullscreen)x.requestFullscreen().catch(()=>{});}
+ else if(a==='mark')vsMark();
+ else if(a==='in'){VS.io.i=v&&VS.url?v.currentTime:0;vsDrawTL();toast('I: '+vsTC(VS.io.i));}
+ else if(a==='out'){VS.io.o=v&&VS.url?v.currentTime:0;vsDrawTL();toast('O: '+vsTC(VS.io.o));}
+ else if(a==='tocue')vsToCues();
+ else if(a==='rec'){VS.rec?vsRecStop():vsRecStart();}
+ else if(a==='wav')vsExportWav();else if(a==='zip')vsExportZip();else if(a==='mux')vsMux();
+ else if(a==='muxstop'){if(VS.mux)VS.mux.stop=true;}
+ else if(a==='pop')vsOpen('pop');else if(a==='dock')vsOpen('dock');else if(a==='close')vsClose();
+}
+function vsDbl(e){const c=e.target.closest('[data-vsm]');if(!c)return;const m=VS.markers.find(x=>x.id===c.dataset.vsm);if(!m)return;const em=c.querySelector('em');em.contentEditable='true';em.focus();
+ const sel=VS.doc.getSelection();const r=VS.doc.createRange();r.selectNodeContents(em);sel.removeAllRanges();sel.addRange(r);
+ const done=()=>{em.contentEditable='false';m.name=em.textContent.trim()||m.name;vsMarkers();};em.addEventListener('blur',done,{once:true});em.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){ev.preventDefault();em.blur();}});}
+function vsInput(e){if(e.target.id==='vsVol'){VS.vvol=+e.target.value/100;}}
+function vsChange(e){const t=e.target;if(t.id==='vsFps'){VS.fps=+t.value;return;}if(t.dataset.vsc){VS.opt[t.dataset.vsc]=t.checked;if(t.dataset.vsc==='punch'&&t.checked&&(VS.io.i==null||VS.io.o==null))toast('Punch: videoda I va O nuqtalarini belgilang');}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#vidBtn');if(!b)return;e.stopPropagation();if(VS.doc){if(VS.win)VS.win.focus();else vsClose();}else vsOpen(IS_FRAME?'dock':'pop');},true);
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
@@ -2065,6 +2520,7 @@ function play(id,bus,o){
  if(o.verb&&o.verb.on)vi=makeVerb(tail,out,o.verb);else tail.connect(out);
  const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,padObj:o.pad||null,vi,off0,regLen,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview,reopt:Object.assign({},o,{offset:0})};
  voices.push(v);
+ if(VS.doc)vsHit(id,bus,o);
  src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
  renderVoices();renderPadStates();return v;
 }

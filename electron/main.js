@@ -180,7 +180,13 @@ function createMain() {
   });
   win.loadFile(path.join(ROOT, 'app', 'index.html'));
   asioCtl.hook();
-  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+  win.webContents.setWindowOpenHandler(({ url, frameName }) => {
+    // 🎬 Video ovozlashtirish — alohida oyna (boshqa monitorga sudraladi), pult bilan bir jarayonda
+    if (frameName === 'sahnaovozi_video' && (url === 'about:blank' || url === '')) {
+      return { action: 'allow', overrideBrowserWindowOptions: { width: 1260, height: 860, minWidth: 760, minHeight: 520, backgroundColor: '#0B0D11', autoHideMenuBar: true, title: 'Video ovozlashtirish — Sahna Ovozi' } };
+    }
+    if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' };
+  });
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('file:')) { e.preventDefault(); shell.openExternal(url); } });
   win.on('close', e => { if (allowClose) return; e.preventDefault(); win.webContents.send('close-request'); });
   win.on('closed', () => { win = null; });
