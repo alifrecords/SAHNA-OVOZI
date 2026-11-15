@@ -3,6 +3,13 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.17.1: Video loop tuzatildi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| ⟲ Loop | I / O belgilanmagan bo'lsa — butun video takrorlanadi; I va O bo'lsa — o'sha oraliq; faqat I — I dan oxirigacha, faqat O — boshidan O gacha |
+| Video | Brauzerning video ustidagi «kichik oyna / translyatsiya» belgilari o'chirildi |
+
 ## 1.17.0: 🎬 Video ovozlashtirish (pultga qo'shimcha)
 
 Pultning ko'rinishi o'zgarmadi — sarlavhaga faqat **🎬 Video** tugmasi qo'shildi.

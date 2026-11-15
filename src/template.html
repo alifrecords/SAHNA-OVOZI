@@ -2109,14 +2109,14 @@ function vsRender(){
   (pop?'<button type="button" class="vs-ic" data-vs="dock" title="Pult ichiga qaytarish">⇲</button>':'<button type="button" class="vs-ic" data-vs="pop" title="Alohida oyna — boshqa monitorga sudrab olib boring">⧉</button>')+
   '<button type="button" class="vs-ic vs-x" data-vs="close" title="Yopish">✕</button></div>'+
  '<div class="vs-body"><div class="vs-left">'+
-  '<div class="vs-video" id="vsVBox"><video id="vsV" playsinline preload="auto"></video>'+
+  '<div class="vs-video" id="vsVBox"><video id="vsV" playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>'+
    '<div class="vs-tc" id="vsTc">00:00:00:00</div><div class="vs-recb" id="vsRecB" hidden></div><div class="vs-mk" id="vsMk" hidden></div><div class="vs-sub" id="vsSub"></div><div class="vs-count" id="vsCount" hidden></div><div class="vs-busy" id="vsBusy" hidden></div>'+
    '<div class="vs-empty" id="vsEmpty"><div class="vs-ei">🎬</div><b>Videoni shu yerga sudrab tashlang</b><span>yoki</span><button type="button" class="btn primary" data-vs="open">📂 Video tanlash</button><small>MP4 · MOV · MKV · WEBM · AVI · M4V · MPEG · 3GP …</small><small class="vs-note">Videosiz ham yozish mumkin — REC bosing</small></div>'+
    '<div class="vs-drop" id="vsDrop" hidden>⤓ Tashlang — video ochiladi</div></div>'+
   '<div class="vs-trans">'+
    '<button type="button" class="vs-b" data-vs="open" title="Video ochish (yoki sudrab tashlang)">📂</button>'+
    '<button type="button" class="vs-b" data-vs="subs" title="Subtitr / dialog matni (.srt, .vtt)">💬</button><span class="vs-sep"></span>'+
-   '<button type="button" class="vs-b'+(VS.loop?' on':'')+'" data-vs="loop" title="Loop: I → O orasini qaytarish">⟲</button>'+
+   '<button type="button" class="vs-b'+(VS.loop?' on':'')+'" data-vs="loop" title="Loop: butun video yoki I → O oralig\'i takrorlanadi">⟲</button>'+
    '<button type="button" class="vs-b" data-vs="start" title="Boshiga">⏮</button><button type="button" class="vs-b" data-vs="fb" title="1 kadr orqaga  ,">‹</button><button type="button" class="vs-b" data-vs="b5" title="−5 s  J">◀◀</button>'+
    '<button type="button" class="vs-b vs-play" data-vs="play" id="vsPlay" title="Play / Pauza — Probel yoki K">▶</button>'+
    '<button type="button" class="vs-b" data-vs="f5" title="+5 s  L">▶▶</button><button type="button" class="vs-b" data-vs="ff" title="1 kadr oldinga  .">›</button><button type="button" class="vs-b" data-vs="end" title="Oxiriga">⏭</button><span class="vs-sep"></span>'+
@@ -2137,6 +2137,8 @@ function vsRender(){
  v.addEventListener('loadedmetadata',vsOnMeta);
  v.addEventListener('error',()=>vsVidErr());
  v.addEventListener('play',()=>vsPlayUI());v.addEventListener('pause',()=>vsPlayUI());
+ v.addEventListener('ended',()=>{if(VS.loop&&!VS.rec){v.currentTime=VS.io.i!=null?VS.io.i:0;vsPlay(true);}});
+ v.disablePictureInPicture=true;v.disableRemotePlayback=true;v.setAttribute('controlslist','nodownload noplaybackrate noremoteplayback');
  v.preservesPitch=true;v.volume=VS.vvol;
  if(VS.url){v.src=VS.url;}
  vsE('vsFile').addEventListener('change',e=>{if(e.target.files[0])vsLoadFile(e.target.files[0]);});
@@ -2400,7 +2402,8 @@ function vsLoop(){
  cancelAnimationFrame(VS.raf);const W=(VS.doc&&VS.doc.defaultView)||window;let last=0;
  const f=ts=>{if(!VS.doc)return;VS.raf=W.requestAnimationFrame(f);const v=vsV();
   if(v&&VS.url){const t=v.currentTime;const tc=vsE('vsTc');if(tc)tc.textContent=vsTC(t);
-   if(VS.loop&&VS.io.i!=null&&VS.io.o!=null&&!VS.rec&&t>=VS.io.o)v.currentTime=VS.io.i;
+   if(VS.loop&&!VS.rec){const a=VS.io.i!=null?VS.io.i:0,z=VS.io.o!=null?VS.io.o:VS.dur;if(z>a+.05&&(VS.io.o!=null||VS.io.i!=null)&&t>=z-.02){v.currentTime=a;if(v.paused)vsPlay(true);}}
+   const nl=VS.loop&&!VS.rec&&VS.io.i==null&&VS.io.o==null;if(v.loop!==nl)v.loop=nl;
    const R=VS.rec;if(R){if(R.stage==='arm'&&t>=VS.io.i&&R.begin){const b=R.begin;R.begin=null;b();R.vt0=VS.io.i;}
     if(R.stage==='rec'){if(R.capT0!=null&&!v.paused&&R.samples.length<40&&ctx.currentTime>R.capT0+.15)R.samples.push(t-(ctx.currentTime-R.capT0));if(R.punch&&t>=VS.io.o)vsRecStop();}}
    const sb=vsE('vsSub');if(sb){const c=VS.subs.find(s=>t>=s.a&&t<=s.z);const tx=c?c.t:'';if(sb.textContent!==tx)sb.textContent=tx;}
@@ -2476,7 +2479,7 @@ function vsClick(e){
  else if(a==='start')vsSeek(0);else if(a==='end')vsSeek(VS.dur);
  else if(a==='b5')vsSeek((v?v.currentTime:0)-5);else if(a==='f5')vsSeek((v?v.currentTime:0)+5);
  else if(a==='fb'){if(v)v.pause();vsSeek((v?v.currentTime:0)-1/VS.fps);}else if(a==='ff'){if(v)v.pause();vsSeek((v?v.currentTime:0)+1/VS.fps);}
- else if(a==='loop'){VS.loop=!VS.loop;b.classList.toggle('on',VS.loop);if(VS.loop&&(VS.io.i==null||VS.io.o==null))toast('Loop uchun I va O nuqtalarini belgilang');}
+ else if(a==='loop'){VS.loop=!VS.loop;b.classList.toggle('on',VS.loop);toast(VS.loop?(VS.io.i!=null||VS.io.o!=null?'⟲ Loop: '+vsTC(VS.io.i||0)+' → '+(VS.io.o!=null?vsTC(VS.io.o):'oxiri'):'⟲ Loop: butun video takrorlanadi (oraliq uchun I va O ni belgilang)'):'Loop o\'chirildi');}
  else if(a==='rate'){const i=VS.rates.indexOf(VS.rate);VS.rate=VS.rates[(i+1)%VS.rates.length];if(v)v.playbackRate=VS.rate;b.textContent=VS.rate+'×';}
  else if(a==='duck'){VS.duck=!VS.duck;b.classList.toggle('on',VS.duck);}
  else if(a==='fs'){const x=vsE('vsVBox');if(VS.doc.fullscreenElement)VS.doc.exitFullscreen();else if(x&&x.requestFullscreen)x.requestFullscreen().catch(()=>{});}
