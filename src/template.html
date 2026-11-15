@@ -269,6 +269,7 @@ body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 .inststeps{margin:6px 0 10px;padding-left:22px;font-size:14px;line-height:1.75;color:var(--text)}
 .instpc,.instdb{border-top:1px solid var(--line);padding-top:10px;margin-top:8px;display:flex;flex-direction:column;gap:6px}
 .instpc .btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--text)}
+.lcreqdev{display:flex;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}.lcreqdev b{font-size:16px;letter-spacing:.04em;color:var(--amber)}.lcreqf{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.lcreqf #lcReqT,.lcreqf #lcReqNote,.lcreqf .btn{grid-column:1/-1}.lcreqf .btn{height:46px;font-size:15px}@media (max-width:560px){.lcreqf{grid-template-columns:1fr}}
 .tabproj{display:none}
 body.tab .tabproj{display:flex;align-items:center;gap:8px}
 .mpt{font-size:13px;white-space:nowrap}.mpd{color:var(--amber);font-weight:800}.mpok{color:#5AC8B0;font-weight:800}
@@ -2925,7 +2926,7 @@ const LIC=(()=>{
  function payHtml(T,c){
   const t=T.find(x=>x.id===PAY.t),card=c.card&&c.card.number?c.card:null,bot=c.botUsername,L=PAY.last;
   let h='';
-  if(L&&L.status==='pending')h+='<div class="lcnote tr">⏳ To\'lov yuborilgan ('+esc(L.plan_name||L.tariff)+' · '+money(L.amount)+') — admin tekshiryapti. Tasdiqlangach pult o\'zi faollashadi.</div>';
+  if(L&&L.status==='pending'&&L.photo_kind!=='req')h+='<div class="lcnote tr">⏳ To\'lov yuborilgan ('+esc(L.plan_name||L.tariff)+' · '+money(L.amount)+') — admin tekshiryapti. Tasdiqlangach pult o\'zi faollashadi.</div>';
   else if(L&&L.status==='rejected')h+='<div class="lcnote ex">✖ Oxirgi to\'lov tasdiqlanmadi — chekni tekshirib qayta yuboring.</div>';
   if(!t)return h+'<p class="hint" style="margin:10px 0 0">Tarifni tanlang — keyin to\'lov va chek yuborish oynasi chiqadi.'+(ST.st==='active'?' Faol tarif ustiga yangi muddat qo\'shiladi.':'')+'</p>';
   return h+'<div class="lcpay"><b>'+esc(t.name)+' · '+money(t.price)+' / '+t.days+' kun</b><ol>'+
@@ -2935,11 +2936,31 @@ const LIC=(()=>{
  }
  function easyMsg(T){const t=T.find(x=>x.id===PAY.t);return 'Sahna Ovozi · qurilma kodi: '+fmtDev(dev())+(t?' · tarif: '+t.name+' ('+money(t.price)+')':'');}
  function easyHtml(T,c){
-  const k=c.contact||{},tg=(k.tg||'').replace(/^@/,''),ph=k.phone||'';
-  return '<div class="lceasy"><b>✉ Chek yuborish qiyinmi? Oson yo\'l:</b><ol>'+
-   '<li>Qurilma kodingizni nusxalang: <b class="mono">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="easycopy">'+(PAY.t?'📋 Kod va tarifni nusxalash':'📋 Kodni nusxalash')+'</button></li>'+
-   '<li>'+(tg||ph?'To\'lovni qiling va nusxani adminga yuboring:':'To\'lovni qiling va nusxani adminga yuboring (Telegram, telefon yoki SMS orqali).')+(tg?' <button type="button" class="btn sm" data-lc="easytg">✈ Telegram: @'+esc(tg)+'</button>':'')+(ph?' <a class="btn sm" href="tel:'+esc(ph.replace(/[^\d+]/g,''))+'">📞 '+esc(ph)+'</a>':'')+'</li>'+
-   '<li>Admin shu kod bo\'yicha faollashtirish kodi yaratadi — pult ochiq bo\'lsa <b>o\'zi faollashadi</b>, yoki yuborilgan kodni pastga joylang.</li></ol></div>';
+  const k=c.contact||{},tg=(k.tg||'').replace(/^@/,''),ph=k.phone||'',L=PAY.last,sel=PAY.rt||PAY.t||((T.find(x=>x.plan==='pro')||T[0]||{}).id);
+  const sent=L&&L.status==='pending'&&L.photo_kind==='req';
+  return '<div class="lceasy lcreq"><b>📨 Qurilma kodini adminga to\'g\'ridan-to\'g\'ri yuborish</b>'+
+   '<p class="hint" style="margin:4px 0 8px">Chek shart emas: to\'lovni qiling, ismingiz va telefoningizni yozib yuboring. Admin to\'lovni tekshirib, <b>shu qurilmaga</b> kod beradi — pult <b>o\'zi faollashadi</b>.</p>'+
+   '<div class="lcreqdev">Qurilma kodi: <b class="mono">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="easycopy">📋</button></div>'+
+   (c.card&&c.card.number?'<div class="lcreqdev" style="margin-top:6px">To\'lov kartasi: <b class="mono">'+esc(c.card.number)+'</b> <span class="muted">('+esc(c.card.system||'')+(c.card.holder?' · '+esc(c.card.holder):'')+')</span> <button type="button" class="btn sm" data-lc="copycard">📋</button></div>':'')+
+   (sent?'<div class="lcnote tr" style="margin-top:8px">✓ So\'rov yuborildi ('+esc(L.plan_name||L.tariff)+' · '+money(L.amount)+'). Admin to\'lovni tekshirib kod beradi — pultni yopmang, o\'zi faollashadi.</div>':
+   '<div class="lcform lcreqf"><select class="inp" id="lcReqT" aria-label="Tarif">'+T.map(t=>'<option value="'+esc(t.id)+'"'+(t.id===sel?' selected':'')+'>'+esc(t.name)+' · '+money(t.price)+' / '+t.days+' kun</option>').join('')+'</select>'+
+   '<input class="inp" id="lcReqName" placeholder="Ismingiz" maxlength="60" value="'+esc(LS('pname')||'')+'">'+
+   '<input class="inp" id="lcReqPhone" placeholder="Telefon (+998 …)" maxlength="30" inputmode="tel" value="'+esc(LS('pphone')||'')+'">'+
+   '<input class="inp" id="lcReqNote" placeholder="Izoh: masalan «14:30 da to\'ladim, karta …4417»" maxlength="200">'+
+   '<button type="button" class="btn primary" data-lc="req"'+(PAY.busy?' disabled':'')+'>'+(PAY.busy?'Yuborilmoqda…':'📨 Adminga yuborish')+'</button></div>')+
+   (tg||ph?'<div class="hint" style="margin-top:6px">Yoki to\'g\'ridan-to\'g\'ri: '+(tg?'<button type="button" class="btn sm" data-lc="easytg">✈ Telegram: @'+esc(tg)+'</button> ':'')+(ph?'<a class="btn sm" href="tel:'+esc(ph.replace(/[^\d+]/g,''))+'">📞 '+esc(ph)+'</a>':'')+'</div>':'')+
+   '</div>';
+ }
+ async function sendReq(){
+  if(PAY.busy)return;const g=id=>((document.getElementById(id)||{}).value||'').trim();
+  const t=g('lcReqT'),name=g('lcReqName'),phone=g('lcReqPhone'),note=g('lcReqNote');
+  if(!name||!phone){toast('Ismingiz va telefoningizni yozing — admin siz bilan bog\'lanadi');return;}
+  LS('pname',name);LS('pphone',phone);PAY.rt=t;PAY.busy=true;reRender();
+  try{const r=await fetch(api()+'/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dev:dev(),tariff:t,name,phone,note})});const j=await r.json().catch(()=>({}));
+   if(!r.ok||!j.ok)toast(j.msg||'Yuborib bo\'lmadi');
+   else{toast('✓ So\'rov adminga yuborildi: '+j.tariff+' · '+money(j.amount)+' — admin kod bergach pult o\'zi faollashadi');logEvent('Qurilma kodi so\'rovi yuborildi: '+j.tariff);await lastPay();poll(true);}
+  }catch(e){toast(navigator.onLine?'Server bilan bog\'lanib bo\'lmadi':'Internet yo\'q');}
+  PAY.busy=false;reRender();
  }
  async function lastPay(){try{const r=await fetch(api()+'/api/pay?dev='+dev(),{cache:'no-store'});const j=await r.json();PAY.last=j.payment||null;}catch(_){}}
  function shrink(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height));const cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);let q=.8,u=cv.toDataURL('image/jpeg',q);while(u.length>900000&&q>.35){q-=.15;u=cv.toDataURL('image/jpeg',q);}res(u);};im.src=fr.result;};fr.readAsDataURL(file);});}
@@ -2981,6 +3002,7 @@ const LIC=(()=>{
   else if(a==='hub')showHub();
   else if(a==='pick'){PAY.t=PAY.t===b.dataset.t?'':b.dataset.t;reRender();}
   else if(a==='send')sendPay();
+  else if(a==='req')sendReq();
   else if(a==='easycopy'){const m=easyMsg(cfg().tariffs||[]);try{await navigator.clipboard.writeText(m);toast('Nusxalandi — endi adminga yuboring');}catch(_){toast(m);}poll(true);}
   else if(a==='easytg'){const c=cfg(),m=easyMsg(c.tariffs||[]);const u='https://t.me/'+String((c.contact||{}).tg||'').replace(/^@/,'')+'?text='+encodeURIComponent(m);try{await navigator.clipboard.writeText(m);}catch(_){}if(NATIVE&&window.azNative.openExternal)window.azNative.openExternal(u);else window.open(u,'_blank','noopener');poll(true);}
   else if(a==='admin')adminLogin();

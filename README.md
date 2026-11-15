@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.15.0: Qurilma kodini adminga to'g'ridan-to'g'ri yuborish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Pult (💎 oynasi) | **📨 Qurilma kodini adminga to'g'ridan-to'g'ri yuborish**: qurilma kodi, to'lov kartasi, tarif, ism, telefon, izoh → **Adminga yuborish**. Chek rasmi shart emas |
+| Server | `/api/pay` chek rasmisiz «so'rov» qabul qiladi (bir qurilmadan 3 tagacha kutilayotgan) |
+| Admin sahifa | So'rov «To'lovlar»ga **📨 so'rov** belgisi bilan tushadi (ism · telefon · izoh) → **Tasdiqlash** → shu qurilmaga kod, pult o'zi faollashadi |
+| Telegram | Bot ulangan va admin chati bog'langan bo'lsa — shaxsiy Telegram'ingizga «📨 Qurilma kodi so'rovi» **Tasdiqlash / Rad etish** tugmalari bilan keladi |
+
 ## 1.14.0: Barcha qurilmalarga o'rnatish va qurilmadagi baza
 
 | Qurilma | O'rnatish (sarlavhadagi ⬇ tugma) | Ma'lumotlar bazasi |

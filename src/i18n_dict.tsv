@@ -969,3 +969,14 @@ Keyinroq	Позже	Later
 🗂 Ma'lumotlar bazasi tayyor	🗂 База данных готова	🗂 Database ready
 Tushunarli	Понятно	Got it
 💾 Hozir zaxira saqlash	💾 Сохранить резервную копию сейчас	💾 Save a backup now
+📨 Qurilma kodini adminga to'g'ridan-to'g'ri yuborish	📨 Отправить код устройства администратору напрямую	📨 Send the device code to the admin directly
+Chek shart emas: to'lovni qiling, ismingiz va telefoningizni yozib yuboring. Admin to'lovni tekshirib,	Чек не обязателен: оплатите, укажите имя и телефон и отправьте. Администратор проверит оплату и выдаст код	No receipt needed: pay, enter your name and phone and send. The admin checks the payment and issues a code
+Qurilma kodi:	Код устройства:	Device code:
+Ismingiz	Ваше имя	Your name
+Telefon (+998 …)	Телефон (+998 …)	Phone (+998 …)
+Izoh: masalan «14:30 da to'ladim, karta …4417»	Комментарий: например «оплатил в 14:30, карта …4417»	Note: e.g. “paid at 14:30, card …4417”
+📨 Adminga yuborish	📨 Отправить администратору	📨 Send to admin
+Yuborilmoqda…	Отправка…	Sending…
+Yoki to'g'ridan-to'g'ri:	Или напрямую:	Or directly:
+Ismingiz va telefoningizni yozing — admin siz bilan bog'lanadi	Укажите имя и телефон — администратор свяжется с вами	Enter your name and phone — the admin will contact you
+To'lov kartasi:	Карта для оплаты:	Payment card:

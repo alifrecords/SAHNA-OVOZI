@@ -4,7 +4,7 @@ export const onRequestGet = adminOnly(async ({ env }) => {
   const db = env.DB, now = Date.now();
   const s = await getSettings(db);
   const ms = new Date(); ms.setUTCDate(1); ms.setUTCHours(0, 0, 0, 0);
-  const payments = (await db.prepare("SELECT id, dev, tariff, plan_name, amount, tg_user, tg_username, tg_name, photo, status, created, decided FROM so_payments ORDER BY created DESC LIMIT 200").all()).results || [];
+  const payments = (await db.prepare("SELECT id, dev, tariff, plan_name, amount, tg_user, tg_username, tg_name, photo, photo_kind, status, created, decided FROM so_payments ORDER BY created DESC LIMIT 200").all()).results || [];
   const codes = ((await db.prepare("SELECT id, dev, tariff, plan, days, status, created, expires, created_by, token FROM so_codes ORDER BY created DESC LIMIT 300").all()).results || []).map((c) => ({ ...c, state: codeState(c), devFmt: fmtDev(c.dev) }));
   const devices = ((await db.prepare("SELECT * FROM so_devices ORDER BY last DESC LIMIT 400").all()).results || []).map((d) => ({ ...d, devFmt: fmtDev(d.dev), ip: undefined }));
   const one = async (sql, ...a) => (await db.prepare(sql).bind(...a).first()) || {};
