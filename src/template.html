@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sahna Ovozi — jonli pult</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -226,6 +226,54 @@ html.native .show-info{cursor:pointer}
 @media (max-width:1720px){header{gap:6px}#asBtn{padding-left:9px;padding-right:9px}#asBtn .aslbl,#dbBtn .dbl{display:none}.proj .pname{display:inline-block;max-width:86px;vertical-align:middle}.langseg button{padding:0 4px}header .show-info{max-width:96px}header .show-info span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}header .btn.panic{padding-left:9px;padding-right:9px;letter-spacing:0}header .clock{padding:4px 7px;gap:6px}#zoomOut,#zoomIn{display:none}#asBtn{gap:4px}}
 @media (max-width:760px){#hub{flex-direction:column}.hside{width:auto;flex:0 0 auto}.hnav{flex-direction:row;flex-wrap:wrap}.hmain{padding:18px}}
 #micBtn.on{border-color:var(--rose);background:#3A1E22;color:#FFB3BC}
+/* ---- planshet rejimi ---- */
+#tabBtn.on{border-color:#5AC8B0;color:#5AC8B0;background:rgba(90,200,176,.1)}
+#tabBar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:8px;align-items:stretch;padding:8px 12px calc(8px + env(safe-area-inset-bottom));padding-left:calc(12px + env(safe-area-inset-left));padding-right:calc(12px + env(safe-area-inset-right));background:rgba(14,15,18,.97);border-top:1px solid #2A3140;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#tabBar[hidden]{display:none}
+#tabBar button{border-radius:12px;border:1px solid #33405A;background:#1A2030;color:#E6EAF2;font-weight:700;font-size:14px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 12px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#tabBar button small{font-size:10px;color:#8A93A3;font-weight:500}
+#tabBar .tbgo{flex:1;min-width:0;background:var(--amber);color:#1A1206;border:0}
+#tabBar .tbgo b{font-size:26px;letter-spacing:.06em;font-family:'Space Grotesk',sans-serif;line-height:1}
+#tabBar .tbgo span{font-size:12px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tabBar .tbback{font-size:30px;width:64px;padding:0}
+#tabBar .tbstop{background:#3A1418;border-color:#7A2A31;color:#FFB4B4;min-width:86px}
+#tabBar .tbw{font-size:11px;width:92px;color:#8A93A3;font-weight:600;line-height:1.2;text-align:center}
+#tabBar .tbw.on{color:#5AC8B0;border-color:#2F6B5F}
+#tabBar button.kflash{filter:brightness(1.35)}
+body.tab{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+body.tab,body.tab button,body.tab input,body.tab select,body.tab .pad,body.tab .cue{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body.tab .pad,body.tab .cue,body.tab .bank,body.tab .seg,body.tab .cfseg,body.tab .nmbar,body.tab header{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.tab .gorow{display:none}
+body.tab .col-l>p.muted{display:none}
+body.tab .cue{min-height:60px;padding:10px 12px}
+body.tab .clp{width:36px;height:36px;opacity:.8}
+body.tab .cfbox{gap:4px}body.tab .cflbl{font-size:10px}
+body.tab .cfseg button{padding:9px 10px;font-size:12.5px;min-width:40px}
+body.tab .seg button{height:48px;min-width:52px;font-size:13px}
+body.tab .nmb{width:38px;height:38px;font-size:18px;border-radius:9px}
+body.tab .nmtgl{padding:8px 12px;font-size:13px}
+body.tab .nmkey{font-size:15px;padding:6px 9px}
+body.tab .nmps{font-size:14px;min-width:44px}
+body.tab .nmrow input[type=range]{height:34px}
+body.tab .bank{height:44px;padding:0 16px;font-size:13px}
+body.tab .pad .hit{min-height:104px}
+body.tab .pctl button{width:38px;height:38px}
+body.tab .pad .up{width:38px;height:38px}
+body.tab .btn.sm{min-height:40px;padding:0 14px}
+body.tab input[type=range]{min-height:32px}
+body.tab .zoomc{display:none}
+body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+/* gorizontal: cue ro'yxati chapda yopishgan, o'z ichida suriladi */
+body.tab.tab-land .col-l{flex:0 0 280px;position:sticky;top:10px;align-self:flex-start;max-height:calc(100vh - 124px);max-height:calc(100dvh - 124px);overflow:auto;overscroll-behavior:contain}
+body.tab.tab-land .col-c{flex:1 1 0}
+body.tab.tab-land .col-r{flex:1 1 100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start}
+@media (min-width:1300px){body.tab.tab-land .main{flex-wrap:nowrap}body.tab.tab-land .col-r{flex:0 0 320px;display:flex}body.tab.tab-land .col-l{flex-basis:260px}}
+/* vertikal: hammasi bir ustunda, cue ro'yxati o'z ichida suriladi */
+body.tab.tab-port .col-l,body.tab.tab-port .col-c,body.tab.tab-port .col-r{flex:1 1 100%}
+body.tab.tab-port #cues{max-height:40vh;max-height:40dvh;overflow:auto;overscroll-behavior:contain;padding-right:2px}
+body.tab.tab-port .col-r{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));align-items:start}
+@media (max-width:700px){#tabBar .tbw{display:none}#tabBar button{padding:0 8px;font-size:12px}#tabBar .tbstop{min-width:64px}}
+body.tab .pad .hit{min-height:116px;padding-bottom:50px}body.tab .pctl{left:8px;right:auto;bottom:8px}body.tab .pctl button,body.tab .pad .up{width:34px;height:34px}body.tab .pad .up{right:6px;bottom:8px}body.tab #toast{bottom:calc(100px + env(safe-area-inset-bottom))!important}
 #cues .cue{scroll-margin:90px 0 120px}.cuehead{flex-wrap:wrap;gap:6px}.cfbox{display:flex;flex-direction:column;align-items:center;gap:2px}
 .cflbl{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A93A3;white-space:nowrap}
 .cfseg{display:flex;border:1px solid #2A3140;border-radius:6px;overflow:hidden}
@@ -393,6 +441,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Tahrirlash</button>
     <button class="btn" type="button" id="audioBadge" aria-label="Ovoz holati va tekshiruv">OVOZ: —</button>
     <div class="clock" id="clockBox"><span class="dot"></span><span class="st" style="font-size:12px;font-weight:700;letter-spacing:.1em" id="liveTxt">TAYYOR</span><span class="mono" style="font-size:22px;font-weight:700;margin-left:6px" id="clock">00:00:00</span></div>
+    <button class="btn" id="tabBtn" type="button" aria-pressed="false" aria-label="Planshet rejimi">📱</button>
     <button class="btn" id="libBtn" type="button" title="Ovozlar kutubxonasi (Ctrl+L)" aria-label="Ovozlar kutubxonasi"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a1 1 0 0 1 1-1h3v16H5a1 1 0 0 1-1-1zM8 4h4v16H8zM14 5l3.5-1 3.5 15-3.5 1z"></path></svg></button>
     <button class="btn panic" id="panicBtn" type="button" title="Hammasini to'xtatish">■ TO'XTATISH · Esc</button>
   </header>
@@ -412,7 +461,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
       <button type="button" class="addbtn edit-only" id="cueAdd" style="justify-content:center;align-items:center">+ Yangi cue qo'shish</button>
       <div style="flex:1"></div>
       <p class="muted" style="font-size:11px;margin:0;line-height:1.5">Cue ustiga bosish — uni <b>keyingi</b> qilib belgilaydi. GO — ijro etadi. ↑ ↓ — keyingini tanlash.</p>
-      <div class="row" style="gap:8px">
+      <div class="row gorow" style="gap:8px">
         <button class="back" id="backBtn" type="button" aria-label="Keyingi cue'ni bitta orqaga surish"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></button>
         <button class="go" id="goBtn" type="button"><b>GO</b><span id="goNext">Keyingi: —</span></button>
       </div>
@@ -511,6 +560,15 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
   </aside>
   <main class="hmain" id="hubMain"></main>
 </div>
+<nav id="tabBar" hidden aria-label="Planshet boshqaruvi">
+  <button type="button" class="tbback" data-tb="back" aria-label="Keyingi cue'ni bitta orqaga surish">‹</button>
+  <button type="button" class="tbgo" data-tb="go"><b>GO</b><span id="tbGoNext">—</span></button>
+  <button type="button" data-tb="atm">Atmosfera<small>so'ndirish</small></button>
+  <button type="button" data-tb="mus">Musiqa<small>so'ndirish</small></button>
+  <button type="button" data-tb="all">Sahna<small>so'ndirish</small></button>
+  <button type="button" class="tbw" data-tb="wake" id="tbWake">☾ Ekran o'chishi mumkin</button>
+  <button type="button" class="tbstop" data-tb="stop">■ STOP</button>
+</nav>
 <aside id="lib" aria-label="Ovozlar kutubxonasi" aria-hidden="true">
   <div class="hd between">
     <div><h2 style="font-size:20px">Ovozlar kutubxonasi</h2><span class="muted" style="font-size:12px">Har bir ovozni o'z faylingiz bilan almashtiring (WAV, MP3, OGG, M4A)</span></div>
@@ -1677,6 +1735,43 @@ document.addEventListener('change',e=>{
  const box=document.getElementById('nm_'+scope);r.blur();nmSet(scope,t.obj,+box.querySelector('[data-nmst]').value+(+box.querySelector('[data-nmct]').value)/100);
 });
 
+/* ---------- PLANSHET REJIMI (iPad / Android planshet) ----------
+   body.tab — barmoq uchun katta tugmalar, pastda doimiy GO / so'ndirish paneli, ustunlar planshetga moslashadi.
+   Avtomatik: sensorli ekran va eni ≥ 600 px; sarlavhadagi 📱 tugma bilan qo'lda yoqiladi / o'chiriladi. */
+const TAB={wl:null};
+function tabAuto(){try{const c=matchMedia('(pointer:coarse)').matches,m=Math.min(screen.width,screen.height);return c&&m>=600;}catch(e){return false;}}
+function tabOn(){let v=null;try{v=localStorage.getItem('sahnaOvozi.tab');}catch(e){}return v==null?tabAuto():v==='1';}
+function tabApply(){
+ const on=tabOn();document.body.classList.toggle('tab',on);
+ const b=$('#tabBtn');if(b){b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');b.title=on?'Planshet rejimi yoqiq · bosing — oddiy rejim':'Planshet rejimi (iPad / planshet): katta tugmalar va pastki GO paneli';}
+ const bar=$('#tabBar');if(bar)bar.hidden=!on;
+ tabOrient();tabGoSync();if(on)tabWake();else tabWakeOff();
+}
+function tabOrient(){const p=innerHeight>innerWidth;document.body.classList.toggle('tab-port',p);document.body.classList.toggle('tab-land',!p);}
+function tabGoSync(){const s=$('#tbGoNext'),g=$('#goNext');if(s&&g)s.textContent=g.textContent.replace(/ · Probel$/,'').replace(/ · Space$/,'').replace(/ · Пробел$/,'');}
+/* ekran o'chib qolmasin — iOS/Android'da ekran o'chsa ovoz ham to'xtaydi */
+async function tabWake(){
+ if(!document.body.classList.contains('tab')||TAB.wl||document.visibilityState!=='visible')return;
+ try{if(navigator.wakeLock&&navigator.wakeLock.request){TAB.wl=await navigator.wakeLock.request('screen');TAB.wl.addEventListener('release',()=>{TAB.wl=null;tabWakeUI();});}}catch(e){TAB.wl=null;}
+ tabWakeUI();
+}
+function tabWakeOff(){try{if(TAB.wl)TAB.wl.release();}catch(e){}TAB.wl=null;tabWakeUI();}
+function tabWakeUI(){const w=$('#tbWake');if(!w)return;const ok=!!TAB.wl;w.classList.toggle('on',ok);w.textContent=ok?'☀ Ekran yoniq':'☾ Ekran o\'chishi mumkin';w.title=ok?'Ekran o\'chmaydi (spektakl paytida)':'Bosing — ekranni yoniq ushlash. iPad: Sozlamalar → Ekran → Avto-qulf → Hech qachon';}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')tabWake();});
+addEventListener('resize',()=>{if(document.body.classList.contains('tab'))tabOrient();});
+addEventListener('orientationchange',()=>setTimeout(tabOrient,200));
+document.addEventListener('click',e=>{
+ const t=e.target.closest&&e.target.closest('#tabBtn,#tabBar [data-tb]');if(!t)return;e.stopPropagation();
+ if(t.id==='tabBtn'){const on=!document.body.classList.contains('tab');try{localStorage.setItem('sahnaOvozi.tab',on?'1':'0');}catch(_){}tabApply();toast(on?'📱 Planshet rejimi yoqildi':'Oddiy rejim');return;}
+ const k=t.dataset.tb;
+ if(k==='go'){go();}
+ else if(k==='back'){const b=$('#backBtn');if(b)b.click();}
+ else if(k==='atm'||k==='mus'||k==='all'){const b=$('#'+k+'Off');if(b)b.click();}
+ else if(k==='stop'){panic();}
+ else if(k==='wake'){if(TAB.wl)tabWakeOff();else tabWake();if(!navigator.wakeLock)toast('Bu brauzer ekranni yoniq ushlay olmaydi — iPad Sozlamalar → Ekran → Avto-qulf → Hech qachon');}
+ t.classList.add('kflash');setTimeout(()=>t.classList.remove('kflash'),300);
+},true);
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
@@ -1915,7 +2010,7 @@ function renderCues(){
  $('#cueCount').textContent=(cur+1)+' / '+C.length;
  if(typeof azvTarget!=='undefined'&&azvTarget==='cue')azvRefresh();nmRender('cue');
  cueFollow();
- $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';
+ $('#goNext').textContent=next<C.length?'Keyingi: Q'+(next+1)+' '+C[next].name+' · Probel':'Ro\'yxat tugadi';tabGoSync();
 }
 /* tanlov (keyingi cue) o'zgarganda — u ko'rinadigan joyga suriladi: ro'yxat ham, butun pult oynasi ham */
 let cueFollowLast=null;
@@ -2896,7 +2991,7 @@ async function boot(){
   SP(3,'Loyihalar va profil',0.86);await loadProfile();await loadSettings();asUI();
   renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
   SP(4,'Sahna oynasi',1);
-  $('#gate').remove();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
+  $('#gate').remove();tabApply();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
   setTimeout(()=>{if(ctx.state!=='running')runDiag(true);},600);
   LIC.init();
   logEvent('Ilova ochildi · '+(NATIVE?'o\'rnatilgan dastur v'+APP_VERSION:isStandalone()?'o\'rnatilgan ilova':'brauzer')+' · baza: '+(Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer'));

@@ -3,6 +3,17 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.12.0: iPad va planshet rejimi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Yoqilishi | Sensorli planshetda (iPad, Android) o'zi yoqiladi; sarlavhadagi **📱** tugma bilan qo'lda yoqish / o'chirish (eslab qoladi) |
+| Pastki panel | Doimiy: **‹** orqaga, katta **GO** (keyingi cue nomi bilan), **Atmosfera / Musiqa / Sahna so'ndirish**, **■ STOP** — sahifa qayerga surilsa ham ko'rinib turadi |
+| Ekran | **☀ Ekran yoniq** — spektakl paytida ekran o'chmaydi (Wake Lock; iOS 16.4+ va Android Chrome) |
+| Gorizontal | Cue ro'yxati chapda yopishgan va o'z ichida suriladi; iPad Pro (≥1300 px) da mikser ham yonida |
+| Vertikal | Bir ustun, cue ro'yxati ekranning 40% balandligida o'z ichida suriladi |
+| Barmoq uchun | Cue qatorlari, o'tish vaqti, Nota, SFX tugmalari va boshqaruvlar kattalashtirildi; ikki marta bosishda sahifa kattalashmaydi |
+
 ## 1.11.3: Tanlangan cue ortidan oyna suriladi
 
 | Bo'lim | Nima qilindi |

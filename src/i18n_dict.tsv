@@ -913,3 +913,19 @@ Tonallikni qayta aniqlash	Определить тональность занов
 Nota siljishi	Сдвиг тона	Pitch shift
 O'tish (fade) vaqti	Время перехода (fade)	Transition (fade) time
 Cue'lar o'tish vaqti	Время перехода cue	Cue transition time
+Planshet rejimi	Режим планшета	Tablet mode
+Planshet rejimi yoqiq · bosing — oddiy rejim	Режим планшета включён · нажмите — обычный режим	Tablet mode on · tap — normal mode
+Planshet rejimi (iPad / planshet): katta tugmalar va pastki GO paneli	Режим планшета (iPad / планшет): крупные кнопки и нижняя панель GO	Tablet mode (iPad / tablet): large buttons and bottom GO bar
+📱 Planshet rejimi yoqildi	📱 Режим планшета включён	📱 Tablet mode on
+Oddiy rejim	Обычный режим	Normal mode
+Planshet boshqaruvi	Управление планшетом	Tablet controls
+Atmosfera	Атмосфера	Atmosphere
+Musiqa	Музыка	Music
+Sahna	Сцена	Scene
+so'ndirish	затухание	fade out
+■ STOP	■ СТОП	■ STOP
+☀ Ekran yoniq	☀ Экран не гаснет	☀ Screen stays on
+☾ Ekran o'chishi mumkin	☾ Экран может погаснуть	☾ Screen may sleep
+Ekran o'chmaydi (spektakl paytida)	Экран не погаснет (во время спектакля)	Screen won't sleep (during the show)
+Bosing — ekranni yoniq ushlash. iPad: Sozlamalar → Ekran → Avto-qulf → Hech qachon	Нажмите — не гасить экран. iPad: Настройки → Экран → Автоблокировка → Никогда	Tap to keep the screen on. iPad: Settings → Display → Auto-Lock → Never
+Bu brauzer ekranni yoniq ushlay olmaydi — iPad Sozlamalar → Ekran → Avto-qulf → Hech qachon	Этот браузер не может держать экран включённым — iPad: Настройки → Экран → Автоблокировка → Никогда	This browser can't keep the screen on — iPad: Settings → Display → Auto-Lock → Never
