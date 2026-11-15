@@ -2959,9 +2959,9 @@ $('#editBtn').addEventListener('click',e=>{e.stopPropagation();setEditing(!editi
 $('#showBtn').addEventListener('click',e=>{e.stopPropagation();if(ctx)editShow();});
 $('#showEdit').addEventListener('click',e=>{e.stopPropagation();editShow();});
 $('#cueAdd').addEventListener('click',e=>{e.stopPropagation();editCue(null);});
-$('#atmOff').addEventListener('click',()=>sceneOff(Math.max(fadeT,.05)));
-$('#musOff').addEventListener('click',()=>busOff('music',Math.max(fadeT,.05)));
-$('#allOff').addEventListener('click',()=>{sceneOff(Math.max(fadeT,.05));['music','sfx','dub'].forEach(b=>busOff(b,Math.max(fadeT,.05)));});
+$('#atmOff').addEventListener('click',()=>sceneOff(Math.max(cueFadeT(),.05)));
+$('#musOff').addEventListener('click',()=>busOff('music',Math.max(cueFadeT(),.05)));
+$('#allOff').addEventListener('click',()=>{const f=Math.max(cueFadeT(),.05);sceneOff(f);['music','sfx','dub'].forEach(b=>busOff(b,f));});
 $('#dubLoad').addEventListener('click',()=>pickFile(f=>replaceAsset('dub_monolog',f)));
 $('#dubPlay').addEventListener('click',()=>{if(!buffers.dub_monolog){toast('Avval ovoz faylini yuklang');return;}play('dub_monolog','dub',{title:'Monolog: ichki ovoz'});});
 $('#dubStop').addEventListener('click',()=>busOff('dub',.3));
@@ -2984,8 +2984,8 @@ document.addEventListener('keydown',e=>{
  if(typing(e.target))return;
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
  if(e.code==='KeyL'&&!e.shiftKey&&!e.repeat){e.preventDefault();if(cur>=0&&show.cues[cur]&&show.cues[cur].type!=='atmos')cueLoopToggle(cur);else toast('Hozir sahnada cue yo\'q');return;}
- if((e.key==='End'||e.key==='Home')&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();if(e.repeat)return;if(e.key==='End'){busOff('music',Math.max(fadeT,.05));const b=$('#musOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}toast("Musiqani so'ndirish · End");}else padPause(selPad);return;}
- if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(fadeT,.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
+ if((e.key==='End'||e.key==='Home')&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();if(e.repeat)return;if(e.key==='End'){busOff('music',Math.max(cueFadeT(),.05));const b=$('#musOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}toast("Musiqani so'ndirish · End");}else padPause(selPad);return;}
+ if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(cueFadeT(),.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
  if(e.target.type==='range'&&/^Arrow/.test(e.code))return;
  if((e.code==='ArrowLeft'||e.code==='ArrowRight')&&!e.repeat){e.preventDefault();browsePad(e.code==='ArrowRight'?1:-1);return;}
