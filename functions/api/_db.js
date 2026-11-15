@@ -27,6 +27,9 @@ export async function ensureSchema(db) {
     db.prepare("CREATE TABLE IF NOT EXISTS so_receipts (id TEXT PRIMARY KEY, mime TEXT, data TEXT, created INTEGER)"),
     db.prepare("CREATE TABLE IF NOT EXISTS so_devices (dev TEXT PRIMARY KEY, first INTEGER, last INTEGER, trial INTEGER, st TEXT, plan TEXT, until INTEGER, ver TEXT, platform TEXT, lang TEXT, ip TEXT, hits INTEGER DEFAULT 1, note TEXT)"),
     db.prepare("CREATE INDEX IF NOT EXISTS so_devices_last ON so_devices(last)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS so_msgs (id INTEGER PRIMARY KEY AUTOINCREMENT, dev TEXT NOT NULL, who TEXT NOT NULL, name TEXT, text TEXT NOT NULL, kind TEXT, created INTEGER, seen_admin INTEGER DEFAULT 0, seen_user INTEGER DEFAULT 0)"),
+    db.prepare("CREATE INDEX IF NOT EXISTS so_msgs_dev ON so_msgs(dev, id)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS so_msgkeys (dev TEXT PRIMARY KEY, key TEXT NOT NULL, name TEXT, created INTEGER)"),
   ]);
   ready = true;
 }

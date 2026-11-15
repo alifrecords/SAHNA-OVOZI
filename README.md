@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.16.0: Administrator bilan yozishma, fikr va takliflar
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Pult | Sarlavhada **✏ Administrator** tugmasi → kichik chat oynasi: savol, fikr, taklif yozish va admin javoblarini o'qish. Yangi javob kelsa tugma **miltillaydi** va soni ko'rinadi |
+| 💎 oynasi | **💡 Fikr va takliflar** maydoni (to'lovdan oldin ham) + yozishmani ochish |
+| Admin sahifa | **💬 Xabarlar** bo'limi: suhbatlar ro'yxati (ism, qurilma, tarif, o'qilmaganlar), suhbat va javob yozish (Ctrl+Enter), ✓✓ o'qildi belgisi; har 20 soniyada yangilanadi |
+| Telegram | Bot ulangan bo'lsa yangi xabar shaxsiy Telegram'ingizga keladi; xabarga **Reply** qilib yozsangiz — javob o'sha pultga boradi |
+| Xavfsizlik | Har bir qurilmaning yozishma kaliti bor — qurilma kodini bilgan boshqa odam yozishmani o'qiy olmaydi; soatiga 30 ta xabar chegarasi |
+
 ## 1.15.0: Qurilma kodini adminga to'g'ridan-to'g'ri yuborish
 
 | Bo'lim | Nima qilindi |

@@ -92,6 +92,15 @@ async function handle(env, u) {
       }
       return send(env, msg.chat.id, "Kod noto'g'ri yoki muddati o'tgan. Admin sahifada yangi kod oling.");
     }
+    // admin Telegram'da foydalanuvchi xabariga «Reply» qilsa — javob o'sha qurilma pultiga boradi
+    if (msg.reply_to_message && !cmd.startsWith("/") && String(msg.chat.id) === (await adminChat(db))) {
+      const rd = findDev(msg.reply_to_message.text || msg.reply_to_message.caption || "");
+      if (rd) {
+        await db.prepare("INSERT INTO so_msgs (dev, who, name, text, kind, created, seen_admin) VALUES (?, 'a', 'Admin', ?, 'chat', ?, 1)").bind(rd, text.slice(0, 2000), Date.now()).run();
+        await db.prepare("UPDATE so_msgs SET seen_admin = 1 WHERE dev = ? AND who = 'u'").bind(rd).run();
+        return send(env, msg.chat.id, `✓ Javob <code>${fmtDev(rd)}</code> pultiga yuborildi.`);
+      }
+    }
     if (cmd === "/start") return onStart(env, msg, arg);
     if (cmd.startsWith("/") && String(msg.chat.id) === (await adminChat(db))) return onAdminCommand(env, msg, cmd, arg);
     const dev = findDev(text);
