@@ -263,6 +263,12 @@ body.tab .btn.sm{min-height:40px;padding:0 14px}
 body.tab input[type=range]{min-height:32px}
 body.tab .zoomc{display:none}
 body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.instb{border-color:#2F6B5F!important;color:#5AC8B0!important;display:inline-flex;align-items:center;gap:6px}.instb[hidden]{display:none!important}
+@media (max-width:1500px){.instb .ihl{display:none}}
+.instdev{font-size:13px;color:var(--muted);margin-bottom:8px}.instgo{width:100%;height:54px;font-size:16px;margin:4px 0 8px}
+.inststeps{margin:6px 0 10px;padding-left:22px;font-size:14px;line-height:1.75;color:var(--text)}
+.instpc,.instdb{border-top:1px solid var(--line);padding-top:10px;margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.instpc .btn{text-decoration:none;display:inline-flex;align-items:center;color:var(--text)}
 .tabproj{display:none}
 body.tab .tabproj{display:flex;align-items:center;gap:8px}
 .mpt{font-size:13px;white-space:nowrap}.mpd{color:var(--amber);font-weight:800}.mpok{color:#5AC8B0;font-weight:800}
@@ -473,6 +479,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
       <span class="bname"><span>SAHNA OVOZI</span><span class="bsub">Azimxodjayev Music</span></span>
     </div>
     <button class="btn" type="button" id="homeBtn" aria-label="Bosh sahifa"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></button>
+    <button class="btn instb" type="button" id="instHdr" title="Ilova sifatida o'rnatish (PC, iPad, planshet, Android)" aria-label="Ilova sifatida o'rnatish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg><span class="ihl">O'rnatish</span></button>
     <button type="button" class="show-info" id="showBtn" aria-label="Spektakl ma'lumotlari"><span class="lbl">Spektakl</span><span style="font-size:14px;font-weight:600;color:var(--text)" id="showName">—</span></button>
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
@@ -1915,6 +1922,54 @@ function mpPlace(){
  else{const si=$('#showBtn');if(si&&mb.previousElementSibling!==si)si.after(mb);}
 }
 
+/* ---------- O'RNATISH (PC · iPad · planshet · Android) + qurilmada ma'lumotlar bazasi ----------
+   Kompyuter (Chrome/Edge): ilova sifatida o'rnatiladi, keyin Documents/Sahna Ovozi papkasi baza bo'ladi.
+   Windows/macOS dasturi: Documents/Sahna Ovozi o'zi yaratiladi (+ ASIO).
+   iPad / Android: brauzer Documents'ga to'g'ridan-to'g'ri yozolmaydi — baza ilovaning doimiy xotirasida, zaxira fayllari Fayllar/Yuklanmalarga. */
+const DEV=(()=>{const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),android=/Android/.test(ua);
+ return {ios,android,mac:!ios&&/Macintosh/.test(ua),win:/Windows/.test(ua),mobile:ios||android,ipad:/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1)};})();
+const REL='https://github.com/alifrecords/SAHNA-OVOZI/releases/latest';
+function instHdrUI(){const b=$('#instHdr');if(b)b.hidden=!!(NATIVE||isStandalone());}
+async function instPersist(){try{if(navigator.storage&&navigator.storage.persist){if(await navigator.storage.persisted())return true;return await navigator.storage.persist();}}catch(e){}return false;}
+async function instStore(){try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();return {used:e.usage||0,quota:e.quota||0};}}catch(e){}return null;}
+const instMb=n=>(n/1048576).toFixed(n>1048576*100?0:1)+' MB';
+function installApp(){
+ const can=!!installEvt,inFrame=IS_FRAME;
+ const devName=DEV.ipad?'iPad':DEV.ios?'iPhone':DEV.android?'Android (telefon / planshet)':DEV.mac?'Mac':'Kompyuter (Windows)';
+ let h='<div class="instdev">Qurilma: <b>'+devName+'</b></div>';
+ if(inFrame)h+='<div class="warn">Bu sahifa Claude ichida ochilgan — bu yerdan o\'rnatib bo\'lmaydi. <b>sahna-ovozi.pages.dev</b> ni brauzerda oching va o\'sha yerdan o\'rnating.</div>';
+ if(can)h+='<button type="button" class="btn primary instgo" data-inst="go">⬇ Hozir o\'rnatish</button>';
+ if(DEV.ios){h+='<ol class="inststeps"><li><b>Safari</b>da <b>sahna-ovozi.pages.dev</b> ni oching (Chrome emas)</li><li>Pastdagi (iPad\'da — yuqoridagi) <b>Ulashish □↑</b> tugmasi</li><li><b>«Bosh ekranga qo\'shish»</b> (Add to Home Screen) → <b>Qo\'shish</b></li><li>Bosh ekrandagi <b>Sahna Ovozi</b> belgisidan oching</li></ol>';}
+ else if(DEV.android){h+=can?'':'<ol class="inststeps"><li><b>Chrome</b>da <b>sahna-ovozi.pages.dev</b> ni oching</li><li>Yuqori o\'ngdagi <b>⋮</b> menyu</li><li><b>«Ilovani o\'rnatish»</b> yoki <b>«Bosh ekranga qo\'shish»</b></li><li>Bosh ekrandagi <b>Sahna Ovozi</b> belgisidan oching</li></ol>';}
+ else{h+=can?'':'<ol class="inststeps"><li><b>Chrome</b> yoki <b>Edge</b>da <b>sahna-ovozi.pages.dev</b> ni oching</li><li>Manzil satrining o\'ng tomonidagi <b>⊕ O\'rnatish</b> belgisi (yoki ⋮ → «Sahna Ovozi\'ni o\'rnatish»)</li></ol>';
+  h+='<div class="instpc"><div class="flabel">Yoki to\'liq kompyuter dasturi (ASIO / M-Audio, oflayn)</div><div class="frow"><a class="btn" href="'+REL+'/download/Sahna-Ovozi-Windows.zip" target="_blank" rel="noopener">💻 Windows (Setup.exe)</a><a class="btn" href="'+REL+'/download/Sahna-Ovozi-macOS.zip" target="_blank" rel="noopener">🍎 macOS</a></div></div>';}
+ h+='<div class="instdb"><div class="flabel">🗂 Ma\'lumotlar bazasi qayerda bo\'ladi</div>'+
+  (DEV.mobile?'<p class="hint">'+(DEV.ios?'iPad / iPhone':'Android')+' brauzeri ilovalarga <b>Documents</b> papkasiga to\'g\'ridan-to\'g\'ri yozishga ruxsat bermaydi (Apple / Google cheklovi). Shuning uchun baza ilovaning <b>doimiy xotirasida</b> turadi — o\'rnatilgandan keyin o\'chib ketmaydi. Zaxira: <b>💾 Saqlash</b> — <code>.sahna</code> fayl '+(DEV.ios?'<b>Fayllar → Yuklanmalar</b> ga tushadi; uni Fayllar ilovasida <b>«Mening iPad\'im» → Sahna Ovozi</b> papkasiga ko\'chirib qo\'ying':'<b>Yuklanmalar (Download)</b> papkasiga tushadi')+'. Davom ettirish — <b>📂 Ochish</b>.</p>'
+  :'<p class="hint">O\'rnatilgandan keyin <b>Documents</b> ichida <b>«Sahna Ovozi»</b> papkasi yaratiladi: <code>baza.json</code> (joriy holat), <code>ovozlar/</code> (barcha fayllar), <code>loyihalar/</code> (.sahna), <code>zaxira/</code> (har 10 daqiqada), <code>jurnal.txt</code>. Ilova har ochilganda shu papkadan davom etadi.</p>')+
+  '</div>';
+ const btns=[{label:'Yopish',fn:()=>{}}];
+ if(!DEV.mobile&&FSUP&&!IS_FRAME&&Store.mode!=='folder')btns.push({label:'🗂 Documents bazasini hozir yaratish',cls:'primary',fn:()=>{pickFolder().then(()=>{try{localStorage.setItem('sahnaOvozi.baseDone','1');}catch(e){}});}});
+ openModal('Ilova sifatida o\'rnatish',h,btns,{click:async(e,b)=>{if(b.dataset.inst==='go'&&installEvt){const ev=installEvt;installEvt=null;closeModal();ev.prompt();try{const r=await ev.userChoice;if(r&&r.outcome==='accepted'){try{localStorage.setItem('sahnaOvozi.needBase','1');}catch(_){}}}catch(_){}}}});
+}
+/* o'rnatilgandan keyin birinchi ochilishda — bazani shakllantirish */
+async function baseWizard(force){
+ if(NATIVE||IS_FRAME)return;let done=null;try{done=localStorage.getItem('sahnaOvozi.baseDone');}catch(e){}
+ if(!force&&(done||!(isStandalone()||localStorage.getItem('sahnaOvozi.needBase'))))return;
+ if(Store.mode==='folder'){try{localStorage.setItem('sahnaOvozi.baseDone','1');}catch(e){}return;}
+ const ok=await instPersist(),st=await instStore();
+ const mark=()=>{try{localStorage.setItem('sahnaOvozi.baseDone','1');localStorage.removeItem('sahnaOvozi.needBase');}catch(e){}};
+ if(!DEV.mobile&&FSUP){
+  openModal('🗂 Documents\'da ma\'lumotlar bazasi','<p class="hint" style="font-size:14px;color:var(--text)">Sahna Ovozi o\'rnatildi. Endi ishingiz kompyuterda saqlanib turishi uchun <b>Documents</b> ichida <b>«Sahna Ovozi»</b> papkasini yaratamiz.</p><ol class="inststeps"><li>Pastdagi tugmani bosing</li><li>Ochilgan oynada <b>Documents (Hujjatlar)</b> papkasini tanlang</li><li><b>«Tanlash»</b> va <b>«Ruxsat berish»</b> ni bosing</li></ol><p class="hint">Papka ichida: baza.json, ovozlar/, loyihalar/, zaxira/, jurnal.txt. Keyingi safar ilova shu papkadan davom etadi.</p>',
+   [{label:'Keyinroq',fn:()=>{}},{label:'🗂 Documents\'ni tanlash',cls:'primary',fn:()=>{pickFolder().then(mark);}}]);
+  return;}
+ mark();
+ openModal('🗂 Ma\'lumotlar bazasi tayyor','<p class="hint" style="font-size:14px;color:var(--text)">Sahna Ovozi '+(DEV.ios?(DEV.ipad?'iPad':'iPhone'):'qurilma')+'ga o\'rnatildi. Baza ilovaning doimiy xotirasida: '+(ok?'<b style="color:#5AC8B0">✓ doimiy saqlash yoqildi</b>':'<b style="color:var(--amber)">⚠ brauzer doimiy saqlashni tasdiqlamadi</b> — ishni vaqti-vaqti bilan 💾 Saqlash bilan faylga oling')+(st&&st.quota?' · band: '+instMb(st.used)+' / '+instMb(st.quota):'')+'.</p>'+
+  '<p class="hint">'+(DEV.ios?'Apple':'Google')+' qoidasiga ko\'ra brauzer ilovasi <b>Documents</b> papkasiga o\'zi yozolmaydi. Shuning uchun zaxira shunday: <b>💾 Saqlash</b> → '+(DEV.ios?'<b>Fayllar → Yuklanmalar</b> (Fayllar ilovasida «Mening iPad\'im → Sahna Ovozi» papkasiga ko\'chiring)':'<b>Yuklanmalar (Download)</b>')+'. Boshqa qurilmada yoki qayta o\'rnatgandan keyin — <b>📂 Ochish</b>.</p>',
+  [{label:'Tushunarli',fn:()=>{}},{label:'💾 Hozir zaxira saqlash',cls:'primary',fn:()=>{saveProject(false);}}]);
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#instHdr');if(!b)return;e.stopPropagation();installApp();},true);
+window.addEventListener('appinstalled',()=>{try{localStorage.setItem('sahnaOvozi.needBase','1');}catch(e){}instHdrUI();});
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
@@ -2647,8 +2702,8 @@ let installEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;});
 window.addEventListener('appinstalled',()=>{installEvt=null;toast('Sahna Ovozi ilova sifatida o\'rnatildi');renderInstall();});
 const isStandalone=()=>window.matchMedia&&(matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: window-controls-overlay)').matches)||navigator.standalone===true;
-function renderInstall(){const b=$('#installBtn');if(b&&b.style)b.style.display=(NATIVE||isStandalone())?'none':'';}
-async function installApp(){
+function renderInstall(){instHdrUI();const b=$('#installBtn');if(b&&b.style)b.style.display=(NATIVE||isStandalone())?'none':'';}
+async function installAppOld(){
  if(installEvt){installEvt.prompt();try{await installEvt.userChoice;}catch(e){}installEvt=null;return;}
  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&'ontouchend' in document),android=/Android/.test(ua);
  let how=IS_FRAME?'<p class="hint" style="font-size:14px;color:var(--text)">Bu sahifa Claude ichida ochilgan, bu yerdan o\'rnatib bo\'lmaydi. Chatdagi <b>ilova paketi</b>ni (sahna-ovozi-ilova.zip) internetga joylang va o\'sha manzildan o\'rnating — yo\'riqnoma paket ichida.</p>':'';
@@ -3137,7 +3192,7 @@ async function boot(){
   SP(3,'Loyihalar va profil',0.86);await loadProfile();await loadSettings();asUI();
   renderStrips();applyMix();renderAll();renderVoices();renderProj();renderInstall();updateDbBadge();
   SP(4,'Sahna oynasi',1);
-  $('#gate').remove();tabApply();$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
+  $('#gate').remove();tabApply();instHdrUI();if(isStandalone())instPersist();setTimeout(()=>baseWizard(),1500);$('#goBtn').focus({preventScroll:true});requestAnimationFrame(loop);updateBadge();
   setTimeout(()=>{if(ctx.state!=='running')runDiag(true);},600);
   LIC.init();
   logEvent('Ilova ochildi · '+(NATIVE?'o\'rnatilgan dastur v'+APP_VERSION:isStandalone()?'o\'rnatilgan ilova':'brauzer')+' · baza: '+(Store.mode==='folder'?'Documents/'+FS.root.name:'brauzer'));

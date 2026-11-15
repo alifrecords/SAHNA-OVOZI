@@ -3,6 +3,17 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.14.0: Barcha qurilmalarga o'rnatish va qurilmadagi baza
+
+| Qurilma | O'rnatish (sarlavhadagi ⬇ tugma) | Ma'lumotlar bazasi |
+|---|---|---|
+| Kompyuter (Chrome / Edge) | «⬇ Hozir o'rnatish» yoki manzil satridagi ⊕; yoki **Windows Setup.exe / macOS** dasturi (Release'dan) | Birinchi ochilishda **Documents/Sahna Ovozi** papkasi yaratiladi: baza.json, ovozlar/, loyihalar/, zaxira/, jurnal.txt |
+| Windows / macOS dasturi | Setup.exe | Documents/Sahna Ovozi o'zi (avvalgidek) |
+| iPad / iPhone (Safari) | Ulashish □↑ → «Bosh ekranga qo'shish» | Ilovaning doimiy xotirasi (Apple Documents'ga yozishga ruxsat bermaydi); zaxira — 💾 Saqlash → Fayllar → Yuklanmalar |
+| Android (Chrome) | «⬇ Hozir o'rnatish» yoki ⋮ → «Ilovani o'rnatish» | Ilovaning doimiy xotirasi; zaxira — 💾 Saqlash → Yuklanmalar (Download) |
+
+O'rnatilgan ilova ochilganda tugma yashirinadi; doimiy saqlash (persistent storage) so'raladi.
+
 ## 1.13.1: Cue ustiga 2 marta bosib ovozni almashtirish
 
 | Bo'lim | Nima qilindi |
