@@ -3,6 +3,13 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.13.1: Cue ustiga 2 marta bosib ovozni almashtirish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Sahnalar ketma-ketligi | Planshet / telefon rejimida cue ustiga **2 marta** bosish: musiqa, SFX va dublaj cue'larida — **📱 Qurilmadan musiqa / sample tanlash** yoki kutubxonadan (▶ bilan tinglab) tanlash; atmosfera cue'larida — qatlamlar muharriri (+ Fayldan qatlam, har qatlamni almashtirish) |
+| Loyiha paneli | Planshet / keng ekranda sarlavhaga, spektakl nomi yoniga ixcham tugmalar (🎵 💾 📤 📂) bo'lib joylashdi — pult tartibini buzmaydi; telefonda alohida ixcham qator |
+
 ## 1.13.0: Telefon va planshetda loyiha va fayllar
 
 | Tugma | Nima qiladi |
