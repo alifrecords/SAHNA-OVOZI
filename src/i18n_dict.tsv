@@ -929,3 +929,17 @@ so'ndirish	затухание	fade out
 Ekran o'chmaydi (spektakl paytida)	Экран не погаснет (во время спектакля)	Screen won't sleep (during the show)
 Bosing — ekranni yoniq ushlash. iPad: Sozlamalar → Ekran → Avto-qulf → Hech qachon	Нажмите — не гасить экран. iPad: Настройки → Экран → Автоблокировка → Никогда	Tap to keep the screen on. iPad: Settings → Display → Auto-Lock → Never
 Bu brauzer ekranni yoniq ushlay olmaydi — iPad Sozlamalar → Ekran → Avto-qulf → Hech qachon	Этот браузер не может держать экран включённым — iPad: Настройки → Экран → Автоблокировка → Никогда	This browser can't keep the screen on — iPad: Settings → Display → Auto-Lock → Never
+Loyiha va fayllar	Проект и файлы	Project and files
+● faylga saqlanmagan	● не сохранён в файл	● not saved to file
+✓ saqlangan	✓ сохранён	✓ saved
+Ish telefon xotirasida o'zi saqlanadi. Fayl — boshqa qurilma yoki odamga berish uchun.	Работа сохраняется в памяти телефона автоматически. Файл — чтобы передать на другое устройство или человеку.	Your work is saved on the phone automatically. The file is for moving to another device or person.
+🎵 Ovoz qo'shish	🎵 Добавить звук	🎵 Add sound
+💾 Saqlash	💾 Сохранить	💾 Save
+📤 Yuborish	📤 Отправить	📤 Send
+📂 Ochish	📂 Открыть	📂 Open
+⏳ Tayyorlanmoqda…	⏳ Подготовка…	⏳ Preparing…
+📤 Tayyor — yuborish	📤 Готово — отправить	📤 Ready — send
+Bu brauzerda «Ulashish» yo'q — fayl yuklab olinadi, uni Telegram orqali yuboring	В этом браузере нет «Поделиться» — файл будет скачан, отправьте его через Telegram	This browser has no Share — the file will be downloaded, send it via Telegram
+Bu brauzer fayl yuborishni qo'llamaydi — fayl yuklab olinadi, uni Telegram orqali yuboring	Этот браузер не умеет отправлять файлы — файл будет скачан, отправьте его через Telegram	This browser can't share files — the file will be downloaded, send it via Telegram
+📤 Tayyor — «Tayyor — yuborish» tugmasini yana bir bor bosing	📤 Готово — нажмите «Готово — отправить» ещё раз	📤 Ready — tap “Ready — send” once more
+Yuborish bekor qilindi	Отправка отменена	Sending cancelled

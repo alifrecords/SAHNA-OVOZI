@@ -263,6 +263,12 @@ body.tab .btn.sm{min-height:40px;padding:0 14px}
 body.tab input[type=range]{min-height:32px}
 body.tab .zoomc{display:none}
 body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.tabproj{display:none}
+body.tab .tabproj{display:flex;flex:1 1 100%;flex-direction:column;gap:10px;padding-top:12px;padding-bottom:12px}
+.mphead{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+.mpt{font-size:15px}.mpd{color:var(--amber);font-size:12px;font-weight:700}.mpok{color:#5AC8B0;font-size:12px;font-weight:700}.mpnote{font-size:11px}
+.mpbtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.mpbtns .btn{height:48px;font-size:14px;padding:0 8px}
+body.tab-phone .mpbtns{grid-template-columns:repeat(2,minmax(0,1fr))}
 /* telefon (eni < 600 px): ixcham pastki panel */
 body.tab.tab-phone{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 body.tab.tab-phone #tabBar{gap:6px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
@@ -473,6 +479,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
   </div>
 
   <div class="main">
+    <section class="panel tabproj" id="mpBox" aria-label="Loyiha va fayllar"></section>
     <section class="panel col-l" aria-label="Cue ro'yxati">
       <div class="between cuehead"><h2>Sahnalar ketma-ketligi</h2><div class="cfbox"><span class="cflbl">O'tish (fade) vaqti</span><div class="cfseg" id="cueFadeSeg" role="group" aria-label="Cue'lar o'tish vaqti"></div></div><span class="muted" style="font-size:12px" id="cueCount"></span></div>
       <div class="nmbar" id="nm_cue"></div>
@@ -614,6 +621,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="dirIn" webkitdirectory multiple class="sr" tabindex="-1" aria-hidden="true">
 <input type="file" id="fileIn" accept="audio/*" class="sr" tabindex="-1" aria-hidden="true">
+<input type="file" id="mpIn" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus" multiple class="sr" tabindex="-1" aria-hidden="true">
 
 <script>
 /*__I18N_JS__*/
@@ -1791,6 +1799,63 @@ document.addEventListener('click',e=>{
  t.classList.add('kflash');setTimeout(()=>t.classList.remove('kflash'),300);
 },true);
 
+/* ---------- TELEFON / PLANSHET: «Loyiha va fayllar» paneli ----------
+   🎵 qurilmadan ovoz qo'shish (bir nechta) · 💾 telefonga saqlash · 📤 boshqalarga yuborish (Ulashish) · 📂 qayta ochish */
+const MP={file:null,at:0,busy:false};
+function mpRender(){
+ const el=$('#mpBox');if(!el)return;
+ const ready=MP.file&&Date.now()-MP.at<120000;
+ el.innerHTML='<div class="mphead"><span class="mpt">📁 <b>'+esc(proj.name)+'</b>'+(proj.dirty?' <span class="mpd">● faylga saqlanmagan</span>':' <span class="mpok">✓ saqlangan</span>')+'</span><span class="muted mpnote">Ish telefon xotirasida o\'zi saqlanadi. Fayl — boshqa qurilma yoki odamga berish uchun.</span></div>'+
+ '<div class="mpbtns">'+
+  '<button type="button" class="btn" data-mp="add">🎵 Ovoz qo\'shish</button>'+
+  '<button type="button" class="btn" data-mp="save">💾 Saqlash</button>'+
+  '<button type="button" class="btn'+(ready?' primary':'')+'" data-mp="share"'+(MP.busy?' disabled':'')+'>'+(MP.busy?'⏳ Tayyorlanmoqda…':(ready?'📤 Tayyor — yuborish':'📤 Yuborish'))+'</button>'+
+  '<button type="button" class="btn" data-mp="open">📂 Ochish</button>'+
+ '</div>';
+}
+function mpName(){return (proj.name==='Nomsiz loyiha'?(show.title.replace(/[\[\]]/g,'').trim()||'Loyiha'):proj.name).replace(/[\\/:*?"<>|]/g,'-');}
+/* Android Chrome .zip ni Ulashish orqali bermaydi — shuning uchun navbat bilan: .sahna.zip → .sahna → .sahna.txt (ichi bir xil, «Ochish» uchalasini ham taniydi) */
+function mpFiles(blob,nm){return [new File([blob],nm+'.sahna.zip',{type:'application/zip'}),new File([blob],nm+'.sahna',{type:'application/octet-stream'}),new File([blob],nm+'.sahna.txt',{type:'text/plain'})];}
+async function mpShare(){
+ if(!ctx||MP.busy)return;
+ if(!(MP.file&&Date.now()-MP.at<120000)){
+  if(!navigator.share||!navigator.canShare){toast('Bu brauzerda «Ulashish» yo\'q — fayl yuklab olinadi, uni Telegram orqali yuboring');saveProject(false);return;}
+  MP.busy=true;mpRender();
+  let blob;try{blob=await buildProject();}catch(e){MP.busy=false;mpRender();toast('Loyihani tayyorlab bo\'lmadi: '+e.message);return;}
+  const nm=mpName(),f=mpFiles(blob,nm).find(x=>{try{return navigator.canShare({files:[x]});}catch(e){return false;}});
+  MP.busy=false;
+  if(!f){mpRender();toast('Bu brauzer fayl yuborishni qo\'llamaydi — fayl yuklab olinadi, uni Telegram orqali yuboring');saveProject(false);return;}
+  MP.file=f;MP.at=Date.now();mpRender();
+ }
+ const f=MP.file;
+ try{await navigator.share({files:[f],title:'Sahna Ovozi · '+mpName(),text:'Sahna Ovozi loyihasi: '+mpName()+'. Ochish: sahna-ovozi.pages.dev → 📂 Ochish'});
+  MP.file=null;mpRender();toast('Yuborildi: '+f.name);logEvent('Loyiha yuborildi: '+f.name);}
+ catch(e){
+  if(e&&e.name==='NotAllowedError'){toast('📤 Tayyor — «Tayyor — yuborish» tugmasini yana bir bor bosing');return;}
+  if(e&&e.name==='AbortError'){toast('Yuborish bekor qilindi');return;}
+  toast('Yuborib bo\'lmadi: '+(e&&e.message||e)+' — 💾 Saqlash bilan faylni olib, Telegram orqali yuboring');
+ }
+}
+async function mpAddFiles(files){
+ if(!ctx){toast('Avval ovozni yoqing');return;}
+ const L=[...files];if(!L.length)return;let ok=0,first=null;
+ toast('Qo\'shilmoqda: '+L.length+' ta fayl…');
+ for(const f of L){const id=await addUserAsset(f,null,'Telefondan',true);if(id){ok++;if(!first)first=id;logEvent('Fayl qo\'shildi: '+titleOf(id)+' ('+f.name+')');}}
+ if(ok)markDirty();renderLib();renderPads();
+ // tanlangan SFX tugma bo'sh bo'lsa — birinchi faylni o'shanga qo'yamiz
+ const p=sbCur();if(first&&!p&&!sfxLocked()){setPadAsset(selPad,first,false);}
+ toast(ok?ok+' ta ovoz qo\'shildi (guruh: Telefondan). SFX tugmasini tanlab, pastdagi ◀ ▶ bilan qo\'ying yoki tugmadagi ↑ ni bosing':'Fayllarni o\'qib bo\'lmadi — MP3, WAV yoki M4A sinab ko\'ring');
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest&&e.target.closest('[data-mp]');if(!b)return;e.stopPropagation();
+ const k=b.dataset.mp;
+ if(k==='add'){const i=$('#mpIn');i.value='';i.click();}
+ else if(k==='save')saveProject(false);
+ else if(k==='share')mpShare();
+ else if(k==='open')openProject();
+},true);
+document.addEventListener('change',e=>{if(e.target.id==='mpIn')mpAddFiles(e.target.files);});
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
@@ -2384,6 +2449,7 @@ function renderProj(){
  asUI();
  const b=$('#projBtn');if(b)b.innerHTML='<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg><span class="pname">'+esc(proj.name)+'</span>'+(proj.dirty?'<span class="pdirty" title="Saqlanmagan o\'zgarishlar">●</span>':'');
  document.title=(proj.dirty?'● ':'')+proj.name+' — Sahna Ovozi';
+ mpRender();
 }
 function storeMix(k){show.mix[k]={v:buses[k].val,m:buses[k].muted};saveShow();}
 function applyMix(){
@@ -2402,6 +2468,8 @@ function usedAssets(){
  // tugmalarda ishlatilgan guruhlarning barcha sample'lari ham (boshqa kompyuterda ◀ ▶ bilan almashtirish uchun)
  const groups=new Set([...ids].map(id=>META[id]&&META[id].kind==='user'&&META[id].group).filter(Boolean));
  for(const id in META)if(META[id].kind==='user'&&groups.has(META[id].group))ids.add(id);
+ // telefondan qo'shilgan ovozlar hali tugmaga qo'yilmagan bo'lsa ham loyihaga kiradi
+ for(const id in META)if(META[id].kind==='user'&&META[id].group==='Telefondan')ids.add(id);
  return [...ids].filter(id=>META[id]&&(META[id].kind==='user'||overrides[id]));
 }
 async function buildProject(){
@@ -2430,7 +2498,7 @@ async function loadProjectBuffer(ab,name,handle){
   show=normShow(head.show);bank=0;cur=-1;next=0;scene=null;restorePos();
   const s=JSON.stringify(show);try{localStorage.setItem('sahnaOvozi.show',s);}catch(e){}Store.put('__show',s);
   applyMix();renderAll();
-  proj.name=(name||head.name||'Loyiha').replace(/(\.sahna)?(\.zip)?$/i,'');proj.handle=handle||null;proj.dirty=false;renderProj();storeProj();
+  proj.name=(name||head.name||'Loyiha').replace(/(\.sahna)?(\.zip|\.txt)?$/i,'');proj.handle=handle||null;proj.dirty=false;renderProj();storeProj();
   logEvent('Loyiha ochildi: '+proj.name);toast('Ochildi: '+proj.name+' · '+head.assets.length+' ta o\'z fayli'+(bad?' ('+bad+' tasi o\'qilmadi)':''));
  }finally{projLoading=false;}
 }
@@ -2467,11 +2535,11 @@ async function saveProject(as,opt){
 }
 async function openProject(){
  if(!ctx)return;
- if(IS_FRAME){pickFile(f=>openFile(f,null),'.sahna,.zip,application/zip');return;}
+ if(IS_FRAME){pickFile(f=>openFile(f,null),'.sahna,.zip,.txt,application/zip,application/octet-stream,text/plain');return;}
  if('showOpenFilePicker' in window){
   try{const [h]=await window.showOpenFilePicker({...(Store.mode==='folder'?{startIn:FS.dirs.loyihalar}:{}),types:FT,multiple:false});await openFile(await h.getFile(),h);addRecent(h);}catch(e){if(e&&e.name!=='AbortError')toast('Ochib bo\'lmadi: '+e.message);}
   return;}
- pickFile(f=>openFile(f,null),'.sahna,.zip,application/zip');
+ pickFile(f=>openFile(f,null),'.sahna,.zip,.txt,application/zip,application/octet-stream,text/plain');
 }
 async function openFile(f,h){try{await loadProjectBuffer(await f.arrayBuffer(),f.name,h);}catch(e){toast(e.message||'Faylni ochib bo\'lmadi');}}
 async function openRecent(i){const all=await DB.all();const r=(all.__recent||[])[i];if(!r)return;

@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.13.0: Telefon va planshetda loyiha va fayllar
+
+| Tugma | Nima qiladi |
+|---|---|
+| 🎵 Ovoz qo'shish | Telefon xotirasidan bir yo'la bir nechta musiqa / ovoz (MP3, WAV, M4A, AAC, OGG, FLAC). «Telefondan» guruhiga tushadi; tanlangan SFX tugma bo'sh bo'lsa, birinchisi o'shanga qo'yiladi |
+| 💾 Saqlash | Butun pult (cue'lar, SFX, atmosferalar, mikser, barcha ovoz fayllari) bitta `.sahna` faylga — telefonning «Yuklanmalar» papkasiga |
+| 📤 Yuborish | Telefonning «Ulashish» oynasi orqali Telegram, WhatsApp, e-pochta va h.k.ga. Android `.zip` ni qabul qilmasa — `.sahna.txt` nomi bilan (ichi o'sha loyiha) |
+| 📂 Ochish | `.sahna`, `.sahna.zip` yoki `.sahna.txt` faylni ochib, ishni davom ettirish (o'z telefonida ham, boshqa telefon / kompyuterda ham) |
+| Avto | Ish telefon xotirasida o'zi saqlanadi; telefondan qo'shilgan ovozlar tugmaga qo'yilmagan bo'lsa ham loyiha fayliga kiradi |
+
 ## 1.12.2: Android va iPhone telefonlar
 
 | Bo'lim | Nima qilindi |
