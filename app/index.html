@@ -271,10 +271,11 @@ body.tab input[type=range]{min-height:32px}
 body.tab .zoomc{display:none}
 body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 /* gorizontal: cue ro'yxati chapda yopishgan, o'z ichida suriladi */
-body.tab.tab-land .col-l{flex:0 0 280px;position:sticky;top:10px;align-self:flex-start;max-height:calc(100vh - 124px);max-height:calc(100dvh - 124px);overflow:auto;overscroll-behavior:contain}
+body.tab.tab-land .col-l{flex:0 0 280px;position:sticky;top:10px;align-self:flex-start;max-height:calc(100vh - 124px);max-height:calc(var(--tabvh,100dvh) - 124px);overflow:auto;overscroll-behavior:contain}
 body.tab.tab-land .col-c{flex:1 1 0}
 body.tab.tab-land .col-r{flex:1 1 100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));align-items:start}
-@media (min-width:1300px){body.tab.tab-land .main{flex-wrap:nowrap}body.tab.tab-land .col-r{flex:0 0 320px;display:flex}body.tab.tab-land .col-l{flex-basis:260px}}
+@media (min-width:1300px){body.tab.tab-land .main{flex-wrap:nowrap}body.tab.tab-land .col-r{flex:0 0 320px;display:flex}body.tab.tab-land .col-l{flex-basis:300px}}@media (min-width:1700px){body.tab.tab-land .col-l{flex-basis:340px}body.tab.tab-land .col-r{flex-basis:360px}}
+body.tab .col-l,body.tab #cues{scrollbar-width:thin;scrollbar-color:#3A4458 transparent}body.tab .col-l::-webkit-scrollbar,body.tab #cues::-webkit-scrollbar{width:6px}body.tab .col-l::-webkit-scrollbar-track,body.tab #cues::-webkit-scrollbar-track{background:transparent}body.tab .col-l::-webkit-scrollbar-thumb,body.tab #cues::-webkit-scrollbar-thumb{background:#3A4458;border-radius:6px}
 /* vertikal: hammasi bir ustunda, cue ro'yxati o'z ichida suriladi */
 body.tab.tab-port .col-l,body.tab.tab-port .col-c,body.tab.tab-port .col-r{flex:1 1 100%}
 body.tab.tab-port #cues{max-height:40vh;max-height:40dvh;overflow:auto;overscroll-behavior:contain;padding-right:2px}
@@ -1886,7 +1887,7 @@ function tabApply(){
  const bar=$('#tabBar');if(bar)bar.hidden=!on;
  tabOrient();tabGoSync();if(on)tabWake();else tabWakeOff();
 }
-function tabOrient(){const p=innerHeight>innerWidth;document.body.classList.toggle('tab-port',p);document.body.classList.toggle('tab-land',!p);}
+function tabOrient(){const z=(typeof uiZoom==='number'&&uiZoom>0)?uiZoom:1;document.documentElement.style.setProperty('--tabvh',(innerHeight/z)+'px');const p=innerHeight>innerWidth;document.body.classList.toggle('tab-port',p);document.body.classList.toggle('tab-land',!p);}
 function tabGoSync(){const s=$('#tbGoNext'),g=$('#goNext');if(s&&g)s.textContent=g.textContent.replace(/ · Probel$/,'').replace(/ · Space$/,'').replace(/ · Пробел$/,'');}
 /* ekran o'chib qolmasin — iOS/Android'da ekran o'chsa ovoz ham to'xtaydi */
 async function tabWake(){
@@ -1993,7 +1994,7 @@ document.addEventListener('drop',e=>{if(dragCue==null)return;e.preventDefault();
 document.addEventListener('dragend',dragEnd);
 /* --- butun oyna masshtabi (zoom) --- */
 const ZOOMS=[.5,.67,.75,.8,.9,1,1.1,1.25,1.5,1.75,2];let uiZoom=1;
-function setZoom(z,quiet){uiZoom=Math.max(.5,Math.min(2,Math.round(z*100)/100));document.body.style.zoom=uiZoom;const v=$('#zoomV');if(v)v.textContent=Math.round(uiZoom*100)+'%';try{localStorage.setItem('sahnaOvozi.zoom',uiZoom);}catch(e){}if(!quiet)toast('Masshtab: '+Math.round(uiZoom*100)+'%');}
+function setZoom(z,quiet){uiZoom=Math.max(.5,Math.min(2,Math.round(z*100)/100));document.body.style.zoom=uiZoom;const v=$('#zoomV');if(v)v.textContent=Math.round(uiZoom*100)+'%';try{localStorage.setItem('sahnaOvozi.zoom',uiZoom);}catch(e){}if(!quiet)toast('Masshtab: '+Math.round(uiZoom*100)+'%');if(typeof tabOrient==='function')tabOrient();}
 function zoomStep(d){if(!d){setZoom(1);return;}if(d>0){const z=ZOOMS.find(z=>z>uiZoom+0.001);setZoom(z||2);}else{const z=[...ZOOMS].reverse().find(z=>z<uiZoom-0.001);setZoom(z||.5);}}
 function zoomFit(){setZoom(Math.min(window.innerWidth*uiZoom/1480,window.innerHeight*uiZoom/960));}
 function zoomMenu(){openModal('Masshtab','<div class="zgrid">'+ZOOMS.map(z=>'<button type="button" class="btn'+(Math.abs(z-uiZoom)<.005?' on':'')+'" data-zset="'+z+'">'+Math.round(z*100)+'%</button>').join('')+'</div><div class="frow"><button type="button" class="btn primary" id="zFit">Ekranga moslash</button></div><p class="hint">Ctrl + g\'ildirak — ravon masshtab · Ctrl + = / Ctrl + − / Ctrl + 0 — kattalashtirish / kichraytirish / 100%</p>',[{label:'Yopish',fn:()=>{}}],{click:(e,b)=>{if(b.dataset.zset){setZoom(+b.dataset.zset);closeModal();}else if(b.id==='zFit'){zoomFit();closeModal();}}});}

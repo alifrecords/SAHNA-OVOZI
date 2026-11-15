@@ -3,6 +3,14 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.12.1: Planshet rejimi — keng ekran va masshtab
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Cue ustuni | Keng ekranda kengroq (300–340 px), nomlar uch qatorga bo'linmaydi |
+| Scrollbar | Oq o'rniga ingichka to'q rangli |
+| Masshtab | Oyna kichraytirilganda (masalan 75%) cue ustuni ekran balandligigacha to'g'ri cho'ziladi |
+
 ## 1.12.0: iPad va planshet rejimi
 
 | Bo'lim | Nima qilindi |
