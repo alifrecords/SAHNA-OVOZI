@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.17.2: Videolar papkasi va yozuvni video bilan eshitish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| 📁 Papka | Papkani ochish (yoki sudrab tashlash) — ichidagi barcha videolar ro'yxat bo'ladi; 📂 bilan bir nechta video tanlansa ham ro'yxat |
+| ⏮ ⏭ | Ro'yxatda — oldingi / keyingi video (⏮ video boshida bosilsa — oldingisi); ro'yxatdan tanlash ham mumkin |
+| Belgilar | Har bir videoning belgilari o'ziga saqlanadi; take'lar ro'yxatida shu videoniki ko'rinadi |
+| 🎧 Video bilan eshitish | Video ▶ bosilganda tanlangan take ham o'sha joydan sinxron chaladi; pauza, o'tkazish, loop, tezlikka ergashadi; chiqish kechikishi qoplanadi; yozuvga tushmaydi (ustidan yangi take yozish mumkin) |
+
 ## 1.17.1: Video loop tuzatildi
 
 | Bo'lim | Nima qilindi |
