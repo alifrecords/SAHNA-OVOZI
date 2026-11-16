@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.18.1: Ctrl + Shift + Num ± — SFX fader
+
+| Tugmalar | Nima qiladi |
+|---|---|
+| **Ctrl + Shift + Num + / −** | Mikserdagi **SFX** fader ±1.5 dB (yangi) |
+| Ctrl + Num + / − | Master fader ±1.5 dB |
+| Shift + Num + / − | Tanlangan SFX tugmaning darajasi ±1 dB |
+| Num + / − | Tanlangan cue darajasi |
+
 ## 1.18.0: 🎛 Dublaj plaginlari
 
 Dublaj paneliga **🎛 Plaginlar** tugmasi qo'shildi (obraz presetlari o'zgarmadi). Zanjir: mikrofon / dublaj fayli → obraz preseti → **plaginlar** → AZ VERB → Dublaj fader.

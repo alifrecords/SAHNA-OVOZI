@@ -95,7 +95,7 @@ input[type=range]{width:100%;accent-color:var(--teal);height:24px;margin:0}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 
 .strips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-.strip{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 4px}
+.strip.kflash{box-shadow:0 0 0 2px #F2A93B;border-radius:10px}.strip{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 4px}
 .mfad{display:flex;gap:6px;align-items:flex-end;height:150px}
 .meter{width:7px;height:150px;background:var(--line);border-radius:3px;position:relative;overflow:hidden}
 .meter i{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:3px}
@@ -693,7 +693,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <h1>Jonli sahna ovoz pulti</h1>
     <p>16 ta SFX, 3 ta qatlamli atmosfera, 2 ta musiqa va dublaj effektlari yuklangan. Brauzer ovozni faqat bosishdan keyin yoqadi — quyidagi tugmani bosing. <b style="color:var(--text)">✎ Tahrirlash</b> rejimida cue, SFX bank va atmosferalarni o'zingizga moslang — hammasi shu brauzerda saqlanadi.</p>
     <p><b style="color:var(--text)">Loyiha:</b> Ctrl+S — saqlash · Ctrl+Shift+S — boshqacha saqlash · Ctrl+O — ochish</p>
-    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · End — musiqani so'ndirish · Home — tanlangan tugmada pauza · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab</p>
+    <p><b style="color:var(--text)">Klaviatura:</b> Probel — GO · Esc — hammasini to'xtatish · 1–8, Q W E R, A S D F — SFX · ← → — tanlangan tugmada sample almashtirish · [ ] — bank · ↑ ↓ — cue tanlash · Num + / Num − — tanlangan cue darajasi · Ctrl + Num ± — Master · Ctrl + Shift + Num ± — SFX fader · Shift + Num ± — tanlangan SFX tugma · End — musiqani so'ndirish · Home — tanlangan tugmada pauza · Num * — atmosferani so'ndirish · Num 0 — sahnani so'ndirish · Ctrl + g'ildirak — masshtab</p>
     <button id="start" type="button">Ovozni yoqish va boshlash</button>
     <span class="muted" style="font-size:12px" id="gateMsg"></span>
   </div>
@@ -2920,11 +2920,13 @@ function cueGainStep(d){
  c.g=Math.max(-30,Math.min(12,(c.g||0)+d));if(!c.g)delete c.g;applyCueGain(c);saveShow();renderCues();
  toast('Q'+(i+1)+' · '+c.name+': '+dbStr(c.g||0)+(voices.some(v=>v.cue===c&&!v.stopping)?' (jonli)':''));
 }
-function masterStep(d){
- const b=buses.master;b.val=Math.max(0,Math.min(100,b.val+d*2));applyFader('master');
- const f=document.querySelector('.vfader[data-bus="master"]');if(f)f.value=b.val;const l=$('#db_master');if(l)l.textContent=faderDb(b.val);
- storeMix('master');toast('Master: '+faderDb(b.val)+' dB');
+function busStep(k,d,name){
+ const b=buses[k];if(!b)return;b.val=Math.max(0,Math.min(100,b.val+d*2));applyFader(k);
+ const f=document.querySelector('.vfader[data-bus="'+k+'"]');if(f)f.value=b.val;const l=$('#db_'+k);if(l)l.textContent=faderDb(b.val);
+ const st=f&&f.closest('.strip');if(st){st.classList.add('kflash');clearTimeout(st._kf);st._kf=setTimeout(()=>st.classList.remove('kflash'),300);}
+ storeMix(k);toast((name||k)+': '+faderDb(b.val)+' dB'+(b.muted?' (M — o\'chiq)':''));
 }
+function masterStep(d){busStep('master',d,'Master');}
 function moveCueTo(from,to){
  const a=show.cues;if(from<0||from>=a.length)return;if(to>from)to--;if(to===from)return;
  const co=a[cur],no=a[next];const [x]=a.splice(from,1);a.splice(Math.max(0,Math.min(to,a.length)),0,x);
@@ -4049,7 +4051,7 @@ const typing=t=>t&&(t.tagName==='TEXTAREA'||t.tagName==='SELECT'||(t.tagName==='
 document.addEventListener('keydown',e=>{
  if(LIC.locked()&&$('#hub').hidden&&!modalOpen()&&!typing(e.target)){if(!/^(F\d+|Tab)$/.test(e.key)&&!(e.ctrlKey||e.metaKey)){e.preventDefault();return;}}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&(e.code==='KeyS'||e.code==='KeyO')){e.preventDefault();if(!ctx){toast('Avval ovozni yoqing');return;}if(modalOpen())closeModal();if(e.code==='KeyS')saveProject(e.shiftKey);else guardDirty(openProject);return;}
- if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
+ if(ctx&&(e.code==='NumpadAdd'||e.code==='NumpadSubtract')&&!e.altKey&&!modalOpen()&&$('#hub').hidden&&!typing(e.target)){e.preventDefault();const d=e.code==='NumpadAdd'?1:-1;if((e.ctrlKey||e.metaKey)&&e.shiftKey)busStep('sfx',d,'SFX fader');else if(e.ctrlKey||e.metaKey)masterStep(d);else if(e.shiftKey)padGainStep(d);else cueGainStep(d);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&!e.altKey&&!e.shiftKey&&(e.code==='Equal'||e.code==='Minus'||e.code==='Digit0')){e.preventDefault();zoomStep(e.code==='Equal'?1:e.code==='Minus'?-1:0);return;}
  if(!NATIVE&&(e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&e.code==='KeyD'&&ctx&&!typing(e.target)){e.preventDefault();if(modalOpen())closeModal();audioDevMenu();return;}
  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&!e.altKey&&e.code==='KeyA'&&ctx&&!typing(e.target)){e.preventDefault();asToggle();return;}
