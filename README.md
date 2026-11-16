@@ -3,6 +3,25 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.18.0: 🎛 Dublaj plaginlari
+
+Dublaj paneliga **🎛 Plaginlar** tugmasi qo'shildi (obraz presetlari o'zgarmadi). Zanjir: mikrofon / dublaj fayli → obraz preseti → **plaginlar** → AZ VERB → Dublaj fader.
+
+| Plagin | Parametrlar |
+|---|---|
+| 🔇 Shovqin darvozasi | ostona, qo'yib yuborish |
+| 🎤 Ton (pitch) | ±12 yarim ton, aralash |
+| 🎛 Filtr | HP 20–1500 Hz, LP 1–20 kHz, 12/24/36/48 dB/okt |
+| 📊 Ekvalayzer | bas 120 Hz, loyqalik 400 Hz, aniqlik 3 kHz, havo 10 kHz (±12 dB) |
+| 🐍 De-esser | chastota 3–10 kHz, ostona (Linkwitz–Riley ajratish) |
+| 🗜 Kompressor | ostona, nisbat, hujum, qo'yib yuborish, kuchaytirish |
+| 🔥 Saturatsiya | drive, lampa / lenta / qattiq, aralash |
+| 📞 Telefon / Radio | eski telefon, mobil (GSM), racija, radio AM, megafon, domofon · polosa, buzilish, kodek, liniya shovqini |
+| 🤖 Robot / Ring | chastota, aralash |
+| 🔁 Aks-sado | vaqt, qaytish, ton, aralash |
+
+Tayyor presetlar: Toza, Eski telefon, Mobil, Racija, Radio AM, Megafon, Domofon, Robot, Diktor (studiya), Uzoqdan, Ichki ovoz + o'z presetlaringizni saqlash. Kirish / chiqish o'lchagichi, GR, A/B chetlab o'tish. Sozlamalar spektakl bilan (.sahna) saqlanadi.
+
 ## 1.17.2: Videolar papkasi va yozuvni video bilan eshitish
 
 | Bo'lim | Nima qilindi |

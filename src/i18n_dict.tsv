@@ -1030,3 +1030,70 @@ Loop o'chirildi	Повтор выключен	Loop off
 ⟲ Loop: butun video takrorlanadi (oraliq uchun I va O ni belgilang)	⟲ Повтор: всё видео (для отрезка отметьте I и O)	⟲ Loop: whole video (set I and O for a range)
 🎧 Video bilan eshitish	🎧 Слушать с видео	🎧 Play with video
 Bu yerda video fayl topilmadi	Здесь нет видеофайлов	No video files found here
+🎛 Plaginlar	🎛 Плагины	🎛 Plug-ins
+🎛 Dublaj plaginlari	🎛 Плагины дубляжа	🎛 Dubbing plug-ins
+plaginlar o'chiq	плагины выключены	plug-ins off
+Shovqin darvozasi	Шумовой гейт	Noise gate
+Ton (pitch)	Тон (pitch)	Pitch
+Filtr	Фильтр	Filter
+Ekvalayzer	Эквалайзер	Equalizer
+Kompressor	Компрессор	Compressor
+Saturatsiya	Сатурация	Saturation
+Telefon / Radio	Телефон / Радио	Phone / Radio
+Robot / Ring	Робот / Ring	Robot / Ring
+Aks-sado (Delay)	Эхо (Delay)	Echo (Delay)
+Jimlikda mikrofon shovqinini yopadi	Закрывает шум микрофона в паузах	Closes mic noise in silence
+Ovozni yarim tonlarda ko'taradi / tushiradi	Повышает / понижает голос по полутонам	Raises / lowers the voice in semitones
+Past va yuqori chastotalarni kesish	Срез низких и высоких частот	Cut lows and highs
+4 polosali tembr	4-полосный тембр	4-band tone
+«S», «Sh» shipillashini yumshatadi	Смягчает свист «С», «Ш»	Softens “S”, “Sh” sibilance
+Ovoz balandligini tekislaydi	Выравнивает громкость	Evens out loudness
+Iliq lampa / lenta yoki qattiq buzilish	Тёплая лампа / лента или жёсткий перегруз	Warm tube / tape or hard clipping
+Tor polosa, kodek, buzilish va liniya shovqini	Узкая полоса, кодек, искажение и шум линии	Narrow band, codec, distortion and line noise
+Metall, robot ovozi	Металлический, роботизированный голос	Metallic robot voice
+Takrorlanuvchi aks-sado	Повторяющееся эхо	Repeating echo
+Ostona	Порог	Threshold
+Qo'yib yuborish	Восстановление	Release
+Yarim ton	Полутон	Semitone
+Aralash	Микс	Mix
+Past kesish (HP)	Срез низов (HP)	Low cut (HP)
+Yuqori kesish (LP)	Срез верхов (LP)	High cut (LP)
+Keskinlik	Крутизна	Slope
+Chastota	Частота	Frequency
+Nisbat	Соотношение	Ratio
+Hujum	Атака	Attack
+Kuchaytirish	Усиление	Makeup
+Tur	Тип	Type
+Rejim	Режим	Mode
+Polosa	Полоса	Bandwidth
+Buzilish	Искажение	Distortion
+Kodek	Кодек	Codec
+Liniya shovqini	Шум линии	Line noise
+Vaqt	Время	Time
+Qaytish	Обратная связь	Feedback
+Ton	Тон	Tone
+Lampa	Лампа	Tube
+Lenta	Лента	Tape
+Qattiq	Жёсткий	Hard
+Eski telefon	Старый телефон	Old phone
+Mobil (GSM)	Мобильный (GSM)	Mobile (GSM)
+Racija	Рация	Walkie-talkie
+Radio AM	Радио AM	AM radio
+Megafon	Мегафон	Megaphone
+Domofon	Домофон	Intercom
+⏻ Toza	⏻ Чисто	⏻ Clean
+📞 Eski telefon	📞 Старый телефон	📞 Old phone
+📱 Mobil	📱 Мобильный	📱 Mobile
+📻 Racija	📻 Рация	📻 Walkie-talkie
+📻 Radio AM	📻 Радио AM	📻 AM radio
+📢 Megafon	📢 Мегафон	📢 Megaphone
+🔔 Domofon	🔔 Домофон	🔔 Intercom
+🤖 Robot	🤖 Робот	🤖 Robot
+🎙 Diktor (studiya)	🎙 Диктор (студия)	🎙 Announcer (studio)
+🌫 Uzoqdan	🌫 Издалека	🌫 From afar
+💭 Ichki ovoz	💭 Внутренний голос	💭 Inner voice
+💾 Presetni saqlash	💾 Сохранить пресет	💾 Save preset
+Kirish	Вход	Input
+Chiqish	Выход	Output
+A/B · chetlab o'tish	A/B · обход	A/B · bypass
+⏻ Chetlab o'tilgan	⏻ Обход включён	⏻ Bypassed

@@ -289,6 +289,29 @@ body.tab-phone #chatBox{left:8px;right:8px;width:auto;bottom:calc(80px + env(saf
 .chf{padding:8px;border-top:1px solid #2A3140;display:flex;flex-direction:column;gap:6px}.chrow{display:flex;gap:6px}.chrow textarea{flex:1;resize:none;min-height:44px;height:44px;font-family:inherit}.chrow .btn{width:50px;font-size:18px}
 .lcfb{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;flex-direction:column;gap:6px}.lcfbr{display:flex;gap:8px}.lcfbr .inp{flex:1}
 #vidBtn{display:inline-flex;align-items:center;gap:6px}#vidBtn.on{border-color:#2F6B5F!important;color:#5AC8B0}#vidBtn.rec{border-color:#E5484D!important;color:#fff;background:#7A1F23;animation:chpulse 1.1s infinite}
+.plg-modal{width:min(1080px,96vw)!important;max-width:96vw!important}
+#mBody.plg-wide{max-height:74vh;overflow:auto}
+.plg-top{display:flex;flex-direction:column;gap:8px;position:sticky;top:0;background:var(--panel,#14171D);z-index:2;padding-bottom:8px}
+.plg-pre{display:flex;flex-wrap:wrap;gap:6px}
+.plg-pb{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line2,#2A3140);background:var(--bg,#101318);color:var(--text);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.plg-pb.on{border-color:var(--amber);color:var(--amber);background:rgba(242,169,59,.1)}.plg-pb.sv{border-style:dashed;color:var(--muted)}.plg-pb b{opacity:.55;padding:0 2px}.plg-pb b:hover{opacity:1;color:#ff8a8d}
+.plg-sv{display:inline-flex;gap:6px;align-items:center}.plg-sv .inp{width:260px}
+.plg-mtr{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.plg-mtr i{flex:1;height:8px;border-radius:3px;background:#1d222b;overflow:hidden;position:relative;max-width:220px}.plg-mtr i b{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e 0 70%,#eab308 70% 88%,#ef4444 88%)}
+.plg-gr{min-width:78px;color:#F2A93B;font-family:ui-monospace,monospace}
+.plg-rack{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.plg{border:1px solid var(--line2,#2A3140);border-radius:12px;padding:10px;background:rgba(255,255,255,.015);opacity:.62;transition:opacity .15s,border-color .15s}
+.plg.on{opacity:1;border-color:#2F6B5F;background:rgba(90,200,176,.05)}
+.plg-h{display:flex;gap:9px;align-items:center;margin-bottom:6px}.plg-h b{font-size:13.5px}.plg-h small{display:block;color:var(--muted);font-size:11px}
+.plg-ic{font-size:20px}
+.plg-pw{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2,#2A3140);background:var(--bg);color:var(--muted);font-size:14px;cursor:pointer;flex:none}
+.plg.on .plg-pw{background:#5AC8B0;color:#062a23;border-color:#5AC8B0;box-shadow:0 0 10px rgba(90,200,176,.45)}
+.plg-ps{display:flex;flex-direction:column;gap:4px}
+.plg-p{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:8px;font-size:12px;color:#B8C0CE}
+.plg-p input[type=range]{width:100%;accent-color:#5AC8B0}.plg-p em{font-style:normal;text-align:right;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--text)}
+.plg-p select{grid-column:2/4}
+.plgrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+#plugBtn{display:inline-flex;align-items:center;gap:6px}#plugBtn.on{border-color:#2F6B5F;color:#5AC8B0}#plugBtn .plgn{min-width:16px;height:16px;border-radius:8px;background:#5AC8B0;color:#062a23;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}#plugBtn .plgn:empty{display:none}
+#plugChips{display:flex;flex-wrap:wrap;gap:4px;flex:1;min-width:0}.plgc{font-size:10.5px;padding:2px 7px;border-radius:999px;background:rgba(90,200,176,.1);color:#5AC8B0;border:1px solid #2F6B5F;white-space:nowrap}.plgc.off{color:#F2A93B;border-color:#6b4f1f;background:rgba(242,169,59,.1)}
 .tabproj{display:none}
 body.tab .tabproj{display:flex;align-items:center;gap:8px}
 .mpt{font-size:13px;white-space:nowrap}.mpd{color:var(--amber);font-weight:800}.mpok{color:#5AC8B0;font-weight:800}
@@ -587,6 +610,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
       <section class="panel" aria-label="Dublaj" style="display:flex;flex-direction:column;gap:12px">
         <div class="between"><h2>Dublaj · obraz ovozi</h2><span style="font-size:11px;font-weight:700;color:var(--rose);letter-spacing:.08em" id="dubState">FAYL YO'Q</span></div>
         <div class="presets" id="presets"></div>
+        <div class="plgrow"><button type="button" class="btn sm" id="plugBtn" title="Dublaj plaginlari: filtr, telefon / radio, EQ, kompressor, de-esser, pitch, robot, aks-sado…">🎛 Plaginlar <span class="plgn"></span></button><div id="plugChips"></div></div>
         <div class="row" id="amtRow">
           <label for="amt" class="muted" style="font-size:12px;width:96px">Effekt miqdori</label>
           <input type="range" id="amt" min="0" max="100" value="60" style="accent-color:var(--rose)">
@@ -961,7 +985,7 @@ function initAudio(){
  const sp=ctx.createChannelSplitter(2);limiter.connect(sp);sp.connect(buses.master.aL,0);sp.connect(buses.master.aR,1);limiter.connect(ctx.destination);
  for(const n of ['atmos','sfx','music','dub'])buses[n]=makeBus(n);
  for(const n of ['atmos','sfx','music'])buses[n].input.connect(buses[n].fader);
- dub.in=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.verbIns=makeVerb(dub.out,buses.dub.fader,null);buildDubFx();
+ dub.in=ctx.createGain();dub.pre=ctx.createGain();dub.out=ctx.createGain();buses.dub.input.connect(dub.in);dub.verbIns=makeVerb(dub.out,buses.dub.fader,null);buildDubFx();PLUG.meter=null;PLUG.live=[];plugBuild();
  for(const n in buses)applyFader(n);
  ctx.onstatechange=()=>updateBadge();
  if(AUD.out&&AUD.engine!=='asio')audApplyOut(true);if(AUD.mon)audApplyMon();
@@ -987,7 +1011,7 @@ function buildDubFx(){
  dub.nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(e){}try{n.disconnect();}catch(e){}});dub.nodes=[];
  try{dub.in.disconnect();}catch(e){}
  const N=n=>(dub.nodes.push(n),n),dry=N(ctx.createGain()),wet=N(ctx.createGain()),a=dub.amount;
- dub.in.connect(dry);dry.connect(dub.out);wet.connect(dub.out);
+ dub.in.connect(dry);dry.connect(dub.pre);wet.connect(dub.pre);
  const ir=(k,t,b)=>irCache[k]||(irCache[k]=makeIR(t,b));
  const chain=(...ns)=>{let prev=dub.in;ns.forEach(n=>{prev.connect(n);prev=n;});prev.connect(wet);};
  switch(dub.preset){
@@ -1769,7 +1793,7 @@ function nmRender(scope){
  el.innerHTML=h;
 }
 function nmProgPaint(){['cue','sfx'].forEach(s=>{const el=document.getElementById('nmp_'+s);if(!el)return;const t=nmTarget(s);if(!t||!t.obj)return;const e=nmEntry(buffers[t.id],+t.obj.ps||0)[1];if(e)el.textContent=Math.round(e.prog*100)+'%';});}
-window.SAHNA_NM={vs:()=>VS,master:()=>masterIn,detect:(...a)=>nmDetect(...a),shift:(...a)=>nmShift(...a),keyName,show:()=>show,ctx:()=>ctx,bank:()=>bank};
+window.SAHNA_NM={dubIn:()=>buses.dub.input,dubOut:()=>dub.out,plug:()=>PLUG,vs:()=>VS,master:()=>masterIn,detect:(...a)=>nmDetect(...a),shift:(...a)=>nmShift(...a),keyName,show:()=>show,ctx:()=>ctx,bank:()=>bank};
 function nmFitPs(src,tk){ // tonallik bo'yicha eng yaqin siljish; major/minor farqli bo'lsa — parallel (relative) tonallikka
  const rel=k=>k<12?k:(k-12+3)%12;let d=((rel(tk)-rel(src))%12+12)%12;if(d>5)d-=12;return d;
 }
@@ -2534,6 +2558,158 @@ function vsInput(e){if(e.target.id==='vsVol'){VS.vvol=+e.target.value/100;}}
 function vsChange(e){const t=e.target;if(t.id==='vsFps'){VS.fps=+t.value;return;}if(t.dataset.vsc){VS.opt[t.dataset.vsc]=t.checked;if(t.dataset.vsc==='punch'&&t.checked&&(VS.io.i==null||VS.io.o==null))toast('Punch: videoda I va O nuqtalarini belgilang');}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#vidBtn');if(!b)return;e.stopPropagation();if(VS.doc){if(VS.win)VS.win.focus();else vsClose();}else vsOpen(IS_FRAME?'dock':'pop');},true);
 
+/* ---------- 🎛 DUBLAJ PLAGINLARI (obraz presetidan keyin, AZ VERB dan oldin) ----------
+   mikrofon va dublaj fayllari: dub.in → obraz preseti → dub.pre → [plaginlar zanjiri] → dub.out → AZ VERB → Dublaj fader */
+const PLUG_DEF=[
+ {k:'gate',n:'Shovqin darvozasi',ic:'🔇',d:'Jimlikda mikrofon shovqinini yopadi',p:[['th','Ostona',-80,-20,1,-52,'dB'],['rel','Qo\'yib yuborish',20,800,10,160,'ms']]},
+ {k:'pitch',n:'Ton (pitch)',ic:'🎤',d:'Ovozni yarim tonlarda ko\'taradi / tushiradi',p:[['st','Yarim ton',-12,12,1,0,'st'],['mix','Aralash',0,100,1,100,'%']]},
+ {k:'filter',n:'Filtr',ic:'🎛',d:'Past va yuqori chastotalarni kesish',p:[['hp','Past kesish (HP)',20,1500,5,80,'Hz'],['lp','Yuqori kesish (LP)',1000,20000,50,20000,'Hz'],['sl','Keskinlik',12,48,12,24,'dB/okt']]},
+ {k:'eq',n:'Ekvalayzer',ic:'📊',d:'4 polosali tembr',p:[['lo','Bas · 120 Hz',-12,12,.5,0,'dB'],['lm','Loyqalik · 400 Hz',-12,12,.5,0,'dB'],['pr','Aniqlik · 3 kHz',-12,12,.5,0,'dB'],['hi','Havo · 10 kHz',-12,12,.5,0,'dB']]},
+ {k:'deess',n:'De-esser',ic:'🐍',d:'«S», «Sh» shipillashini yumshatadi',p:[['f','Chastota',3000,10000,100,6500,'Hz'],['th','Ostona',-60,0,1,-32,'dB']]},
+ {k:'comp',n:'Kompressor',ic:'🗜',d:'Ovoz balandligini tekislaydi',p:[['th','Ostona',-60,0,1,-22,'dB'],['ra','Nisbat',1,20,.5,4,':1'],['at','Hujum',0,100,1,5,'ms'],['re','Qo\'yib yuborish',20,1000,10,180,'ms'],['mk','Kuchaytirish',0,24,.5,6,'dB']]},
+ {k:'sat',n:'Saturatsiya',ic:'🔥',d:'Iliq lampa / lenta yoki qattiq buzilish',p:[['dr','Drive',0,100,1,30,'%'],['ty','Tur',0,2,1,0,['Lampa','Lenta','Qattiq']],['mix','Aralash',0,100,1,100,'%']]},
+ {k:'tel',n:'Telefon / Radio',ic:'📞',d:'Tor polosa, kodek, buzilish va liniya shovqini',p:[['md','Rejim',0,5,1,0,['Eski telefon','Mobil (GSM)','Racija','Radio AM','Megafon','Domofon']],['bw','Polosa',0,100,1,50,'%'],['dr','Buzilish',0,100,1,40,'%'],['bit','Kodek',0,100,1,30,'%'],['nz','Liniya shovqini',0,100,1,12,'%']]},
+ {k:'robot',n:'Robot / Ring',ic:'🤖',d:'Metall, robot ovozi',p:[['f','Chastota',20,600,1,90,'Hz'],['mix','Aralash',0,100,1,70,'%']]},
+ {k:'echo',n:'Aks-sado (Delay)',ic:'🔁',d:'Takrorlanuvchi aks-sado',p:[['t','Vaqt',20,1200,5,280,'ms'],['fb','Qaytish',0,90,1,35,'%'],['tone','Ton',800,12000,100,4500,'Hz'],['mix','Aralash',0,100,1,25,'%']]},
+];
+const PLUG_PRE=[
+ ['off','⏻ Toza',{}],
+ ['tel','📞 Eski telefon',{gate:{on:1,th:-55},tel:{on:1,md:0,bw:50,dr:40,bit:25,nz:12},comp:{on:1,th:-20,ra:4,mk:6}}],
+ ['gsm','📱 Mobil',{gate:{on:1,th:-55},tel:{on:1,md:1,bw:45,dr:28,bit:65,nz:6},comp:{on:1,th:-22,ra:5,mk:7}}],
+ ['rac','📻 Racija',{gate:{on:1,th:-50},tel:{on:1,md:2,bw:40,dr:75,bit:35,nz:30},comp:{on:1,th:-28,ra:8,mk:8}}],
+ ['am','📻 Radio AM',{tel:{on:1,md:3,bw:60,dr:22,bit:10,nz:22},comp:{on:1,th:-20,ra:3,mk:4}}],
+ ['meg','📢 Megafon',{tel:{on:1,md:4,bw:55,dr:65,bit:12,nz:4},echo:{on:1,t:120,fb:22,tone:3500,mix:16}}],
+ ['dom','🔔 Domofon',{gate:{on:1,th:-50},tel:{on:1,md:5,bw:45,dr:35,bit:40,nz:14}}],
+ ['rob','🤖 Robot',{robot:{on:1,f:90,mix:80},pitch:{on:1,st:-2,mix:100},comp:{on:1,th:-20,ra:4,mk:5}}],
+ ['dik','🎙 Diktor (studiya)',{gate:{on:1,th:-55},filter:{on:1,hp:80,lp:20000,sl:24},eq:{on:1,lo:2,lm:-3,pr:3,hi:2},deess:{on:1,f:6500,th:-32},comp:{on:1,th:-24,ra:3.5,at:5,re:150,mk:5}}],
+ ['uzq','🌫 Uzoqdan',{filter:{on:1,hp:220,lp:3800,sl:24},eq:{on:1,lm:3,pr:-2},echo:{on:1,t:340,fb:28,tone:2800,mix:28}}],
+ ['ich','💭 Ichki ovoz',{filter:{on:1,hp:140,lp:9000,sl:12},eq:{on:1,lo:3,pr:-3,hi:-4},echo:{on:1,t:85,fb:18,tone:5000,mix:22},comp:{on:1,th:-26,ra:3,mk:5}}],
+];
+const PLUG={live:[],meter:null,timer:null,bypass:false,rb:null};
+function plugCfg(){
+ if(!show.dubPlug)show.dubPlug={};const C=show.dubPlug;
+ for(const d of PLUG_DEF){const c=C[d.k]||(C[d.k]={on:false});for(const p of d.p)if(c[p[0]]==null)c[p[0]]=p[5];}return C;
+}
+const plugDb=x=>Math.pow(10,x/20);
+let plugNoise=null;
+function plugNoiseBuf(){if(plugNoise)return plugNoise;const n=ctx.sampleRate*2,b=ctx.createBuffer(1,n,ctx.sampleRate),d=b.getChannelData(0);let p=0;for(let i=0;i<n;i++){const w=Math.random()*2-1;p=.97*p+.03*w;d[i]=w*.6+p*2;}return plugNoise=b;}
+function plugCurve(kind,amt,bits){
+ const N=4096,c=new Float32Array(N),k=1+amt*24;
+ for(let i=0;i<N;i++){let x=i/(N-1)*2-1,y;
+  if(kind===0)y=Math.tanh(k*x)/Math.tanh(k);                 // lampa
+  else if(kind===1)y=(x>=0?1-Math.exp(-k*x*1.2):-(1-Math.exp(k*x)))/(1-Math.exp(-k*1.2)); // lenta (asimmetrik)
+  else y=Math.max(-1,Math.min(1,x*k*.6))*(1/Math.max(1,Math.min(k*.6,1)));                  // qattiq
+  if(bits){const L=Math.pow(2,bits);y=Math.round(y*L)/L;}
+  c[i]=y;}return c;
+}
+const PLUG_TEL=[ // hp, lp, peaks [f,gain,Q], drive asos, bit asos, shovqin rangi
+ {hp:300,lp:3400,pk:[[1000,4,1.2],[2500,3,1.4]],dr:.35,b:9,nf:2500},
+ {hp:300,lp:3400,pk:[[1800,5,1.5]],dr:.2,b:6,nf:3000},
+ {hp:500,lp:2700,pk:[[1500,8,2]],dr:.8,b:7,nf:2000},
+ {hp:150,lp:4500,pk:[[1200,3,1]],dr:.2,b:11,nf:1200,hum:50},
+ {hp:400,lp:4000,pk:[[1100,9,4],[2900,6,5]],dr:.6,b:10,nf:2500},
+ {hp:450,lp:3000,pk:[[800,6,6],[2200,7,8]],dr:.35,b:7,nf:2800},
+];
+const PLUG_MK={
+ gate(c){const i=ctx.createGain(),g=ctx.createGain(),an=ctx.createAnalyser();an.fftSize=512;i.connect(an);i.connect(g);const buf=new Float32Array(512);let open=1;
+  return {in:i,out:g,nodes:[i,g,an],set(c2){c=c2;},tick(){an.getFloatTimeDomainData(buf);let s=0;for(let k=0;k<buf.length;k++)s+=buf[k]*buf[k];const db=10*Math.log10(s/buf.length+1e-12);const want=db>c.th?1:db>c.th-6?.25:0;if(want!==open){open=want;g.gain.setTargetAtTime(want,ctx.currentTime,want>.5?.003:c.rel/1000/3);}}};},
+ pitch(c){const i=ctx.createGain(),o=ctx.createGain(),dry=ctx.createGain(),wet=ctx.createGain();i.connect(dry);dry.connect(o);wet.connect(o);let ps=null,st=null;
+  const u={in:i,out:o,nodes:[i,o,dry,wet],set(c2){c=c2;dry.gain.value=c.st?1-c.mix/100:1;wet.gain.value=c.st?c.mix/100:0;if(st!==c.st){st=c.st;if(ps){try{i.disconnect(ps);ps.disconnect();}catch(e){}ps=null;}if(c.st){ps=makePitchShifter(Math.pow(2,c.st/12));i.connect(ps);ps.connect(wet);u.nodes.push(ps);}}}};u.set(c);return u;},
+ filter(c){const i=ctx.createGain(),o=ctx.createGain();let ns=[],sl=null;
+  const u={in:i,out:o,nodes:[i,o],set(c2){c=c2;const n=c.sl/12;if(n!==sl){sl=n;try{i.disconnect();}catch(e){}ns.forEach(x=>{try{x.disconnect();}catch(e){}});ns=[];let p=i;for(let k=0;k<n;k++){const h=bq('highpass',c.hp,.7071);p.connect(h);p=h;ns.push(h);}for(let k=0;k<n;k++){const l=bq('lowpass',c.lp,.7071);p.connect(l);p=l;ns.push(l);}p.connect(o);}
+   ns.forEach(x=>x.frequency.setTargetAtTime(x.type==='highpass'?c.hp:Math.min(c.lp,ctx.sampleRate/2-100),ctx.currentTime,.02));}};u.set(c);return u;},
+ eq(c){const a=bq('lowshelf',120,null,0),b=bq('peaking',400,1,0),d=bq('peaking',3000,.9,0),e=bq('highshelf',10000,null,0);a.connect(b);b.connect(d);d.connect(e);
+  const u={in:a,out:e,nodes:[a,b,d,e],set(c2){c=c2;const T=ctx.currentTime;a.gain.setTargetAtTime(c.lo,T,.02);b.gain.setTargetAtTime(c.lm,T,.02);d.gain.setTargetAtTime(c.pr,T,.02);e.gain.setTargetAtTime(c.hi,T,.02);}};u.set(c);return u;},
+ deess(c){const i=ctx.createGain(),o=ctx.createGain(),l1=bq('lowpass',6500,.7071),l2=bq('lowpass',6500,.7071),h1=bq('highpass',6500,.7071),h2=bq('highpass',6500,.7071),cp=ctx.createDynamicsCompressor();
+  cp.ratio.value=12;cp.attack.value=.001;cp.release.value=.06;cp.knee.value=3;i.connect(l1);l1.connect(l2);l2.connect(o);i.connect(h1);h1.connect(h2);h2.connect(cp);cp.connect(o);
+  const u={in:i,out:o,nodes:[i,o,l1,l2,h1,h2,cp],gr:cp,set(c2){c=c2;[l1,l2,h1,h2].forEach(x=>x.frequency.setTargetAtTime(c.f,ctx.currentTime,.02));cp.threshold.setTargetAtTime(c.th,ctx.currentTime,.02);}};u.set(c);return u;},
+ comp(c){const cp=ctx.createDynamicsCompressor(),mk=ctx.createGain();cp.knee.value=6;cp.connect(mk);
+  const u={in:cp,out:mk,nodes:[cp,mk],gr:cp,set(c2){c=c2;const T=ctx.currentTime;cp.threshold.setTargetAtTime(c.th,T,.02);cp.ratio.setTargetAtTime(c.ra,T,.02);cp.attack.setTargetAtTime(Math.max(.0005,c.at/1000),T,.02);cp.release.setTargetAtTime(c.re/1000,T,.02);mk.gain.setTargetAtTime(plugDb(c.mk),T,.02);}};u.set(c);return u;},
+ sat(c){const i=ctx.createGain(),o=ctx.createGain(),ws=ctx.createWaveShaper(),dry=ctx.createGain(),wet=ctx.createGain();ws.oversample='4x';i.connect(dry);dry.connect(o);i.connect(ws);ws.connect(wet);wet.connect(o);let key='';
+  const u={in:i,out:o,nodes:[i,o,ws,dry,wet],set(c2){c=c2;const k=c.ty+'|'+c.dr;if(k!==key){key=k;ws.curve=plugCurve(c.ty,c.dr/100,0);}const m=c.mix/100,trim=1/(1+c.dr/100*(c.ty===2?1.2:.6));dry.gain.value=1-m;wet.gain.value=m*trim;}};u.set(c);return u;},
+ tel(c){const i=ctx.createGain(),o=ctx.createGain(),hp1=bq('highpass',300,.7071),hp2=bq('highpass',300,.7071),lp1=bq('lowpass',3400,.7071),lp2=bq('lowpass',3400,.7071),pk1=bq('peaking',1000,1,0),pk2=bq('peaking',2500,1,0),pre=ctx.createGain(),ws=ctx.createWaveShaper(),post=ctx.createGain();
+  ws.oversample='2x';i.connect(hp1);hp1.connect(hp2);hp2.connect(lp1);lp1.connect(lp2);lp2.connect(pk1);pk1.connect(pk2);pk2.connect(pre);const pl1=bq('lowpass',3400,.7071),pl2=bq('lowpass',3400,.7071),ph1=bq('highpass',300,.7071),ph2=bq('highpass',300,.7071);pre.connect(ws);ws.connect(pl1);pl1.connect(pl2);pl2.connect(ph1);ph1.connect(ph2);ph2.connect(post);post.connect(o); // buzilish/kodek hosil qilgan yuqori shipillashni kesamiz — haqiqiy telefon kabi
+  const ns=ctx.createBufferSource();ns.buffer=plugNoiseBuf();ns.loop=true;const nf=bq('bandpass',2500,.6),ng=ctx.createGain();ng.gain.value=0;ns.connect(nf);nf.connect(ng);ng.connect(o);ns.start();
+  const hum=ctx.createOscillator(),hg=ctx.createGain();hum.frequency.value=50;hg.gain.value=0;hum.connect(hg);hg.connect(o);hum.start();
+  const env=ctx.createAnalyser();env.fftSize=512;i.connect(env);const buf=new Float32Array(512);let key='',lvl=0;
+  const u={in:i,out:o,nodes:[i,o,hp1,hp2,lp1,lp2,pk1,pk2,pre,ws,pl1,pl2,ph1,ph2,post,ns,nf,ng,hum,hg,env],set(c2){c=c2;const M=PLUG_TEL[c.md]||PLUG_TEL[0],bw=c.bw/100,T=ctx.currentTime;
+    const hp=M.hp*(1.6-bw*1.2),lp=Math.min(ctx.sampleRate/2-200,M.lp*(.6+bw*.8));[hp1,hp2].forEach(x=>x.frequency.setTargetAtTime(hp,T,.02));[lp1,lp2].forEach(x=>x.frequency.setTargetAtTime(lp,T,.02));[pl1,pl2].forEach(x=>x.frequency.setTargetAtTime(Math.min(ctx.sampleRate/2-200,lp*1.15),T,.02));[ph1,ph2].forEach(x=>x.frequency.setTargetAtTime(hp*.85,T,.02));
+    const P=M.pk;pk1.frequency.value=P[0][0];pk1.gain.value=P[0][1];pk1.Q.value=P[0][2];if(P[1]){pk2.frequency.value=P[1][0];pk2.gain.value=P[1][1];pk2.Q.value=P[1][2];}else pk2.gain.value=0;
+    const dr=Math.min(1,M.dr*.5+c.dr/100*.9),bits=Math.round(16-(16-M.b)*(.3+c.bit/100*.9)),k=c.md+'|'+dr.toFixed(2)+'|'+bits;
+    if(k!==key){key=k;ws.curve=plugCurve(c.md===2?2:0,dr,c.bit>2?Math.max(3,bits):0);}
+    pre.gain.value=1+dr*2;post.gain.value=1/(1+dr*1.4);nf.frequency.value=M.nf;hg.gain.setTargetAtTime(M.hum?c.nz/100*.012:0,T,.05);},
+   tick(){env.getFloatTimeDomainData(buf);let s=0;for(let k=0;k<buf.length;k++)s+=buf[k]*buf[k];const r=Math.sqrt(s/buf.length);lvl=Math.max(r,lvl*.92);const base=c.nz/100*.02;ng.gain.setTargetAtTime(base*(.35+Math.min(1,lvl*8)*.65),ctx.currentTime,.03);}};u.set(c);return u;},
+ robot(c){const i=ctx.createGain(),o=ctx.createGain(),rg=ctx.createGain(),osc=ctx.createOscillator(),dry=ctx.createGain(),wet=ctx.createGain();rg.gain.value=0;osc.connect(rg.gain);osc.start();i.connect(rg);rg.connect(wet);i.connect(dry);dry.connect(o);wet.connect(o);
+  const u={in:i,out:o,nodes:[i,o,rg,osc,dry,wet],set(c2){c=c2;osc.frequency.setTargetAtTime(c.f,ctx.currentTime,.02);dry.gain.value=1-c.mix/100;wet.gain.value=c.mix/100*1.6;}};u.set(c);return u;},
+ echo(c){const i=ctx.createGain(),o=ctx.createGain(),d=ctx.createDelay(2),fb=ctx.createGain(),tn=bq('lowpass',4500,.7),wet=ctx.createGain();i.connect(o);i.connect(d);d.connect(tn);tn.connect(fb);fb.connect(d);tn.connect(wet);wet.connect(o);
+  const u={in:i,out:o,nodes:[i,o,d,fb,tn,wet],set(c2){c=c2;const T=ctx.currentTime;d.delayTime.setTargetAtTime(c.t/1000,T,.03);fb.gain.setTargetAtTime(c.fb/100,T,.02);tn.frequency.setTargetAtTime(c.tone,T,.02);wet.gain.setTargetAtTime(c.mix/100*1.2,T,.02);}};u.set(c);return u;},
+};
+function plugBuild(){
+ if(!ctx||!dub.pre||!dub.out)return;const C=plugCfg();
+ PLUG.live.forEach(u=>u.nodes.forEach(n=>{try{if(n.stop)n.stop();}catch(e){}try{n.disconnect();}catch(e){}}));PLUG.live=[];
+ try{dub.pre.disconnect();}catch(e){}
+ let prev=dub.pre;
+ if(!PLUG.bypass)for(const d of PLUG_DEF){const c=C[d.k];if(!c||!c.on)continue;try{const u=PLUG_MK[d.k](c);u.k=d.k;prev.connect(u.in);prev=u.out;PLUG.live.push(u);}catch(e){console.warn('plug',d.k,e);}}
+ prev.connect(dub.out);
+ if(!PLUG.meter){const ai=ctx.createAnalyser(),ao=ctx.createAnalyser();ai.fftSize=ao.fftSize=1024;dub.pre.connect(ai);dub.out.connect(ao);PLUG.meter={ai,ao,b:new Float32Array(1024)};}
+ else dub.pre.connect(PLUG.meter.ai);
+ clearInterval(PLUG.timer);if(PLUG.live.some(u=>u.tick))PLUG.timer=setInterval(()=>PLUG.live.forEach(u=>u.tick&&u.tick()),12);
+ plugChips();
+}
+function plugSet(k){const u=PLUG.live.find(x=>x.k===k);if(u)u.set(show.dubPlug[k]);}
+function plugSave(){saveShow();}
+function plugChips(){
+ const el=$('#plugChips');if(!el)return;const C=plugCfg(),on=PLUG_DEF.filter(d=>C[d.k].on);
+ el.innerHTML=(PLUG.bypass?'<span class="plgc off">⏻ chetlab o\'tilgan</span>':'')+(on.length?on.map(d=>'<span class="plgc" title="'+esc(d.n)+'">'+d.ic+' '+esc(d.n)+'</span>').join(''):'<span class="muted" style="font-size:11px">plaginlar o\'chiq</span>');
+ const b=$('#plugBtn');if(b){const n=on.length;b.querySelector('.plgn').textContent=n?n:'';b.classList.toggle('on',n>0&&!PLUG.bypass);}
+}
+function plugApplyPreset(id){
+ const P=PLUG_PRE.find(x=>x[0]===id);let cfg=P?P[2]:null;
+ if(!cfg){try{cfg=(JSON.parse(localStorage.getItem('sahnaOvozi.plugPresets')||'{}'))[id];}catch(e){}}
+ if(!cfg)return;show.dubPlug={};const C=plugCfg();
+ for(const d of PLUG_DEF){const s=cfg[d.k];C[d.k].on=!!(s&&s.on);if(s)for(const p of d.p)if(s[p[0]]!=null)C[d.k][p[0]]=s[p[0]];}
+ show.dubPlug.preset=id;PLUG.bypass=false;plugBuild();plugSave();logEvent('Dublaj plaginlari: '+(P?P[1]:id));
+}
+function plugUserPresets(){try{return JSON.parse(localStorage.getItem('sahnaOvozi.plugPresets')||'{}')||{};}catch(e){return {};}}
+function plugFmt(p,v){if(Array.isArray(p[6]))return p[6][v]||v;const u=p[6];return (u==='st'?(v>0?'+':'')+v:u==='dB'&&p[2]<0&&p[3]>0?(v>0?'+':'')+v:v>=1000&&u==='Hz'?(v/1000).toFixed(v%1000?1:0)+'k':v)+(u==='st'?' st':u==='%'?'%':u===':1'?':1':' '+u);}
+function plugHtml(){
+ const C=plugCfg(),U=plugUserPresets(),cur=show.dubPlug.preset;
+ return '<div class="plg-top"><div class="plg-pre">'+PLUG_PRE.map(([id,n])=>'<button type="button" class="plg-pb'+(cur===id?' on':'')+'" data-plp="'+id+'">'+n+'</button>').join('')+
+  Object.keys(U).map(n=>'<button type="button" class="plg-pb u'+(cur===n?' on':'')+'" data-plp="'+esc(n)+'">⭐ '+esc(n)+'<b data-pld="'+esc(n)+'" title="O\'chirish">×</b></button>').join('')+
+  '<button type="button" class="plg-pb sv" data-pls="1">💾 Presetni saqlash</button></div>'+
+  '<div class="plg-mtr"><span>Kirish</span><i><b id="plgMi"></b></i><span>Chiqish</span><i><b id="plgMo"></b></i><span id="plgGr" class="plg-gr">GR 0 dB</span><button type="button" class="btn sm'+(PLUG.bypass?' primary':'')+'" data-plb="1" title="Hammasini chetlab o\'tib, asl ovoz bilan solishtirish">'+(PLUG.bypass?'⏻ Chetlab o\'tilgan':'A/B · chetlab o\'tish')+'</button></div></div>'+
+ '<div class="plg-rack">'+PLUG_DEF.map(d=>{const c=C[d.k];return '<div class="plg'+(c.on?' on':'')+'" data-plg="'+d.k+'"><div class="plg-h"><button type="button" class="plg-pw" data-plo="'+d.k+'" aria-pressed="'+(c.on?'true':'false')+'" title="Yoqish / o\'chirish">⏻</button><span class="plg-ic">'+d.ic+'</span><div><b>'+esc(d.n)+'</b><small>'+esc(d.d)+'</small></div></div><div class="plg-ps">'+
+  d.p.map(p=>Array.isArray(p[6])?'<label class="plg-p"><span>'+esc(p[1])+'</span><select class="inp sm" data-plk="'+d.k+'" data-plq="'+p[0]+'">'+p[6].map((o,i)=>'<option value="'+i+'"'+(+c[p[0]]===i?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select></label>'
+   :'<label class="plg-p"><span>'+esc(p[1])+'</span><input type="range" min="'+p[2]+'" max="'+p[3]+'" step="'+p[4]+'" value="'+c[p[0]]+'" data-plk="'+d.k+'" data-plq="'+p[0]+'"><em>'+plugFmt(p,c[p[0]])+'</em></label>').join('')+'</div></div>';}).join('')+'</div>'+
+ '<p class="hint" style="margin:8px 0 0">Plaginlar mikrofon va dublaj fayllariga ishlaydi: obraz preseti (Toza, Saroy zali, Dev…) → <b>plaginlar</b> → AZ VERB. Sozlamalar spektakl bilan birga saqlanadi.</p>';
+}
+function plugOpen(){
+ if(!ctx){toast('Avval ovozni yoqing');return;}plugCfg();
+ openModal('🎛 Dublaj plaginlari',plugHtml(),[{label:'Yopish',fn:()=>{cancelAnimationFrame(PLUG.rb);}}],{
+  click:(e,b)=>{const d=b.dataset,del=e.target.closest('[data-pld]');
+   if(del){d.pld=del.dataset.pld;}
+   if(d.pld){const U=plugUserPresets();delete U[d.pld];try{localStorage.setItem('sahnaOvozi.plugPresets',JSON.stringify(U));}catch(_){}plugRe();return;}
+   if(d.plp){plugApplyPreset(d.plp);plugRe();toast('🎛 '+b.textContent.replace('×','').trim());return;}
+   if(d.pls){b.outerHTML='<span class="plg-sv"><input class="inp sm" id="plgName" maxlength="30" placeholder="Preset nomi: masalan «Tergovchi telefoni»"><button type="button" class="btn sm primary" data-plsok="1">Saqlash</button></span>';setTimeout(()=>{const i=$('#plgName');if(i){i.focus();i.addEventListener('keydown',ev=>{ev.stopPropagation();if(ev.key==='Enter'){const ok=document.querySelector('[data-plsok]');if(ok)ok.click();}});}},20);return;}
+   if(d.plsok){const n=(($('#plgName')||{}).value||'').trim().slice(0,30);if(!n){toast('Preset nomini yozing');return;}const U=plugUserPresets(),c=JSON.parse(JSON.stringify(show.dubPlug));delete c.preset;U[n]=c;try{localStorage.setItem('sahnaOvozi.plugPresets',JSON.stringify(U));}catch(_){}show.dubPlug.preset=n;plugSave();plugRe();toast('💾 Preset saqlandi: '+n);return;}
+   if(d.plb){PLUG.bypass=!PLUG.bypass;plugBuild();plugRe();return;}
+   if(d.plo){const c=show.dubPlug[d.plo];c.on=!c.on;show.dubPlug.preset=null;plugBuild();plugSave();const el=b.closest('.plg');el.classList.toggle('on',c.on);b.setAttribute('aria-pressed',c.on?'true':'false');plugPresetUI();return;}
+  }});
+ const M=$('#mBody');M.classList.add('plg-wide');const box=M.closest('.modal')||M.parentElement;if(box)box.classList.add('plg-modal');
+ M.addEventListener('input',plugInput);M.addEventListener('change',plugInput);
+ const tick=()=>{if(!$('#plgMi'))return;const m=PLUG.meter;if(m){const pk=an=>{an.getFloatTimeDomainData(m.b);let x=0;for(let i=0;i<m.b.length;i++){const a=Math.abs(m.b[i]);if(a>x)x=a;}return x;},pc=p=>Math.max(0,Math.min(100,(20*Math.log10(p+1e-6)+60)/60*100));$('#plgMi').style.width=pc(pk(m.ai))+'%';$('#plgMo').style.width=pc(pk(m.ao))+'%';}
+  let gr=0;PLUG.live.forEach(u=>{if(u.gr)gr+=u.gr.reduction||0;});const g=$('#plgGr');if(g)g.textContent='GR '+(gr<-.1?gr.toFixed(1):'0')+' dB';PLUG.rb=requestAnimationFrame(tick);};tick();
+}
+function plugRe(){const M=$('#mBody');if(M&&$('#plgMi'))M.innerHTML=plugHtml();plugChips();}
+function plugPresetUI(){document.querySelectorAll('.plg-pb[data-plp]').forEach(x=>x.classList.toggle('on',x.dataset.plp===show.dubPlug.preset));}
+function plugInput(e){const t=e.target;if(!t.dataset||!t.dataset.plk)return;const k=t.dataset.plk,q=t.dataset.plq,d=PLUG_DEF.find(x=>x.k===k),p=d.p.find(x=>x[0]===q),c=show.dubPlug[k];
+ c[q]=+t.value;const em=t.parentNode.querySelector('em');if(em)em.textContent=plugFmt(p,c[q]);
+ if(!c.on&&e.type==='input'){c.on=true;const el=t.closest('.plg');el.classList.add('on');el.querySelector('.plg-pw').setAttribute('aria-pressed','true');plugBuild();}
+ else plugSet(k);
+ if(show.dubPlug.preset){show.dubPlug.preset=null;plugPresetUI();}
+ if(e.type==='change')plugSave();}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#plugBtn');if(!b)return;e.stopPropagation();plugOpen();},true);
+
 /* ---------- playback ---------- */
 function play(id,bus,o){
  o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
@@ -3133,7 +3309,7 @@ function renderProj(){
 function storeMix(k){show.mix[k]={v:buses[k].val,m:buses[k].muted};saveShow();}
 function applyMix(){
  for(const [k] of BUSES){const m=show.mix&&show.mix[k];buses[k].val=m?m.v:80;buses[k].muted=m?!!m.m:false;applyFader(k);}
- const d=show.dubfx||{};dub.preset=d.preset||'clean';dub.amount=d.amount==null?.6:d.amount;buildDubFx();
+ const d=show.dubfx||{};dub.preset=d.preset||'clean';dub.amount=d.amount==null?.6:d.amount;buildDubFx();PLUG.bypass=false;plugBuild();
  fadeT=show.fade==null?3:show.fade;
  const a=$('#amt');if(a){a.value=Math.round(dub.amount*100);$('#amtV').textContent=a.value+'%';}
  renderStrips();renderPresets();renderFades();
