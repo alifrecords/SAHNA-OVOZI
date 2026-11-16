@@ -335,6 +335,7 @@ header #mpBox .mphead{display:none}
 .cswrow{display:flex;gap:6px}.cswrow.on .cswpick{border-color:#F2A93B;background:rgba(242,169,59,.1)}
 .cswpick{flex:1;min-height:50px;text-align:left;border-radius:8px;border:1px solid var(--line2);background:var(--bg);padding:6px 12px;display:flex;flex-direction:column;justify-content:center;color:var(--text);font-size:14px;font-weight:600}
 .shrl{display:flex;flex-direction:column;gap:8px;max-height:56vh;overflow:auto}.shrr{display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;gap:6px 8px;padding:8px;border:1px solid var(--line2);border-radius:10px}.shrr.done{border-color:#2F6B5F;background:rgba(90,200,176,.06)}.shrn{display:flex;flex-direction:column;min-width:0}.shrn b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.shrn small{color:var(--muted)}.shrr select{grid-column:1/-1}
+.cswed{border:1px solid #2F6B5F;background:rgba(90,200,176,.06);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;margin:2px 0 6px}.csedl{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}.csedl .inp{font-size:15px}.cswcat{display:flex;flex-wrap:wrap;gap:6px}.cswcat button{padding:9px 12px;border-radius:999px;border:1px solid var(--line2);background:var(--bg);color:var(--text);font-size:13px;cursor:pointer}.cswcat button.on{border-color:var(--amber);color:var(--amber);background:rgba(242,169,59,.12);font-weight:700}.csedtr{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);line-height:1.35}.csedtr[hidden]{display:none}.csedtr input{margin-top:2px;accent-color:#5AC8B0}.csedb{display:flex;gap:8px;justify-content:flex-end}.csedb .btn{min-height:44px}
 .cswp.on{background:#5AC8B0;color:#062a23;border-color:#5AC8B0;box-shadow:0 0 12px rgba(90,200,176,.5)}.cswrow.playing .cswpick{border-color:#5AC8B0;background:rgba(90,200,176,.1)}.cswrow.playing .cswpick small::after{content:" · ▶ yangramoqda";color:#5AC8B0}
 .cswmsg{margin-top:8px;padding:9px 11px;border-radius:10px;font-size:13px;line-height:1.45}.cswmsg.warn{background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.5);color:#ffb4b4}.cswmsg.ok{background:rgba(90,200,176,.1);border:1px solid #2F6B5F;color:#5AC8B0}.cswmsg[hidden]{display:none}
 .cswdel{color:#ff8a8d}.cswdel.arm{background:#7A1F23;color:#fff;border-color:#E5484D}.cswpick small{color:var(--muted);font-weight:500;font-size:11px}.cswp{width:50px;height:50px!important;font-size:16px}
@@ -1939,15 +1940,21 @@ function cueSet(i,id){
  voices.filter(v=>v.preview).forEach(v=>stopVoice(v,.05));
  saveShow();renderCues();renderNow();toast('Q'+(i+1)+' · '+c.name+' ← '+titleOf(id));logEvent('Cue ovozi: Q'+(i+1)+' ← '+titleOf(id));
 }
-let cswTimer=null;
+let cswTimer=null,cswTap={};
+function cswEdit(i,id,b){
+ document.querySelectorAll('.cswed').forEach(x=>x.remove());const c=show.cues[i],cur=c.ref===id,g=assetGroup(id);
+ const ed=document.createElement('div');ed.className='cswed';
+ ed.innerHTML='<label class="csedl">Nomi<input class="inp" data-csedname="1" maxlength="80" value="'+esc(titleOf(id))+'"></label><div class="csedl">Bo\'lim</div><div class="cswcat">'+[['sfx','💥 SFX'],['music','🎵 Musiqa'],['atmos','🌫 Atmosfera'],['dub','🎙 Dublaj'],['user','📁 Mening fayllarim']].map(([k,n])=>'<button type="button" data-cscat="'+k+'" class="'+(g===k?'on':'')+'">'+n+'</button>').join('')+'</div>'+(cur?'<label class="csedtr" hidden><input type="checkbox" data-csedtype="1" checked><span></span></label>':'')+'<div class="csedb"><button type="button" class="btn" data-csedno="1">Bekor</button><button type="button" class="btn primary" data-csedsave="'+id+'">✓ Saqlash</button></div>';
+ b.closest('.cswrow').after(ed);const inp=ed.querySelector('[data-csedname]');inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();ed.querySelector('[data-csedsave]').click();}});setTimeout(()=>{inp.focus();inp.select();},30);ed.scrollIntoView({block:'nearest'});
+}
 function cswPlayUI(){document.querySelectorAll('[data-cswp]').forEach(b=>{const on=voices.some(v=>v.preview&&!v.stopping&&v.ref===b.dataset.cswp);if(b.classList.contains('on')!==on){b.classList.toggle('on',on);b.textContent=on?'■':'▶';b.setAttribute('aria-pressed',on?'true':'false');const r=b.closest('.cswrow');if(r)r.classList.toggle('playing',on);}});}
 function cueSwap(i){
  const c=show.cues[i];if(!c)return;
  if(c.type==='atmos'){if(show.scenes[c.ref])editScene(c.ref);else editScene(null);return;}
  const g={user:[],sfx:[],atmos:[],music:[],dub:[]};
- for(const id in META){if(!durOf(id))continue;const k=META[id].kind,key=k.indexOf('atmos')===0?'atmos':k;(g[key]||g.user).push(id);}
+ assetMetaApply();for(const id in META){if(!durOf(id))continue;(g[assetGroup(id)]||g.user).push(id);}
  const order=['user',c.type,'music','sfx','dub','atmos'].filter((x,j,a)=>a.indexOf(x)===j);
- const row=id=>'<div class="cswrow'+(id===c.ref?' on':'')+'"><button type="button" class="cswpick" data-csw="'+id+'"><span>'+esc(titleOf(id))+'</span><small>'+fmt(durOf(id))+(id===c.ref?' · hozirgi':'')+'</small></button><button type="button" class="btn cswp" data-cswp="'+id+'" aria-label="'+esc(titleOf(id))+' ni tinglash">▶</button>'+(META[id].kind==='user'?'<button type="button" class="btn cswp cswdel" data-cswdel="'+id+'" aria-label="'+esc(titleOf(id))+' ni o\'chirish" title="Faylni pultdan o\'chirish (2 marta bosing)">🗑</button>':'')+'</div>';
+ const row=id=>'<div class="cswrow'+(id===c.ref?' on':'')+'"><button type="button" class="cswpick" data-csw="'+id+'"><span>'+esc(titleOf(id))+'</span><small>'+fmt(durOf(id))+(id===c.ref?' · hozirgi':'')+(META[id].kind==='user'?' · 2× — nomi / bo\'limi':'')+'</small></button><button type="button" class="btn cswp" data-cswp="'+id+'" aria-label="'+esc(titleOf(id))+' ni tinglash">▶</button>'+(META[id].kind==='user'?'<button type="button" class="btn cswp cswdel" data-cswdel="'+id+'" aria-label="'+esc(titleOf(id))+' ni o\'chirish" title="Faylni pultdan o\'chirish (2 marta bosing)">🗑</button>':'')+'</div>';
  const body='<button type="button" class="btn primary cswdev" data-csw="__dev">📱 Qurilmadan musiqa / sample tanlash</button>'+
   '<div class="cswmsg" id="cswMsg" hidden></div><p class="hint" style="margin:6px 0 2px">yoki kutubxonadan tanlang (▶ — tinglash):</p><div class="cswlist">'+
   order.map(k=>g[k].length?'<div class="cswg">'+GROUP_N[k]+'</div>'+g[k].map(row).join(''):'').join('')+'</div>';
@@ -1955,7 +1962,18 @@ function cueSwap(i){
  openModal('Q'+(i+1)+' · '+c.name,body,[{label:'Yopish',fn:()=>{voices.filter(v=>v.preview).forEach(v=>stopVoice(v,.05));}}],{
   click:(e,b)=>{const d=b.dataset;
    if(d.csw==='__dev'){pickFile(async f=>{const id=await addUserAsset(f,null,'Telefondan');if(id){renderLib();cueSet(i,id);closeModal();}},'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus');return;}
-   if(d.csw){cueSet(i,d.csw);closeModal();return;}
+   if(d.csw){const id=d.csw;
+    if(META[id]&&META[id].kind==='user'){const now=performance.now();if(cswTap.id===id&&now-cswTap.t<450){clearTimeout(cswTap.to);cswTap={};cswEdit(i,id,b);return;}
+     clearTimeout(cswTap.to);cswTap={id,t:now,to:setTimeout(()=>{cswTap={};if(id===c.ref){const ms=$('#cswMsg');if(ms){ms.hidden=false;ms.className='cswmsg ok';ms.innerHTML='Bu fayl allaqachon shu cue\'da. Nomi yoki bo\'limini o\'zgartirish uchun <b>2 marta</b> bosing.';}return;}cueSet(i,id);closeModal();},450)};return;}
+    cueSet(i,id);closeModal();return;}
+   if(d.csedsave){const id=d.csedsave,box=b.closest('.cswed'),nm=box.querySelector('[data-csedname]').value.trim().slice(0,80),cat=(box.querySelector('.cswcat .on')||{}).dataset;const k=cat?cat.cscat:'user',tc=box.querySelector('[data-csedtype]'),trOn=tc&&!tc.closest('.csedtr').hidden&&tc.checked;
+    if(!nm){toast('Nomini yozing');return;}
+    show.assetMeta=show.assetMeta||{};show.assetMeta[id]={title:nm,cat:k==='user'?null:k};assetMetaApply();
+    let extra='';if(trOn){if(k==='atmos'){const key=uid('s');show.scenes[key]={name:nm,layers:[{a:id,v:80,t:''}]};c.type='atmos';c.ref=key;extra=' · Q'+(i+1)+' atmosfera cue bo\'ldi';}else{c.type=k;extra=' · Q'+(i+1)+' turi: '+GROUP_N[k];}}
+    saveShow();renderAll();logEvent('Fayl: «'+nm+'» → '+GROUP_N[k]+extra);toast('✓ «'+nm+'» → '+GROUP_N[k]+extra);
+    if(c.type==='atmos'){closeModal();return;}cueSwap(i);return;}
+   if(d.csedno){const box=b.closest('.cswed');if(box)box.remove();return;}
+   if(d.cscat){b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));const box=b.closest('.cswed'),tr=box.querySelector('.csedtr');if(tr){const k=d.cscat,ok=k!=='user'&&k!==c.type;tr.hidden=!ok;const s=tr.querySelector('span');if(s)s.textContent=k==='atmos'?'Q'+(i+1)+' ni shu fayl bilan atmosfera cue\'ga aylantirish (loop)':'Q'+(i+1)+' turini ham «'+GROUP_N[k]+'» qilish';}return;}
    if(d.cswp){preview(d.cswp);setTimeout(cswPlayUI,30);return;}
    if(d.cswdel){const id=d.cswdel,msg=$('#cswMsg'),say=(t,cls)=>{if(msg){msg.hidden=false;msg.className='cswmsg '+(cls||'');msg.innerHTML=t;}};const uses=assetUses(id);
     if(b.dataset.arm!=='1'){document.querySelectorAll('[data-cswdel].arm').forEach(x=>{x.dataset.arm='';x.textContent='🗑';x.classList.remove('arm');});b.dataset.arm='1';b.textContent='✓?';b.classList.add('arm');
@@ -3075,13 +3093,15 @@ function renderVoices(){
 function renderLib(){
  const row=id=>{const m=META[id];const ov=overrides[id];const d=durOf(id);const user=m.kind==='user';
   return '<div class="lrow"'+(d?' draggable="true" data-dasset="'+id+'" title="Sudrab SFX tugmasi yoki cue ustiga tashlang"':'')+'>'+(d?'<span class="grip" aria-hidden="true">⠿</span>':'')+'<span class="nm">'+esc(m.title)+'<small>'+(user?'fayl: '+esc(m.file||''):(ov?'o\'z fayli: '+esc(ov.name):(d?'tayyor namuna':'bo\'sh')))+(d?' · '+fmt(d):'')+(user&&!assetUsed(id)?' · ishlatilmagan':'')+'</small></span>'+(d?'<button type="button" class="btn" data-prev="'+id+'" aria-label="'+esc(m.title)+' ni tinglash">▶</button>':'')+'<button type="button" class="btn" data-repl="'+id+'">Almashtirish</button>'+(ov?'<button type="button" class="btn" data-reset="'+id+'">Asl</button>':'')+(user?'<button type="button" class="btn danger" data-udel="'+id+'">O\'chirish</button>':'')+'</div>';};
- const g={user:[],sfx:[],atmos:[],music:[],dub:[]};for(const id in META){const k=META[id].kind;(g[k.indexOf('atmos')===0?'atmos':k]||g.user).push(id);}
+ const g={user:[],sfx:[],atmos:[],music:[],dub:[]};for(const id in META)(g[assetGroup(id)]||g.user).push(id);
  let h='<div class="warn" style="background:#141B29;border-color:#2C3B5C;color:#C9D7F7">Sample\'ni sichqoncha bilan ushlab, chapdagi <b>SFX tugmasi</b> yoki <b>cue</b> ustiga sudrab tashlang. Bank yorlig\'i ustida biroz to\'xtasangiz — o\'sha bank ochiladi.</div><div class="warn">Diqqat: ▶ oldindan tinglash zal karnaylariga chiqadi (brauzerda alohida quloqchin chiqishi yo\'q).</div>';
  h+='<div class="frow"><button type="button" class="btn primary" id="libAdd">+ Kutubxonaga fayl qo\'shish</button></div>';
  ['user','sfx','atmos','music','dub'].forEach(k=>{h+='<div class="lgroup"><h3>'+GROUP_N[k]+'</h3>'+(g[k].length?g[k].map(row).join(''):'<p class="hint">Hali fayl yo\'q.</p>')+'</div>';});
  $('#libBody').innerHTML=h;
 }
-function renderAll(){renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();nmWarm();}
+function assetMetaApply(){const A=show.assetMeta||{};for(const id in A){const m=META[id];if(!m||m.kind!=='user')continue;if(A[id].title)m.title=A[id].title;m.cat=A[id].cat||null;}}
+const assetGroup=id=>{const m=META[id];if(!m)return 'user';if(m.kind==='user')return m.cat||'user';return m.kind.indexOf('atmos')===0?'atmos':m.kind;};
+function renderAll(){assetMetaApply();renderHeader();renderCues();renderScene();renderPads();renderPresets();renderLib();renderNow();nmWarm();}
 function setEditing(on){editing=on;document.body.classList.toggle('editing',on);const b=$('#editBtn');b.classList.toggle('edit-on',on);b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Tugatish':'✎ Tahrirlash';renderCues();renderPads();}
 
 /* ---------- meters & clock loop ---------- */

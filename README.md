@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.19.1: Faylga nom berish va bo'limga joylash
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Cue → 2× oyna | O'z faylingiz ustiga **2 marta** bosish: **Nomi** (masalan Telegram'dan kelgan «2_5413…» → «Final olqishlar») va **Bo'lim**: SFX / Musiqa / Atmosfera / Dublaj / Mening fayllarim |
+| Cue turi | Fayl shu cue'da bo'lsa — «Qn turini ham Musiqa / SFX / Dublaj qilish» yoki «atmosfera cue'ga aylantirish (loop)» |
+| Bir bosish | Boshqa faylni tanlaydi; hozirgi faylda — maslahat chiqadi |
+| Saqlash | Nom va bo'lim spektakl ichida (`.sahna` faylda ham) saqlanadi; kutubxonada ham shu bo'limda ko'rinadi |
+
 ## 1.19.0: 📥 Telegram va boshqa ilovalardan «Ulashish» (Android)
 
 | Bo'lim | Nima qilindi |
