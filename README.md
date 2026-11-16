@@ -3,6 +3,12 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.18.2: Tanlash oynasida faylni o'chirish
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Cue → 2 marta bosish oynasi | «Mening fayllarim» qatorlarida **🗑** — 2 marta bosib o'chiriladi; fayl biror cue / tugmada ishlatilayotgan bo'lsa — qaysi cue ekani aytiladi |
+
 ## 1.18.1: Ctrl + Shift + Num ± — SFX fader
 
 | Tugmalar | Nima qiladi |

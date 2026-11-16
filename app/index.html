@@ -341,7 +341,7 @@ header #mpBox .mphead{display:none}
 .cswg{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px}
 .cswrow{display:flex;gap:6px}.cswrow.on .cswpick{border-color:#F2A93B;background:rgba(242,169,59,.1)}
 .cswpick{flex:1;min-height:50px;text-align:left;border-radius:8px;border:1px solid var(--line2);background:var(--bg);padding:6px 12px;display:flex;flex-direction:column;justify-content:center;color:var(--text);font-size:14px;font-weight:600}
-.cswpick small{color:var(--muted);font-weight:500;font-size:11px}.cswp{width:50px;height:50px!important;font-size:16px}
+.cswdel{color:#ff8a8d}.cswdel.arm{background:#7A1F23;color:#fff;border-color:#E5484D}.cswpick small{color:var(--muted);font-weight:500;font-size:11px}.cswp{width:50px;height:50px!important;font-size:16px}
 .tabonly{display:none}body.tab .tabonly{display:block}
 /* telefon (eni < 600 px): ixcham pastki panel */
 body.tab.tab-phone{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -2085,7 +2085,7 @@ function cueSwap(i){
  const g={user:[],sfx:[],atmos:[],music:[],dub:[]};
  for(const id in META){if(!durOf(id))continue;const k=META[id].kind,key=k.indexOf('atmos')===0?'atmos':k;(g[key]||g.user).push(id);}
  const order=['user',c.type,'music','sfx','dub','atmos'].filter((x,j,a)=>a.indexOf(x)===j);
- const row=id=>'<div class="cswrow'+(id===c.ref?' on':'')+'"><button type="button" class="cswpick" data-csw="'+id+'"><span>'+esc(titleOf(id))+'</span><small>'+fmt(durOf(id))+(id===c.ref?' · hozirgi':'')+'</small></button><button type="button" class="btn cswp" data-cswp="'+id+'" aria-label="'+esc(titleOf(id))+' ni tinglash">▶</button></div>';
+ const row=id=>'<div class="cswrow'+(id===c.ref?' on':'')+'"><button type="button" class="cswpick" data-csw="'+id+'"><span>'+esc(titleOf(id))+'</span><small>'+fmt(durOf(id))+(id===c.ref?' · hozirgi':'')+'</small></button><button type="button" class="btn cswp" data-cswp="'+id+'" aria-label="'+esc(titleOf(id))+' ni tinglash">▶</button>'+(META[id].kind==='user'?'<button type="button" class="btn cswp cswdel" data-cswdel="'+id+'" aria-label="'+esc(titleOf(id))+' ni o\'chirish" title="Faylni pultdan o\'chirish (2 marta bosing)">🗑</button>':'')+'</div>';
  const body='<button type="button" class="btn primary cswdev" data-csw="__dev">📱 Qurilmadan musiqa / sample tanlash</button>'+
   '<p class="hint" style="margin:6px 0 2px">yoki kutubxonadan tanlang (▶ — tinglash):</p><div class="cswlist">'+
   order.map(k=>g[k].length?'<div class="cswg">'+GROUP_N[k]+'</div>'+g[k].map(row).join(''):'').join('')+'</div>';
@@ -2094,6 +2094,9 @@ function cueSwap(i){
    if(d.csw==='__dev'){pickFile(async f=>{const id=await addUserAsset(f,null,'Telefondan');if(id){renderLib();cueSet(i,id);closeModal();}},'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus');return;}
    if(d.csw){cueSet(i,d.csw);closeModal();return;}
    if(d.cswp){preview(d.cswp);return;}
+   if(d.cswdel){const id=d.cswdel;if(assetUsed(id)){const u=show.cues.findIndex(x=>x.ref===id);toast('Bu fayl hali ishlatilmoqda'+(u>=0?' (Q'+(u+1)+' · '+show.cues[u].name+')':'')+' — avval o\'rniga boshqa ovoz tanlang, keyin o\'chiring');return;}
+    if(b.dataset.arm!=='1'){b.dataset.arm='1';b.textContent='✓?';b.classList.add('arm');toast('O\'chirish uchun yana bir marta bosing: '+titleOf(id));setTimeout(()=>{if(b.isConnected){b.dataset.arm='';b.textContent='🗑';b.classList.remove('arm');}},3000);return;}
+    const nm=titleOf(id);deleteUserAsset(id);const r=b.closest('.cswrow');if(r)r.remove();logEvent('Fayl o\'chirildi: '+nm);return;}
   }});
 }
 let cueTapAt=0,cueTapI=-1;
