@@ -3,6 +3,16 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.19.0: 📥 Telegram va boshqa ilovalardan «Ulashish» (Android)
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Ulashish | O'rnatilgan ilova Android'ning «Ulashish» ro'yxatida chiqadi: Telegram, WhatsApp, fayl menejeri, diktofon… → **Sahna Ovozi** |
+| Audio | MP3, WAV, M4A, AAC, OGG, OPUS, FLAC, AMR — bir yo'la bir nechtasi; «Telefondan» guruhiga tushadi |
+| Joylash | «📥 Ulashilgan audio» oynasi: har fayl uchun ▶ tinglash va **Qayerga**: istalgan cue (keyingisi belgilangan) yoki tanlangan SFX tugma, yoki kutubxonada qolsin |
+| Loyiha | `.sahna` fayl ulashilsa — «Loyiha keldi · Ochish» |
+| Texnik | manifest `share_target` + service worker (IndexedDB «sahnaOvozi-share»); SW hali yo'q bo'lsa `/share-target` funksiyasi pultga qaytaradi |
+
 ## 1.18.3: O'chirish va tinglash holati tuzatildi
 
 | Bo'lim | Nima qilindi |
