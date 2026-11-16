@@ -3,6 +3,14 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.18.3: O'chirish va tinglash holati tuzatildi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| 🗑 | Ishlatilayotgan faylni ham o'chirish mumkin: 1-bosishda oyna ichida qaysi cue / tugma / atmosfera bo'sh qolishi yoziladi, 2-bosishda o'chadi |
+| ▶ | Tinglanayotgan fayl yashil bo'ladi, tugma ■ ga aylanadi, ovoz tugaganda o'zi qaytadi |
+| Xabarlar | Ekrandagi xabar (toast) endi oynalar ustida ko'rinadi |
+
 ## 1.18.2: Tanlash oynasida faylni o'chirish
 
 | Bo'lim | Nima qilindi |

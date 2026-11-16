@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  APP_VERSION: 1.18.2
+  APP_VERSION: 1.18.3
 
 jobs:
   windows:
