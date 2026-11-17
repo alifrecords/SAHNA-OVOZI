@@ -1,0 +1,20 @@
+name: Tarif muddati eslatmasi
+
+# Har soatda saytni chaqiradi: muddati 3 kun ichida tugaydigan foydalanuvchilarga eslatma (bot + pultdagi yozishma).
+on:
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      SITE: ${{ vars.SITE_URL || 'https://sahna-ovozi.pages.dev' }}
+    steps:
+      - name: Eslatmalarni yuborish
+        run: curl -fsS -m 60 -X POST "$SITE/api/cron" || true

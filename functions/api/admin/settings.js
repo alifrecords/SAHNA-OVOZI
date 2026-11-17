@@ -18,7 +18,7 @@ export const onRequestPut = adminOnly(async ({ request, env }) => {
     s.tariffs = list;
   }
   if (b.trialDays !== undefined) s.trialDays = Math.max(0, Math.min(30, Math.round(Number(b.trialDays) || 0)));
-  if (b.bot) for (const k of ["notify", "autoSend"]) if (b.bot[k] !== undefined) s.bot[k] = !!b.bot[k];
+  if (b.bot) for (const k of ["notify", "autoSend", "remind"]) if (b.bot[k] !== undefined) s.bot[k] = !!b.bot[k];
   await saveSettings(db, s);
   return json({ ok: true, settings: s });
 });

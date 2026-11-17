@@ -57,7 +57,7 @@ async function onAdminCommand(env, msg, cmd, arg) {
     for (const p of list) await send(env, msg.chat.id, `${esc(p.id)} · ${esc(p.tg_username || p.tg_name)} · ${esc(p.plan_name)} · ${fmtSum(p.amount)}`, { reply_markup: decisionKb(p.id) });
     return;
   }
-  if (cmd === "/kod") { // /kod STD SO-XXXX-XXXX-XXXX
+  if (cmd === "/kod") { // /kod ST SO-XXXX-XXXX-XXXX
     const st = await getSettings(db), [tid, ...r] = String(arg || "").trim().split(/\s+/), dev = findDev(r.join(" "));
     if (!st.tariffs.some((t) => t.id === String(tid).toUpperCase()) || !dev) return send(env, msg.chat.id, "Foydalanish: /kod " + st.tariffs.map((t) => t.id).join("|") + " SO-XXXX-XXXX-XXXX");
     const c = await issue(env, dev, String(tid).toUpperCase(), { by: "telegram" });
@@ -72,7 +72,7 @@ async function onAdminCommand(env, msg, cmd, arg) {
     await saveSettings(db, st);
     return send(env, msg.chat.id, `Karta saqlandi: <code>${st.card.number}</code> · ${esc(st.card.holder)}`);
   }
-  return send(env, msg.chat.id, "Admin buyruqlari:\n/kutilayotgan — tasdiqlanmagan to'lovlar\n/kod STD SO-XXXX-XXXX-XXXX — qo'lda kod\n/karta 8600… Ism — kartani almashtirish");
+  return send(env, msg.chat.id, "Admin buyruqlari:\n/kutilayotgan — tasdiqlanmagan to'lovlar\n/kod ST SO-XXXX-XXXX-XXXX — qo'lda kod\n/karta 8600… Ism — kartani almashtirish");
 }
 async function handle(env, u) {
   const db = env.DB;

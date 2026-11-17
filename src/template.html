@@ -521,6 +521,7 @@ header .brand svg{width:24px;height:24px}
 body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;border-radius:12px}
 @media (max-width:640px){.faders{grid-template-columns:1fr}}
 @media (max-width:640px){.pads{grid-template-columns:repeat(2,minmax(0,1fr))}.layers{grid-template-columns:1fr}.voice{grid-template-columns:10px 1fr 60px 44px}.voice .prog{display:none}}
+.lcpm{font-size:12px;color:var(--muted);margin:-4px 0 6px}
 </style>
 </head>
 <body>
@@ -3747,8 +3748,8 @@ const LIC=(()=>{
   if(p.x<=Date.now()){if(!quiet)toast('Bu kodning muddati tugagan');return false;}
   const old=LS('lic');if(old===tok&&quiet)return true;
   LS('lic',tok);refresh();
-  toast('💎 Faollashtirildi: '+(p.p==='std'?'Standart':'Pro')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
-  logEvent('Litsenziya faollashtirildi: '+(p.p==='std'?'Standart':'Pro')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
+  toast('💎 Faollashtirildi: '+(p.p==='std'?'Start':'PRO')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
+  logEvent('Litsenziya faollashtirildi: '+(p.p==='std'?'Start':'PRO')+' · '+new Date(p.x).toLocaleDateString(AZL())+' gacha');
   hello(true);
   return true;
  }
@@ -3767,7 +3768,7 @@ const LIC=(()=>{
  function badge(){
   const b=$('#licBtn');if(!b)return;const t=b.querySelector('.lct');
   b.classList.toggle('exp',ST.st==='expired');b.classList.toggle('ok',ST.st==='active'||ST.st==='admin');
-  t.textContent=ST.st==='admin'?'Admin':ST.st==='owner'?'Egasi':ST.st==='active'?(ST.plan==='std'?'Standart':'Pro')+' · '+leftTxt(ST.left):ST.st==='trial'?'Sinov · '+leftTxt(ST.left):'To\'lov kerak';
+  t.textContent=ST.st==='admin'?'Admin':ST.st==='owner'?'Egasi':ST.st==='active'?(ST.plan==='std'?'Start':'PRO')+' · '+leftTxt(ST.left):ST.st==='trial'?'Sinov · '+leftTxt(ST.left):'To\'lov kerak';
   const hb=$('#hubLic');if(hb)hb.textContent='💎 '+t.textContent;
  }
  function refresh(){ST=calc();badge();wall();document.body.classList.toggle('lic-std',ST.st==='active'&&ST.plan==='std');}
@@ -3778,14 +3779,14 @@ const LIC=(()=>{
   if(on){if(!w.dataset.r||w.dataset.r!==ST.st){w.querySelector('.lwb').innerHTML=panelHtml(true);w.dataset.r=ST.st;lastPay().then(reRender);}poll(true);}else{w.dataset.r='';}
  }
  const money=n=>String(Math.round(n||0)).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' so\'m';
- const FEAT={std:['Cue ro\'yxati, GO, SFX banklari, atmosferalar','Mikser, AZ VERB, obraz ovozlari','O\'z fayllari, kesish, loop, SFX qulfi','Loyiha saqlash / ochish (.sahna), avtosaqlash','Documents bazasi, 3 til'],pro:['Standartdagi hamma narsa','ASIO / tashqi ovoz kartasi (ASIO4ALL, M-Audio…)','Audioni sozlash: Maximizer, Normalize, Envelope, Avto balans','Quloqchin (monitor) chiqishi — tinglash zalga chiqmaydi']};
+ const FEAT={std:['Cue ro\'yxati, GO, SFX banklari, atmosferalar','Mikser, AZ VERB, obraz ovozlari','O\'z fayllari, kesish, loop, SFX qulfi','Loyiha saqlash / ochish (.sahna), avtosaqlash','Documents bazasi, 3 til'],pro:['Start tarifidagi hamma narsa','ASIO / tashqi ovoz kartasi (ASIO4ALL, M-Audio…)','Audioni sozlash: Maximizer, Normalize, Envelope, Avto balans','Quloqchin (monitor) chiqishi — tinglash zalga chiqmaydi']};
  function panelHtml(isWall){
-  const c=cfg(),T=(c.tariffs&&c.tariffs.length?c.tariffs:[{id:'STD',name:'Standart',plan:'std',days:30,price:25000},{id:'PRO',name:'Pro',plan:'pro',days:30,price:49000}]);
-  const st=ST.st==='trial'?'<span class="lcb tr">Sinov: '+leftTxt(ST.left)+' qoldi</span>':ST.st==='active'?'<span class="lcb ok">'+(ST.plan==='std'?'Standart':'Pro')+' · '+new Date(ST.until).toLocaleDateString(AZL())+' gacha</span>':ST.st==='admin'?'<span class="lcb ok">Admin — hamma imkoniyat ochiq</span>':ST.st==='owner'?'<span class="lcb ok">Egasi (ko\'rib chiqish)</span>':'<span class="lcb ex">'+(ST.back?'Qurilma soati orqaga surilgan — to\'g\'rilang':'Sinov muddati tugadi')+'</span>';
+  const c=cfg(),T=(c.tariffs&&c.tariffs.length?c.tariffs:[{id:'ST',name:'Start · 1 oy',plan:'std',days:30,price:25000},{id:'PR',name:'PRO · 1 oy',plan:'pro',days:30,price:50000},{id:'PY',name:'PRO · 1 yil',plan:'pro',days:365,price:300000}]);
+  const st=ST.st==='trial'?'<span class="lcb tr">Sinov: '+leftTxt(ST.left)+' qoldi</span>':ST.st==='active'?'<span class="lcb ok">'+(ST.plan==='std'?'Start':'PRO')+' · '+new Date(ST.until).toLocaleDateString(AZL())+' gacha</span>':ST.st==='admin'?'<span class="lcb ok">Admin — hamma imkoniyat ochiq</span>':ST.st==='owner'?'<span class="lcb ok">Egasi (ko\'rib chiqish)</span>':'<span class="lcb ex">'+(ST.back?'Qurilma soati orqaga surilgan — to\'g\'rilang':'Sinov muddati tugadi')+'</span>';
   const bot=c.botUsername,card=c.card&&c.card.number?c.card:null;
   return (isWall?'<div class="between" style="margin-bottom:4px"><span></span><button type="button" class="btn sm" data-lc="hub">← Bosh sahifa</button></div><h2 class="lch">💎 Sahna Ovozi — davom etish uchun tarif tanlang</h2><p class="hint">'+trialDays()+' kunlik sinov muddati tugadi. Loyihalaringiz joyida — Bosh sahifadan ochib, saqlab qo\'yishingiz mumkin. Pult to\'lovdan keyin ochiladi.</p>':'')+
   '<div class="lcst">'+st+'<span class="lcdev">Qurilma kodi: <b class="mono" id="lcDev">'+fmtDev(dev())+'</b> <button type="button" class="btn sm" data-lc="copy">Nusxalash</button></span></div>'+
-  '<div class="lcplans">'+T.map(t=>'<div class="lcp'+(t.plan==='pro'?' pro':'')+'">'+(t.plan==='pro'?'<span class="lctag">To\'liq</span>':'')+'<h3>'+esc(t.name)+'</h3><div class="lcpr">'+money(t.price)+' <small>/ '+t.days+' kun</small></div><ul>'+FEAT[t.plan==='std'?'std':'pro'].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><button type="button" class="btn '+(t.plan==='pro'?'primary':'')+(PAY.t===t.id?' sel':'')+'" data-lc="pick" data-t="'+esc(t.id)+'">'+(PAY.t===t.id?'✓ Tanlandi':(ST.st==='active'?'Shu tarif bilan uzaytirish':'Tanlash'))+'</button></div>').join('')+'</div>'+payHtml(T,c)+fbHtml()+easyHtml(T,c)+
+  '<div class="lcplans">'+T.map(t=>'<div class="lcp'+(t.plan==='pro'?' pro':'')+'">'+(t.plan==='pro'?'<span class="lctag">To\'liq</span>':'')+'<h3>'+esc(t.name)+'</h3><div class="lcpr">'+money(t.price)+' <small>/ '+(t.days>=360?Math.round(t.days/365)+' yil':t.days+' kun')+'</small></div>'+(t.days>=60?'<div class="lcpm">oyiga ~'+money(Math.round(t.price/(t.days/30)/1000)*1000)+'</div>':'')+'<ul>'+FEAT[t.plan==='std'?'std':'pro'].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><button type="button" class="btn '+(t.plan==='pro'?'primary':'')+(PAY.t===t.id?' sel':'')+'" data-lc="pick" data-t="'+esc(t.id)+'">'+(PAY.t===t.id?'✓ Tanlandi':(ST.st==='active'?'Shu tarif bilan uzaytirish':'Tanlash'))+'</button></div>').join('')+'</div>'+payHtml(T,c)+fbHtml()+easyHtml(T,c)+
   '<div class="lcact"><input class="inp mono" id="lcCode" placeholder="Faollashtirish kodi (admin yoki botdan keladi)" spellcheck="false" autocomplete="off"><button type="button" class="btn primary" data-lc="act">Faollashtirish</button><button type="button" class="btn" data-lc="check">Holatni tekshirish</button></div>'+
   '<div class="lcfoot"><span class="muted" id="lcNet"></span><span style="flex:1"></span><button type="button" class="lnk" data-lc="admin">'+(ST.st==='admin'?'Admin rejimidan chiqish':'Admin')+'</button><button type="button" class="lnk" data-lc="server">Server</button></div>';
  }

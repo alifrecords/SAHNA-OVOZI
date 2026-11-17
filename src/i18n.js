@@ -28,6 +28,9 @@ const CNT={
 const CNTRE=/(\d+) ta (ovoz fayli|o'z fayli|ovoz|qatlam|fayl|sample|cue|loyiha)(?!['A-Za-z])/g;
 /* butun qatorga mos dinamik shakllar: [regex, ru, en] — $1 o'zi ham tarjima qilinadi */
 const PAT=[
+ [/^\/ (\d+) kun$/,'/ $1 дн.','/ $1 days'],
+ [/^\/ (\d+) yil$/,'/ $1 год','/ $1 year'],
+ [/^oyiga ~(.+) so'm$/,'~$1 сум в месяц','~$1 UZS / month'],
  [/^(.+) ni tinglash$/,'Прослушать: $1','Preview: $1'],
  [/^(.+) ni to'xtatish$/,'Остановить: $1','Stop: $1'],
  [/^(.+) ni tahrirlash$/,'Изменить $1','Edit $1'],

@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.20.0: To'lov va tariflar Sahna Nuri bilan bir xil
+
+| Bo'lim | Nima o'zgardi |
+|---|---|
+| Tariflar | **Start** 25 000 / oy · **PRO** 50 000 / oy · **PRO 1 yil** 300 000 (oyiga ~25 000). Eski Standart/Pro yashirildi — faol foydalanuvchilar va kutilayotgan to'lovlar o'z holicha qoladi |
+| Sinov | 1 kun (o'zgarmadi) |
+| Eslatma | Tarif muddati tugashidan 3 kun oldin — Telegram bot orqali va pultdagi ✏ Administrator yozishmasiga (har soatda, `.github/workflows/remind.yml`). Admin sahifada yoqib/o'chiriladi |
+| To'lov | O'zgarmadi: bot, pultdan chek yuborish, qurilma kodi so'rovi, tasdiqlansa pult o'zi faollashadi, uzaytirish muddat ustiga qo'shiladi |
+
 ## 1.19.2: Cue qatorini silab ovoz boshqarish (sensor)
 
 Telefon, planshet va iPad'da Sahnalar ketma-ketligidagi cue qatorini barmoq bilan chapga silasangiz ovoz pasayadi, o'ngga silasangiz ko'tariladi (−30…+12 dB, 0,5 dB qadam). Daraja qator ustida shaffof yashil chiziq bilan ko'rinadi, 0 dB oq chiziq bilan belgilangan. Chalinayotgan cue ovozi darhol o'zgaradi. Yuqoriga/pastga aylantirish va sichqoncha ishi o'zgarmagan.

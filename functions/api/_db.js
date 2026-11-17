@@ -6,10 +6,11 @@ export const DEFAULT_SETTINGS = {
   card: { number: "", holder: "", system: "UZCARD" },
   contact: { tg: "", phone: "" },
   tariffs: [
-    { id: "STD", name: "Standart", plan: "std", days: 30, price: 25000, active: true },
-    { id: "PRO", name: "Pro", plan: "pro", days: 30, price: 49000, active: true },
+    { id: "ST", name: "Start · 1 oy", plan: "std", days: 30, price: 25000, active: true },
+    { id: "PR", name: "PRO · 1 oy", plan: "pro", days: 30, price: 50000, active: true },
+    { id: "PY", name: "PRO · 1 yil", plan: "pro", days: 365, price: 300000, active: true },
   ],
-  bot: { notify: true, autoSend: false },
+  bot: { notify: true, autoSend: false, remind: true },
   trialDays: 1,
 };
 
@@ -31,6 +32,8 @@ export async function ensureSchema(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS so_msgs_dev ON so_msgs(dev, id)"),
     db.prepare("CREATE TABLE IF NOT EXISTS so_msgkeys (dev TEXT PRIMARY KEY, key TEXT NOT NULL, name TEXT, created INTEGER)"),
   ]);
+  // muddat eslatmasi uchun ustun (eski bazalarga qo'shiladi)
+  try { await db.prepare("ALTER TABLE so_codes ADD COLUMN reminded INTEGER NOT NULL DEFAULT 0").run(); } catch (_) {}
   ready = true;
 }
 
@@ -61,13 +64,24 @@ export function guard(fn) {
 export async function kvGet(db, k) { const r = await db.prepare("SELECT v FROM so_kv WHERE k = ?").bind(k).first(); return r ? r.v : null; }
 export async function kvSet(db, k, v) { await db.prepare("INSERT INTO so_kv (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v").bind(k, v == null ? null : String(v)).run(); }
 
+// Tariflar Sahna Nuri bilan bir xil (Start 25 000 / PRO 50 000 / PRO yil 300 000). Eski STD/PRO tariflari o'chirilmaydi —
+// yashiriladi (active:false), shunda kutilayotgan eski to'lovlar ham tasdiqlanadi. Bir marta bajariladi (tv: 2).
+const TARIFF_V = 2;
+function migrateTariffs(s) {
+  if (!Array.isArray(s.tariffs) || !s.tariffs.length || (s.tv || 0) >= TARIFF_V) return false;
+  const old = s.tariffs.filter((t) => !DEFAULT_SETTINGS.tariffs.some((d) => d.id === t.id)).map((t) => ({ ...t, active: false }));
+  s.tariffs = [...DEFAULT_SETTINGS.tariffs.map((t) => ({ ...t })), ...old];
+  s.tv = TARIFF_V;
+  return true;
+}
 export async function getSettings(db) {
   const raw = await kvGet(db, "settings");
   let s = {};
   try { s = raw ? JSON.parse(raw) : {}; } catch { s = {}; }
+  if (migrateTariffs(s)) await kvSet(db, "settings", JSON.stringify(s));
   return { ...DEFAULT_SETTINGS, ...s, card: { ...DEFAULT_SETTINGS.card, ...(s.card || {}) }, contact: { ...DEFAULT_SETTINGS.contact, ...(s.contact || {}) }, bot: { ...DEFAULT_SETTINGS.bot, ...(s.bot || {}) }, tariffs: Array.isArray(s.tariffs) && s.tariffs.length ? s.tariffs : DEFAULT_SETTINGS.tariffs, trialDays: Number.isFinite(+s.trialDays) ? Math.max(0, Math.min(30, Math.round(+s.trialDays))) : 1 };
 }
-export async function saveSettings(db, s) { await kvSet(db, "settings", JSON.stringify(s)); }
+export async function saveSettings(db, s) { await kvSet(db, "settings", JSON.stringify({ ...s, tv: TARIFF_V })); }
 
 /* ---- admin: GitHub token bilan kirish (AZ-Playlist / AZ-ARENA bilan bir xil) ---- */
 async function sha256(s) { const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)); return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join(""); }
