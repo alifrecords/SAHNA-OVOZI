@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.20.1: Soddaroq to'lov oynasi
+
+«Qurilma kodini adminga to'g'ridan-to'g'ri yuborish» bo'limi olib tashlandi. To'lov endi uch qadam: tarifni tanlash → kartaga o'tkazish → chek rasmini yuborish. Uchta tarif bir qatorda.
+
 ## 1.20.0: To'lov va tariflar Sahna Nuri bilan bir xil
 
 | Bo'lim | Nima o'zgardi |
