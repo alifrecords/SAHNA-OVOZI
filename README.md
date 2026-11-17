@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.20.2: Admin ro'yxatlarida ism va nik
+
+«Foydalanuvchilar» va «Berilgan kodlar» jadvallarida qurilma kodi ostida foydalanuvchi yuborgan ism / Telegram nik ko'rinadi (oxirgi to'lovdan, bo'lmasa yozishmadagi ismdan). Qidiruv ism va nik bo'yicha ham ishlaydi.
+
 ## 1.20.1: Soddaroq to'lov oynasi
 
 «Qurilma kodini adminga to'g'ridan-to'g'ri yuborish» bo'limi olib tashlandi. To'lov endi uch qadam: tarifni tanlash → kartaga o'tkazish → chek rasmini yuborish. Uchta tarif bir qatorda.
