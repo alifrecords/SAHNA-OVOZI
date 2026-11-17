@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.19.2: Cue qatorini silab ovoz boshqarish (sensor)
+
+Telefon, planshet va iPad'da Sahnalar ketma-ketligidagi cue qatorini barmoq bilan chapga silasangiz ovoz pasayadi, o'ngga silasangiz ko'tariladi (−30…+12 dB, 0,5 dB qadam). Daraja qator ustida shaffof yashil chiziq bilan ko'rinadi, 0 dB oq chiziq bilan belgilangan. Chalinayotgan cue ovozi darhol o'zgaradi. Yuqoriga/pastga aylantirish va sichqoncha ishi o'zgarmagan.
+
 ## 1.19.1: Faylga nom berish va bo'limga joylash
 
 | Bo'lim | Nima qilindi |
