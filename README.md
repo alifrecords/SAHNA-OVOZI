@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.20.3: Cue nomi audio nomidan olinadi
+
+Cue ustiga 2 marta bosib audio almashtirilsa (qurilmadan yoki kutubxonadan), cue ro'yxatda o'sha audio nomi bilan ko'rinadi. Audioning nomi «nomi / bo'limi» oynasida o'zgartirilsa, shu audio qo'yilgan barcha cue nomlari ham yangilanadi.
+
 ## 1.20.2: Admin ro'yxatlarida ism va nik
 
 «Foydalanuvchilar» va «Berilgan kodlar» jadvallarida qurilma kodi ostida foydalanuvchi yuborgan ism / Telegram nik ko'rinadi (oxirgi to'lovdan, bo'lmasa yozishmadagi ismdan). Qidiruv ism va nik bo'yicha ham ishlaydi.

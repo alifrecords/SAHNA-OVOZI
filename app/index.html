@@ -2089,9 +2089,9 @@ document.addEventListener('change',e=>{if(e.target.id==='mpIn')mpAddFiles(e.targ
 /* ---------- planshet / telefon: cue ustiga 2 marta bosish — ovozni almashtirish ----------
    musiqa / SFX / dublaj cue: qurilmadan fayl yoki kutubxonadan tanlash; atmosfera cue: qatlamlar muharriri */
 function cueSet(i,id){
- const c=show.cues[i];if(!c||!id)return;c.ref=id;delete c.trim;delete c.ps;
+ const c=show.cues[i];if(!c||!id)return;c.ref=id;delete c.trim;delete c.ps;c.name=titleOf(id)||c.name;
  voices.filter(v=>v.preview).forEach(v=>stopVoice(v,.05));
- saveShow();renderCues();renderNow();toast('Q'+(i+1)+' · '+c.name+' ← '+titleOf(id));logEvent('Cue ovozi: Q'+(i+1)+' ← '+titleOf(id));
+ saveShow();renderCues();renderNow();toast('Q'+(i+1)+' ← '+c.name);logEvent('Cue ovozi: Q'+(i+1)+' ← '+titleOf(id));
 }
 let cswTimer=null,cswTap={};
 function cswEdit(i,id,b){
@@ -2121,7 +2121,7 @@ function cueSwap(i){
     cueSet(i,id);closeModal();return;}
    if(d.csedsave){const id=d.csedsave,box=b.closest('.cswed'),nm=box.querySelector('[data-csedname]').value.trim().slice(0,80),cat=(box.querySelector('.cswcat .on')||{}).dataset;const k=cat?cat.cscat:'user',tc=box.querySelector('[data-csedtype]'),trOn=tc&&!tc.closest('.csedtr').hidden&&tc.checked;
     if(!nm){toast('Nomini yozing');return;}
-    show.assetMeta=show.assetMeta||{};show.assetMeta[id]={title:nm,cat:k==='user'?null:k};assetMetaApply();
+    show.assetMeta=show.assetMeta||{};show.assetMeta[id]={title:nm,cat:k==='user'?null:k};assetMetaApply();show.cues.forEach(q=>{if(q.ref===id)q.name=nm;});
     let extra='';if(trOn){if(k==='atmos'){const key=uid('s');show.scenes[key]={name:nm,layers:[{a:id,v:80,t:''}]};c.type='atmos';c.ref=key;extra=' · Q'+(i+1)+' atmosfera cue bo\'ldi';}else{c.type=k;extra=' · Q'+(i+1)+' turi: '+GROUP_N[k];}}
     saveShow();renderAll();logEvent('Fayl: «'+nm+'» → '+GROUP_N[k]+extra);toast('✓ «'+nm+'» → '+GROUP_N[k]+extra);
     if(c.type==='atmos'){closeModal();return;}cueSwap(i);return;}
