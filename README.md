@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.22.5: Masofaviy pult — telefon ko'rinishi
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Kamera ekrani | Telefonda pastga tushirilganda ham yuqorida qotib turadi (ekran balandligining ~⅓ qismi) |
+| «Hozir sahnada» | Ingichka: 1-qator — cue nomi va dB, 2-qator — − slayder + va GO, ostida «Keyingi: …» |
+| Yuqori panel | Telefonda ixcham va o'zi bilan birga surilmaydi (ekran kameraga qoladi) |
+| Klaviatura ro'yxati | Sensorli telefonda yashiriladi |
+
 ## 1.22.4: Masofaviy pultda joriy ijro balandligi
 
 «Hozir sahnada» kartasida jonli cue uchun **− / slayder / +** (−30…+12 dB, 0,5 dB qadam; − / + tugmalari 1 dB). Teatr pultida cue darajasi (Num ± bilan bir xil) o'zgaradi va chalinayotgan ovozga darhol ta'sir qiladi. Telefonda barmoq bilan surish uchun katta.

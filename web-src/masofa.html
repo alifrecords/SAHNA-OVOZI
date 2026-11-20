@@ -18,7 +18,6 @@ button:active{transform:scale(.98)}button.pri{background:#F2A93B;border-color:#F
 button.danger{border-color:#7a2a2d;color:#ff8a8d}button.on{border-color:#3DD68C;color:#3DD68C}
 button:disabled{opacity:.4;cursor:not-allowed}
 .wrap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;padding:14px;max-width:1500px;margin:0 auto}
-@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
 .card{background:#14161b;border:1px solid #23262d;border-radius:14px;padding:12px 14px}
 .lbl{font-size:11px;font-weight:700;letter-spacing:.1em;color:#8b90a0;margin:0 0 8px;text-transform:uppercase}
 .vid{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
@@ -35,8 +34,11 @@ video{width:100%;height:100%;object-fit:contain;display:block}
 .cue .cg,.pad .g{color:#F2A93B;font:700 11px ui-monospace,Consolas,monospace}
 .cgrow{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:10px;align-items:center;margin-top:12px}
 .cgrow button{font-size:20px;padding:10px 0}
-.cgv{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px}.cgv b{font:800 20px ui-monospace,Consolas,monospace;color:#F2A93B}
+.cgv{margin-top:12px}
+.nowh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.nowh .big{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cgval{font:800 20px ui-monospace,Consolas,monospace;color:#F2A93B;white-space:nowrap}
 #cgain{height:44px}
+.mgo,.mnext{display:none}
 .tnote{font-size:12px;margin-top:4px;color:#3DD68C}.tnote.bad{color:#F2A93B}
 .cues{max-height:340px;overflow:auto}
 .fr{display:grid;grid-template-columns:86px minmax(0,1fr) 64px 34px;align-items:center;gap:8px;margin:8px 0}
@@ -55,6 +57,26 @@ input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
 .keys{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px;color:#8b90a0}
 kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px solid #2f343d;border-radius:5px;color:#E8E8EA;white-space:nowrap}
 .kflash{outline:2px solid #F2A93B;outline-offset:1px}
+@media (max-width:900px) and (pointer:coarse){.keyc{display:none}}
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:10px;padding:0 10px 10px}
+  .top{position:static;padding:6px 10px;gap:6px}.top .brand small{display:none}.top .pill{font-size:11px;padding:3px 8px}.top button{padding:6px 10px;font-size:12px}
+  .col{display:contents}
+  .vstick{position:sticky;top:0;z-index:6;background:#0E0F12;padding:8px 0}
+  .wrap{gap:8px}.wrap .card{margin-top:0!important}
+  .vid{max-height:34vh;aspect-ratio:auto;height:min(34vh,calc((100vw - 20px)*9/16))}
+  .vctl button{padding:5px 9px;font-size:12px}
+  .card{padding:8px 10px}.wrap .card{margin-top:8px!important}
+  .nowc .lbl,.nowc #nowSub,.nowc .cgv{display:none}
+  .nowc .big{font-size:16px}.cgval{font-size:15px}
+  .cgrow{grid-template-columns:36px minmax(0,1fr) 36px 64px;gap:6px;margin-top:4px}
+  .mgo{display:block;padding:0!important;height:34px;font-size:13px!important}
+  .mnext{display:block;margin:4px 0 0;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nowc:has(#cgBox:not([hidden])) .btns{display:none}
+  .cgrow button{font-size:18px;padding:4px 0;height:34px}
+  #cgain{height:30px}
+  .nowc .btns{margin-top:6px!important;flex-wrap:nowrap}.nowc #goBtn{padding:6px 14px}.nowc #goHint{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 </style>
 </head>
 <body>
@@ -77,18 +99,19 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     <button id="leave" type="button">Chiqish</button>
   </div>
   <div class="wrap">
-    <div>
-      <div class="vid"><video id="vid" playsinline autoplay muted></video><span class="vbad" id="vbad" hidden>● JONLI</span>
+    <div class="col">
+      <div class="vstick"><div class="vid"><video id="vid" playsinline autoplay muted></video><span class="vbad" id="vbad" hidden>● JONLI</span>
         <div class="vmsg" id="vmsg">Sahnadagi telefon-kamera kutilmoqda…<br>Telefonda: sahna-ovozi.pages.dev/kamera → shu kod</div>
         <div class="vctl"><button id="snd" type="button">🔇 Zal ovozi</button><button id="vre" type="button">↻</button></div>
-      </div>
-      <div class="card" style="margin-top:14px">
+      </div></div>
+      <div class="card nowc" style="margin-top:14px">
         <p class="lbl">Hozir sahnada</p>
-        <p class="big" id="now">—</p>
+        <div class="nowh"><p class="big" id="now">—</p><b id="cgV" class="cgval" hidden>0 dB</b></div>
         <p class="hint" id="nowSub"></p>
         <div id="cgBox" hidden>
-          <div class="cgv"><span class="hint">Shu ijrodagi ovoz balandligi</span><b id="cgV">0 dB</b></div>
-          <div class="cgrow"><button type="button" id="cgDn" aria-label="Pasaytirish">−</button><input type="range" id="cgain" min="-30" max="12" step="0.5" value="0" aria-label="Joriy cue balandligi"><button type="button" id="cgUp" aria-label="Balandlatish">+</button></div>
+          <div class="cgv hint">Shu ijrodagi ovoz balandligi</div>
+          <div class="cgrow"><button type="button" id="cgDn" aria-label="Pasaytirish">−</button><input type="range" id="cgain" min="-30" max="12" step="0.5" value="0" aria-label="Joriy cue balandligi"><button type="button" id="cgUp" aria-label="Balandlatish">+</button><button type="button" class="pri mgo" id="goBtn2">GO ▶</button></div>
+          <p class="hint mnext" id="goHint2"></p>
         </div>
         <div class="btns" style="margin-top:10px"><button class="pri" id="goBtn" type="button">GO ▶</button><span class="hint" id="goHint"></span></div>
       </div>
@@ -97,7 +120,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
         <div class="cues" id="cues"></div>
       </div>
     </div>
-    <div>
+    <div class="col">
       <div class="card">
         <p class="lbl">Mikser · teatrda o'sha zahoti o'zgaradi</p>
         <div id="faders"></div>
@@ -120,7 +143,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
         <p class="log" id="log">Oxirgi buyruq: —</p>
         <p class="tnote" id="tnote"></p>
       </div>
-      <div class="card" style="margin-top:14px">
+      <div class="card keyc" style="margin-top:14px">
         <p class="lbl">Klaviatura — Sahna Ovozi'dagi kabi</p>
         <div class="keys">
           <kbd>Probel</kbd><span>GO — keyingi cue</span>
@@ -211,11 +234,12 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     const pv = $('#pVer'); const old_ = vlt(s.ver, NEED); pv.hidden = !old_; if (old_) pv.textContent = '⚠ Teatr pulti eski: ' + (s.ver || '≤1.22.0') + ' — yangilang';
     $('#pShow').textContent = (s.title || 'Spektakl') + (s.live ? ' · JONLI' : '');
     const goOk = !!(s.perms && s.perms.go);
-    $('#goBtn').disabled = !goOk; $('#panic').disabled = !goOk;
+    $('#goBtn').disabled = !goOk; $('#goBtn2').disabled = !goOk; $('#panic').disabled = !goOk;
+    $('#goHint2').textContent = s.cues[s.next] && s.next !== s.cur ? 'Keyingi: Q' + (s.next + 1) + ' · ' + s.cues[s.next].n : '';
     $('#goHint').textContent = goOk ? (s.cues[s.next] ? 'Keyingi: Q' + (s.next + 1) + ' · ' + s.cues[s.next].n : 'Ro‘yxat tugadi') : 'GO teatrdagi pultda (ruxsat berilmagan)';
     const c = s.cues[s.cur];
     $('#now').textContent = c ? 'Q' + (s.cur + 1) + ' · ' + c.n : 'Spektakl boshlanishini kutmoqda';
-    $('#cgBox').hidden = !c;
+    $('#cgBox').hidden = !c; $('#cgV').hidden = !c;
     if (c && !(Date.now() - (R.touch.cg || 0) < 1500 && R.cgI === s.cur)) { $('#cgain').value = c.g || 0; $('#cgV').textContent = dbStr(c.g || 0); }
     R.cgI = s.cur;
     $('#nowSub').textContent = c ? (TYPE[c.ty] || '') + (c.lt ? ' · 💡 ' + c.lt : '') : '';
@@ -277,7 +301,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     if (b.dataset.mute) { const k = b.dataset.mute; cmd({ t: 'mute', k }, 'Mute: ' + k); b.classList.toggle('on'); }
     else if (b.dataset.i != null) { if (!(R.st && R.st.perms.go)) { log('Cue tanlash uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'sel', i: +b.dataset.i }, 'Keyingi: Q' + (+b.dataset.i + 1)); }
     else if (b.dataset.pad != null) { if (!(R.st && R.st.perms.go)) { log('SFX tugmalari uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'pad', i: +b.dataset.pad }, 'SFX ' + b.querySelector('.k').textContent); b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 250); }
-    else if (b.id === 'goBtn') cmd({ t: 'go' }, 'GO');
+    else if (b.id === 'goBtn' || b.id === 'goBtn2') cmd({ t: 'go' }, 'GO');
     else if (b.id === 'panic') { if (b.dataset.arm) { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; cmd({ t: 'panic' }, 'HAMMASINI TO‘XTATISH'); } else { b.dataset.arm = 1; b.textContent = 'Yana bosing ■'; setTimeout(() => { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; }, 2500); } }
     else if (b.id === 'musoff') cmd({ t: 'musoff' }, 'Musiqani so‘ndirish');
     else if (b.id === 'atmoff') cmd({ t: 'atmoff' }, 'Atmosferani so‘ndirish');
