@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.22.1: ⌨ Masofaviy pultda klaviatura va SFX tugmalari
+
+Masofadagi operator sahifasida (`/masofa`) Sahna Ovozi'ning klaviatura tugmalari teatr pultidagi bilan bir xil ishlaydi: Probel (GO), Esc, ↑↓, 1–8 · QWER · ASDF (SFX), [ ], ← →, Home, L, End · Num /, Num *, Num 0, Num ±, Shift / Ctrl / Ctrl+Shift + Num ±. Joriy SFX banki 4×4 tugmalar sifatida ko'rinadi va bosilsa chaladi. GO, Esc, ↑↓, L va SFX — teatr pultida «GO ham mumkin» ruxsati bo'lsa.
+
 ## 1.22.0: 📡 Masofaviy pult — jonli video va masofadan boshqarish
 
 Teatr kompyuteri **asosiy pult** bo'lib qoladi (ovoz va chiroq shu yerdan chiqadi). Masofadagi operator sahnani telefon-kamera orqali jonli ko'rib-eshitib, balansni boshqaradi.

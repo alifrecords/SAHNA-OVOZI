@@ -42,6 +42,13 @@ input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
 .join input{background:#16181d;border:1px solid #2c3038;color:#fff;border-radius:10px;padding:12px;font:700 24px ui-monospace,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;width:200px;text-align:center}
 .hint{color:#8b90a0;font-size:12px}.log{color:#8b90a0;font-size:12px;margin-top:8px}
 .big{font-size:20px;font-weight:700;margin:0}
+.pads{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pad{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:7px 8px;min-height:52px;text-align:left}
+.pad .k{font:700 11px ui-monospace,Consolas,monospace;color:#8b90a0}.pad .t{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.pad.vac{opacity:.35}.pad.sel{border-color:#3DD68C}.pad.hit{background:#F2A93B;color:#14110a}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px;color:#8b90a0}
+kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px solid #2f343d;border-radius:5px;color:#E8E8EA;white-space:nowrap}
+.kflash{outline:2px solid #F2A93B;outline-offset:1px}
 </style>
 </head>
 <body>
@@ -93,9 +100,34 @@ input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
         <div class="fr"><span>Effekt</span><input type="range" min="0" max="100" step="1" id="amt"><span class="v" id="amtV">—</span><span></span></div>
       </div>
       <div class="card" style="margin-top:14px">
+        <p class="lbl" id="padT">SFX tugmalari</p>
+        <div class="pads" id="pads"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
         <p class="lbl">Tez buyruqlar</p>
         <div class="btns"><button id="musoff" type="button">Musiqani so'ndirish</button><button id="atmoff" type="button">Atmosferani so'ndirish</button><button id="alloff" type="button">Sahnani so'ndirish</button></div>
         <p class="log" id="log">Oxirgi buyruq: —</p>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl">Klaviatura — Sahna Ovozi'dagi kabi</p>
+        <div class="keys">
+          <kbd>Probel</kbd><span>GO — keyingi cue</span>
+          <kbd>Esc</kbd><span>Hammasini to'xtatish</span>
+          <kbd>↑ ↓</kbd><span>Keyingi cue'ni tanlash</span>
+          <kbd>1–8 · Q W E R · A S D F</kbd><span>SFX tugmalari</span>
+          <kbd>[ ]</kbd><span>SFX bankini almashtirish</span>
+          <kbd>← →</kbd><span>Tanlangan tugmada sample almashtirish</span>
+          <kbd>Home</kbd><span>Tanlangan SFX — pauza / davom</span>
+          <kbd>L</kbd><span>Joriy cue — loop</span>
+          <kbd>End · Num /</kbd><span>Musiqani so'ndirish</span>
+          <kbd>Num *</kbd><span>Atmosferani so'ndirish</span>
+          <kbd>Num 0</kbd><span>Sahnani so'ndirish</span>
+          <kbd>Num + / −</kbd><span>Tanlangan cue darajasi</span>
+          <kbd>Shift + Num ±</kbd><span>Tanlangan SFX tugma darajasi</span>
+          <kbd>Ctrl + Num ±</kbd><span>Master fader</span>
+          <kbd>Ctrl + Shift + Num ±</kbd><span>SFX fader</span>
+        </div>
+        <p class="hint" id="keyHint" style="margin-top:8px"></p>
       </div>
     </div>
   </div>
@@ -194,6 +226,12 @@ input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
       }
       sc.layers.forEach((l, i) => { if (!(now - (R.touch['l' + i] || 0) < 1500)) { document.querySelector('[data-layer="' + i + '"]').value = l.v; $('#lv_' + i).textContent = l.v + '%'; } });
     }
+    const pd = s.pads;
+    if (pd) {
+      $('#padT').textContent = 'SFX tugmalari · ' + (pd.bank || '');
+      $('#pads').innerHTML = pd.list.map((p, i) => p ? '<button type="button" class="pad' + (i === pd.sel ? ' sel' : '') + '" data-pad="' + i + '"><span class="k">' + esc(p.k) + '</span><span class="t">' + esc(p.t) + '</span></button>' : '<button type="button" class="pad vac" disabled><span class="k">' + ['1','2','3','4','5','6','7','8','Q','W','E','R','A','S','D','F'][i] + '</span><span class="t">bo‘sh</span></button>').join('');
+    }
+    $('#keyHint').textContent = goOk ? '' : 'GO, Esc, ↑↓, L va SFX tugmalari teatr pultida «GO ham mumkin» ruxsati yoqilganda ishlaydi.';
     if (!(now - (R.touch.amt || 0) < 1500)) { $('#amt').value = s.amt; $('#amtV').textContent = s.amt + '%'; }
     if (s.ack && R.sent[s.ack]) { R.rtt = performance.now() - R.sent[s.ack]; delete R.sent[s.ack]; top(); }
   }
@@ -208,11 +246,31 @@ input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.mute) { const k = b.dataset.mute; cmd({ t: 'mute', k }, 'Mute: ' + k); b.classList.toggle('on'); }
     else if (b.dataset.i != null) { if (!(R.st && R.st.perms.go)) { log('Cue tanlash uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'sel', i: +b.dataset.i }, 'Keyingi: Q' + (+b.dataset.i + 1)); }
+    else if (b.dataset.pad != null) { if (!(R.st && R.st.perms.go)) { log('SFX tugmalari uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'pad', i: +b.dataset.pad }, 'SFX ' + b.querySelector('.k').textContent); b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 250); }
     else if (b.id === 'goBtn') cmd({ t: 'go' }, 'GO');
     else if (b.id === 'panic') { if (b.dataset.arm) { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; cmd({ t: 'panic' }, 'HAMMASINI TO‘XTATISH'); } else { b.dataset.arm = 1; b.textContent = 'Yana bosing ■'; setTimeout(() => { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; }, 2500); } }
     else if (b.id === 'musoff') cmd({ t: 'musoff' }, 'Musiqani so‘ndirish');
     else if (b.id === 'atmoff') cmd({ t: 'atmoff' }, 'Atmosferani so‘ndirish');
     else if (b.id === 'alloff') cmd({ t: 'alloff' }, 'Sahnani so‘ndirish');
+  });
+
+  /* ---------- klaviatura: Sahna Ovozi tugmalari teatr pultiga ---------- */
+  const PADK = ['Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','KeyQ','KeyW','KeyE','KeyR','KeyA','KeyS','KeyD','KeyF'];
+  const KEYN = { Space: 'Probel', Escape: 'Esc', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', BracketLeft: '[', BracketRight: ']', Home: 'Home', End: 'End', KeyL: 'L', NumpadDivide: 'Num /', NumpadMultiply: 'Num *', Numpad0: 'Num 0', NumpadAdd: 'Num +', NumpadSubtract: 'Num −' };
+  const REPEAT = ['NumpadAdd', 'NumpadSubtract', 'ArrowUp', 'ArrowDown'];
+  document.addEventListener('keydown', (e) => {
+    if ($('#app').hidden || e.altKey || e.metaKey) return;
+    const t = e.target; if (t && (t.tagName === 'INPUT' && t.type !== 'range' || t.tagName === 'TEXTAREA')) return;
+    const c = e.code, num = c === 'NumpadAdd' || c === 'NumpadSubtract';
+    if (t && t.type === 'range' && /^Arrow/.test(c)) return;
+    if (e.ctrlKey && !num) return;
+    if (!(KEYN[c] || PADK.includes(c))) return;
+    e.preventDefault();
+    if (e.repeat && !REPEAT.includes(c)) return;
+    const nm = (e.ctrlKey ? 'Ctrl+' : '') + (e.shiftKey ? 'Shift+' : '') + (KEYN[c] || c.replace(/^(Digit|Key)/, ''));
+    cmd({ t: 'key', code: c, ctrl: e.ctrlKey, shift: e.shiftKey }, nm);
+    const pi = PADK.indexOf(c); if (pi >= 0) { const b = document.querySelector('[data-pad="' + pi + '"]'); if (b) { b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 250); } }
+    if (c === 'Space') { const g = $('#goBtn'); g.classList.add('kflash'); setTimeout(() => g.classList.remove('kflash'), 300); }
   });
 
   async function loop(my) {
