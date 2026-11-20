@@ -32,7 +32,11 @@ contextBridge.exposeInMainWorld('azNative', {
   onAsioDead: cb => ipcRenderer.on('asio-dead', (_e, c) => cb(c)),
   onMenu: cb => ipcRenderer.on('menu', (_e, c) => cb(c)),
   onOpenFile: cb => ipcRenderer.on('open-file', (_e, p) => cb(p)),
-  onCloseRequest: cb => ipcRenderer.on('close-request', () => cb())
+  onCloseRequest: cb => ipcRenderer.on('close-request', () => cb()),
+  // 💡 Cue-Link: Sahna Nuri'ga lokal signal
+  linkSend: msg => ipcRenderer.invoke('link-send', msg),
+  linkInfo: () => ipcRenderer.invoke('link-info'),
+  onLinkClients: cb => ipcRenderer.on('link-clients', (_e, n) => cb(n))
 });
 
 // ASIO: sahifadagi AudioWorklet porti asosiy jarayonga to'g'ridan-to'g'ri uzatiladi

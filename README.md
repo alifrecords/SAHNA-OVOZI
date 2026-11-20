@@ -3,6 +3,18 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.21.0: 💡 Cue-Link — Sahna Nuri (chiroq) bilan bog'lash
+
+Cue GO bo'lganda unga biriktirilgan **Sahna Nuri** chiroq cue'si o'zi yonadi.
+
+| Bo'lim | Nima qilindi |
+|---|---|
+| Cue → ✎ | Yangi maydon **💡 Sahna Nuri cue**: Nuri'dagi cue raqami (`5`) yoki nomi (`Portlash`), `BO` — blackout. Yonida **ms** — chiroq ovozdan necha ms keyin yonsin |
+| Cue ro'yxati | Biriktirilgan cue'da sariq **💡5** belgisi |
+| Yuqori panel | **💡 NURI** tugmasi: yashil — ulangan. Oynada online xona kodi, holat va «Sinov signali» |
+| Lokal (shu kompyuter) | O'rnatilgan dastur `127.0.0.1:47810` da signal tarqatadi, Sahna Nuri unga o'zi ulanadi — internetsiz (`electron/link.js`) |
+| Online | 6 belgili xona kodi orqali `sahna-nuri.pages.dev/api/link` — boshqa kompyuter, planshet yoki sayt uchun |
+
 ## 1.20.3: Cue nomi audio nomidan olinadi
 
 Cue ustiga 2 marta bosib audio almashtirilsa (qurilmadan yoki kutubxonadan), cue ro'yxatda o'sha audio nomi bilan ko'rinadi. Audioning nomi «nomi / bo'limi» oynasida o'zgartirilsa, shu audio qo'yilgan barcha cue nomlari ham yangilanadi.

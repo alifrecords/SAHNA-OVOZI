@@ -1113,3 +1113,41 @@ Start tarifidagi hamma narsa	Всё из тарифа Start	Everything in Start
 Start · 1 oy	Start · 1 мес	Start · 1 month
 PRO · 1 oy	PRO · 1 мес	PRO · 1 month
 PRO · 1 yil	PRO · 1 год	PRO · 1 year
+Sahna Nuri — chiroq bilan bog'lash (Cue-Link)	Sahna Nuri — связь со светом (Cue-Link)	Sahna Nuri — link with lighting (Cue-Link)
+Sahna Nuri bilan bog'lash	Связь с Sahna Nuri	Link with Sahna Nuri
+💡 Sahna Nuri bilan bog'lash · Cue-Link	💡 Связь с Sahna Nuri · Cue-Link	💡 Link with Sahna Nuri · Cue-Link
+NURI: o'chiq	NURI: выкл	NURI: off
+NURI · lokal	NURI · локально	NURI · local
+NURI · online	NURI · онлайн	NURI · online
+💡 Sahna Nuri cue (chiroq)	💡 Cue Sahna Nuri (свет)	💡 Sahna Nuri cue (light)
+masalan: 5 yoki Portlash · BO = blackout	например: 5 или Взрыв · BO = blackout	e.g. 5 or Explosion · BO = blackout
+Chiroq kechikishi, millisekund	Задержка света, мс	Light delay, ms
+Sahna Nuri cue	Cue Sahna Nuri	Sahna Nuri cue
+Sahna Nuri’ga signal yuborish	Отправлять сигнал в Sahna Nuri	Send signals to Sahna Nuri
+Online xona kodi (Sahna Nuri → Ulanish → «2 · Online xona kodi»)	Онлайн-код комнаты (Sahna Nuri → Подключение → «2 · Онлайн-код комнаты»)	Online room code (Sahna Nuri → Connection → “2 · Online room code”)
+Bitta kompyuterda o'rnatilgan dastur bilan ishlasangiz kod shart emas — lokal yo'l o'zi ulanadi.	Если работаете в установленной программе на одном компьютере, код не нужен — локальная связь подключится сама.	If you use the installed app on one computer, no code is needed — the local link connects by itself.
+💡 Sinov signali	💡 Тестовый сигнал	💡 Test signal
+Sahna Nuri’ni ochish ↗	Открыть Sahna Nuri ↗	Open Sahna Nuri ↗
+Tozalash	Очистить	Clear
+1 · Lokal:	1 · Локально:	1 · Local:
+2 · Online	2 · Онлайн	2 · Online
+● Ulangan	● Подключено	● Connected
+○ Kutilmoqda	○ Ожидание	○ Waiting
+Sahna Nuri’ni Chrome/Edge’da oching	откройте Sahna Nuri в Chrome/Edge	open Sahna Nuri in Chrome/Edge
+○ Faqat o'rnatilgan dasturda	○ Только в установленной программе	○ Installed app only
+saytda online kodni ishlating	на сайте используйте онлайн-код	on the website use the online code
+○ Kod kiritilmagan	○ Код не введён	○ No code entered
+✕ Serverga ulanib bo'lmadi	✕ Нет связи с сервером	✕ Cannot reach the server
+(internet yoki kod xato)	(интернет или неверный код)	(internet or wrong code)
+● Sahna Nuri online	● Sahna Nuri онлайн	● Sahna Nuri online
+○ Sahna Nuri ko'rinmayapti	○ Sahna Nuri не виден	○ Sahna Nuri not visible
+Nuri’da shu kod ochiq turibdimi?	открыт ли этот код в Nuri?	is this code open in Nuri?
+Oxirgi signal:	Последний сигнал:	Last signal:
+Kod 6 belgidan iborat bo'lishi kerak	Код должен состоять из 6 символов	The code must be 6 characters
+Xona kodi tozalandi	Код комнаты очищен	Room code cleared
+Avval «Sahna Nuri’ga signal yuborish»ni yoqing	Сначала включите «Отправлять сигнал в Sahna Nuri»	First turn on “Send signals to Sahna Nuri”
+Online xona kodini kiriting	Введите онлайн-код комнаты	Enter the online room code
+Sinov signali yuborildi — Sahna Nuri’da xabar chiqishi kerak	Тестовый сигнал отправлен — в Sahna Nuri должно появиться сообщение	Test signal sent — a message should appear in Sahna Nuri
+Sahna Nuri signallari yoqildi	Сигналы Sahna Nuri включены	Sahna Nuri signals on
+Sahna Nuri signallari o'chirildi	Сигналы Sahna Nuri выключены	Sahna Nuri signals off
+💡 Sahna Nuri ulandi (lokal)	💡 Sahna Nuri подключён (локально)	💡 Sahna Nuri connected (local)
