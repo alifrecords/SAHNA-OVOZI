@@ -2988,6 +2988,7 @@ setTimeout(linkCheck,2500);
    sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
    Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
 const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
+const RM_VER='__APPVER__';
 const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
 try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
 function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}
@@ -2999,7 +3000,7 @@ function rmState(){
  return {title:show.title,live:showStart!=null,cur,next,cues:show.cues.slice(0,300).map(c=>({n:c.name,ty:c.type,lt:c.lt||'',g:c.g||0})),
   busN:BUSES.map(b=>[b[0],b[1]]),bus:Object.fromEntries(BUSES.map(([k])=>[k,{v:buses[k]?buses[k].val:80,m:!!(buses[k]&&buses[k].muted)}])),
   scene:scene?{name:sc?sc.name:'',layers:scene.layers.map(l=>({t:layerTitle(l),v:l.v}))}:null,
-  amt:Math.round((dub.amount==null?.6:dub.amount)*100),perms:{go:RM.go},ack:RM.ack,
+  amt:Math.round((dub.amount==null?.6:dub.amount)*100),perms:{go:RM.go},ack:RM.ack,ver:RM_VER,
   pads:{bank:(show.banks[bank]||{}).name||'',sel:selPad,list:((show.banks[bank]||{}).pads||[]).map((p,i)=>p?{k:KEYS[i][1],t:padTitle(p),g:p.g||0}:null)},note:RM.note||null};
 }
 async function rmPost(body){
@@ -3090,6 +3091,8 @@ function rmMenu(){
 }
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rmBtn');if(b)rmMenu();});
 setInterval(rmUI,5000);
+// sayt versiyasi: yangisi chiqsa — bir marta eslatamiz (spektakl o'rtasida o'zi qayta yuklanmaydi)
+if(!window.azNative&&/^https?:$/.test(location.protocol)){let told='';const vchk=async()=>{try{const r=await fetch('version.json',{cache:'no-store'});const j=await r.json();if(j&&j.v&&j.v!==RM_VER&&told!==j.v){told=j.v;toast('Sahna Ovozi '+j.v+' chiqdi — tanaffusda sahifani Ctrl+F5 bilan yangilang');}}catch(e){}};setTimeout(vchk,8000);setInterval(vchk,600000);}
 rmStart();
 
 /* ---------- files ---------- */

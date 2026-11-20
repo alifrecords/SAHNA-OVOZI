@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.22.3: Masofaviy pult teatr pulti versiyasini tekshiradi
+
+Klaviatura buyruqlari (Probel, 1–8, Num ± …) teatr pultining o'zida bajariladi — u **1.22.3** yoki yangi bo'lishi kerak. Endi masofaviy pult buni o'zi ko'rsatadi: teatr pulti eski bo'lsa yuqorida «⚠ Teatr pulti eski: … — yangilang», javob kelmagan buyruq ostida «⚠ Teatr pulti bu buyruqqa javob bermadi …». Sayt versiyasidagi pult yangi versiya chiqqanini o'zi eslatadi (o'zi qayta yuklanmaydi). `web/version.json` — sayt versiyasi.
+
 ## 1.22.2: Masofaviy pultda natija darhol ko'rinadi
 
 | Bo'lim | Nima qilindi |

@@ -67,6 +67,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     <span class="pill" id="pCam">Kamera: —</span>
     <span class="pill" id="pRtt">📡 —</span>
     <span class="pill" id="pShow">—</span>
+    <span class="pill err" id="pVer" hidden></span>
     <span style="flex:1"></span>
     <button class="danger" id="panic" type="button">■ TO'XTATISH</button>
     <button id="leave" type="button">Chiqish</button>
@@ -142,6 +143,8 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
   const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
   const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
   const TYPE = { music: 'Musiqa', sfx: 'SFX', dub: 'Dublaj', atmos: 'Atmosfera' };
+  const NEED = '1.22.3';
+  const vlt = (a, b) => { const x = String(a || '0').split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== y[i]) return (x[i] || 0) < y[i]; } return false; };
   const R = { room: '', gen: 0, st: null, stTs: 0, ages: {}, sent: {}, rtt: null, touch: {}, pc: null, vidOk: false, wantT: 0, seq: 0 };
   const dbStr = (d) => (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d).toFixed(Number.isInteger(d) ? 0 : 1) + ' dB';
   const faderDb = (v) => { if (v <= 0) return '−∞'; const d = (v - 80) * 0.75; return (d > 0 ? '+' : '') + d.toFixed(1).replace('-', '−') + ' dB'; };
@@ -154,6 +157,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
   }
   function cmd(m, label) {
     m.id = 'c' + (++R.seq) + Math.random().toString(36).slice(2, 5); R.sent[m.id] = performance.now();
+    const id = m.id; setTimeout(() => { if (R.sent[id]) { delete R.sent[id]; const n = $('#tnote'); n.className = 'tnote bad'; n.textContent = '⚠ Teatr pulti bu buyruqqa javob bermadi' + (R.st && vlt(R.st.ver, NEED) ? ' — u eski versiyada (' + (R.st.ver || '1.22.0 yoki eskiroq') + '). Teatrda sahifani Ctrl+F5 bilan yangilang yoki yangi .exe o‘rnating.' : ' (internet sekin yoki teatr pulti yopiq).'); } }, 4000);
     post('master', m); if (label) log('Oxirgi buyruq: ' + label + ' · teatrga yuborildi');
   }
   const log = (t) => { $('#log').textContent = t; };
@@ -196,6 +200,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
   }
   function render() {
     const s = R.st; if (!s) return;
+    const pv = $('#pVer'); const old_ = vlt(s.ver, NEED); pv.hidden = !old_; if (old_) pv.textContent = '⚠ Teatr pulti eski: ' + (s.ver || '≤1.22.0') + ' — yangilang';
     $('#pShow').textContent = (s.title || 'Spektakl') + (s.live ? ' · JONLI' : '');
     const goOk = !!(s.perms && s.perms.go);
     $('#goBtn').disabled = !goOk; $('#panic').disabled = !goOk;
