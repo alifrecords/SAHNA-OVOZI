@@ -3043,6 +3043,7 @@ function rmApply(m){
  else if(m.t==='alloff'){$('#allOff').click();t='sahnani so\'ndirish';}
  else if(m.t==='key'){t=rmKey(m);}
  else if(m.t==='pad'&&RM.go){const i=+m.i,p=show.banks[bank].pads[i];if(p&&!editing){hitPad(i);t='SFX '+KEYS[i][1]+' · '+padTitle(p);}}
+ else if(m.t==='fire'&&RM.go){const i=+m.i;if(i>=0&&i<show.cues.length){fireCue(i);t='GO · Q'+(i+1)+' · '+show.cues[i].name+' (2× bosish)';}}
  else if(m.t==='go'&&RM.go){go();t='GO';}
  else if(m.t==='panic'&&RM.go){panic();t='HAMMASINI TO\'XTATISH';}
  if(m.id)RM.ack=m.id;

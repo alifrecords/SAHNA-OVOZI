@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.22.6: Masofaviy pultda cue ustiga 2 marta bosish — GO
+
+Masofaviy pultdagi cue ro'yxatida: **1 marta** bosish — keyingi qilib tanlaydi, **2 marta** bosish — shu cue'ni darhol GO qiladi. Teatr pulti uni oddiy GO kabi chaladi: «O'tish (fade) vaqti» bo'yicha, oldingi musiqa shu fade bilan so'nadi. «GO ham mumkin» ruxsati kerak.
+
 ## 1.22.5: Masofaviy pult — telefon ko'rinishi
 
 | Bo'lim | Nima qilindi |

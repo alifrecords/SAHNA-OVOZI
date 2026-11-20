@@ -25,7 +25,7 @@ video{width:100%;height:100%;object-fit:contain;display:block}
 .vbad{position:absolute;top:10px;left:10px;background:#E5484D;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
 .vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#8b90a0;padding:20px}
 .vctl{position:absolute;bottom:10px;right:10px;display:flex;gap:6px}
-.cue{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #23262d;border-radius:9px;margin:5px 0;cursor:pointer;background:transparent;width:100%;text-align:left;color:inherit;font:inherit}
+.cue{touch-action:manipulation;display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #23262d;border-radius:9px;margin:5px 0;cursor:pointer;background:transparent;width:100%;text-align:left;color:inherit;font:inherit}
 .cue .n{font:700 12px ui-monospace,Consolas,monospace;color:#8b90a0;min-width:30px}.cue .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cue .tg{font-size:10px;font-weight:800;letter-spacing:.08em;color:#8b90a0}
 .cue.live{border-color:#F2A93B;background:rgba(242,169,59,.10)}.cue.live .tg{color:#F2A93B}
@@ -116,7 +116,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
         <div class="btns" style="margin-top:10px"><button class="pri" id="goBtn" type="button">GO ▶</button><span class="hint" id="goHint"></span></div>
       </div>
       <div class="card" style="margin-top:14px">
-        <p class="lbl">Cue'lar · bosilsa — keyingi qilib tanlanadi</p>
+        <p class="lbl">Cue'lar · 1 marta — keyingi · 2 marta — GO</p>
         <div class="cues" id="cues"></div>
       </div>
     </div>
@@ -174,7 +174,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
   const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
   const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
   const TYPE = { music: 'Musiqa', sfx: 'SFX', dub: 'Dublaj', atmos: 'Atmosfera' };
-  const NEED = '1.22.4';
+  const NEED = '1.22.6';
   const vlt = (a, b) => { const x = String(a || '0').split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== y[i]) return (x[i] || 0) < y[i]; } return false; };
   const R = { room: '', gen: 0, st: null, stTs: 0, ages: {}, sent: {}, rtt: null, touch: {}, pc: null, vidOk: false, wantT: 0, seq: 0 };
   const dbStr = (d) => (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d).toFixed(Number.isInteger(d) ? 0 : 1) + ' dB';
@@ -299,7 +299,12 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     const b = e.target.closest('button'); if (!b) return;
     if (b.id === 'cgDn' || b.id === 'cgUp') { cgSend(+$('#cgain').value + (b.id === 'cgUp' ? 1 : -1)); return; }
     if (b.dataset.mute) { const k = b.dataset.mute; cmd({ t: 'mute', k }, 'Mute: ' + k); b.classList.toggle('on'); }
-    else if (b.dataset.i != null) { if (!(R.st && R.st.perms.go)) { log('Cue tanlash uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'sel', i: +b.dataset.i }, 'Keyingi: Q' + (+b.dataset.i + 1)); }
+    else if (b.dataset.i != null) {
+      if (!(R.st && R.st.perms.go)) { log('Cue tanlash uchun teatr pultida GO ruxsati kerak'); return; }
+      const i = +b.dataset.i, now = Date.now();
+      if (R.tap && R.tap.i === i && now - R.tap.t < 400) { R.tap = null; cmd({ t: 'fire', i }, 'GO · Q' + (i + 1) + ' (2× bosish)'); b.classList.add('kflash'); setTimeout(() => b.classList.remove('kflash'), 400); return; }
+      R.tap = { i, t: now }; cmd({ t: 'sel', i }, 'Keyingi: Q' + (i + 1) + ' · yana bir bossangiz — GO');
+    }
     else if (b.dataset.pad != null) { if (!(R.st && R.st.perms.go)) { log('SFX tugmalari uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'pad', i: +b.dataset.pad }, 'SFX ' + b.querySelector('.k').textContent); b.classList.add('hit'); setTimeout(() => b.classList.remove('hit'), 250); }
     else if (b.id === 'goBtn' || b.id === 'goBtn2') cmd({ t: 'go' }, 'GO');
     else if (b.id === 'panic') { if (b.dataset.arm) { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; cmd({ t: 'panic' }, 'HAMMASINI TO‘XTATISH'); } else { b.dataset.arm = 1; b.textContent = 'Yana bosing ■'; setTimeout(() => { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; }, 2500); } }
