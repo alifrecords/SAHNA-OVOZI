@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0F12">
+<title>Kamera — Sahna Ovozi</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#0E0F12;color:#E8E8EA;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #23262d}
+header b{letter-spacing:.06em}header small{color:#F2A93B;letter-spacing:.14em;font-size:10px;display:block}
+main{flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px;max-width:720px;width:100%;margin:0 auto}
+.vid{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
+video{width:100%;height:100%;object-fit:contain;display:block}
+.live{position:absolute;top:10px;left:10px;background:#E5484D;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;display:none}
+.live.on{display:block}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input{background:#16181d;border:1px solid #2c3038;color:#fff;border-radius:10px;padding:12px;font:700 22px ui-monospace,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;width:180px;text-align:center}
+button{background:#1b1e24;border:1px solid #2f343d;color:#E8E8EA;border-radius:10px;padding:12px 16px;font:600 15px system-ui,sans-serif;cursor:pointer}
+button.pri{background:#F2A93B;border-color:#F2A93B;color:#14110a}
+button.on{border-color:#3DD68C;color:#3DD68C}
+.st{padding:10px 12px;border-radius:10px;background:#16181d;font-size:14px}
+.ok{color:#3DD68C}.wait{color:#F2A93B}.err{color:#E5484D}
+.hint{color:#8b90a0;font-size:13px}
+.meter{height:8px;border-radius:4px;background:#23262d;flex:1;min-width:120px}.meter i{display:block;height:8px;border-radius:4px;background:#3DD68C;width:0}
+</style>
+</head>
+<body>
+<header><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"/></svg><div><b>SAHNA OVOZI · KAMERA</b><small>AZIMXODJAYEV MUSIC</small></div></header>
+<main>
+  <div class="vid"><video id="pv" playsinline muted autoplay></video><span class="live" id="live">● JONLI EFIRDA</span></div>
+  <div class="row">
+    <input id="code" maxlength="6" placeholder="KOD" autocomplete="off" aria-label="Xona kodi">
+    <button class="pri" id="start" type="button">Kamerani yoqish</button>
+  </div>
+  <div class="row">
+    <button id="flip" type="button">↺ Old / orqa kamera</button>
+    <button id="mic" type="button" class="on">🎤 Zal ovozi: yoqiq</button>
+  </div>
+  <div class="row"><span class="hint">Zal ovozi</span><div class="meter"><i id="lvl"></i></div></div>
+  <div class="st" id="st">Kodni yozing (teatr kompyuterida: 📡 Masofaviy oynasida) va «Kamerani yoqish»ni bosing.</div>
+  <p class="hint">Telefonni shtativga qo'ying va quvvatga ulang. Ekran o'chib qolmasligi uchun bu sahifa ochiq tursin. Kamera bitta masofaviy operatorga jonli video va zal ovozini yuboradi.</p>
+</main>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
+  const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
+  const S = { room: '', stream: null, facing: 'environment', mic: true, pc: null, gen: 0, wake: null };
+  const q = new URLSearchParams(location.search).get('kod');
+  $('#code').value = (q || localStorage.getItem('sahnaOvozi.cam.room') || '').toUpperCase();
+  const st = (t, c) => { const e = $('#st'); e.textContent = t; e.className = 'st ' + (c || ''); };
+
+  async function send(to, msg) {
+    try { await fetch(API + '/api/remote', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ room: S.room, from: 'camera', to, msg }) }); } catch (_) {}
+  }
+  async function getMedia() {
+    if (S.stream) S.stream.getTracks().forEach((t) => t.stop());
+    S.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: S.facing, width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 25, max: 30 } },
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    });
+    S.stream.getAudioTracks().forEach((t) => { t.enabled = S.mic; });
+    $('#pv').srcObject = S.stream;
+    meter();
+  }
+  let ac = null, an = null;
+  function meter() {
+    try {
+      if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ac.createMediaStreamSource(S.stream); an = ac.createAnalyser(); an.fftSize = 512; src.connect(an);
+      const d = new Uint8Array(an.fftSize);
+      (function tick() { if (!an) return; an.getByteTimeDomainData(d); let p = 0; for (const x of d) p = Math.max(p, Math.abs(x - 128)); $('#lvl').style.width = Math.min(100, p / 1.28) + '%'; requestAnimationFrame(tick); })();
+    } catch (_) {}
+  }
+  const gathered = (pc) => new Promise((res) => {
+    if (pc.iceGatheringState === 'complete') return res();
+    const t = setTimeout(res, 2500);
+    pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } });
+  });
+  async function offer() {
+    if (!S.stream) return;
+    if (S.pc) { try { S.pc.close(); } catch (_) {} }
+    const pc = new RTCPeerConnection({ iceServers: ICE }); S.pc = pc;
+    S.stream.getTracks().forEach((t) => pc.addTrack(t, S.stream));
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      $('#live').classList.toggle('on', s === 'connected');
+      if (s === 'connected') st('● Operator ulandi — jonli efirda', 'ok');
+      else if (s === 'failed') st('✕ Video ulanmadi. Operator qayta ulanishi kerak (tarmoq NAT orqali o‘tkazmadi).', 'err');
+      else if (s === 'disconnected') st('○ Operator bilan aloqa uzildi — qayta ulanishini kutyapman…', 'wait');
+    };
+    await pc.setLocalDescription(await pc.createOffer());
+    await gathered(pc);
+    send('remote', { t: 'offer', sdp: pc.localDescription.sdp });
+  }
+  async function onMsg(m) {
+    if (m.t === 'want') { st('Operator so‘radi — video yuborilmoqda…', 'wait'); offer(); }
+    else if (m.t === 'answer' && S.pc) { try { await S.pc.setRemoteDescription({ type: 'answer', sdp: m.sdp }); } catch (_) {} }
+  }
+  async function loop(my) {
+    let after = -1;
+    while (my === S.gen) {
+      try {
+        const r = await fetch(API + '/api/remote?room=' + S.room + '&role=camera&after=' + after, { cache: 'no-store' });
+        const j = await r.json(); if (!r.ok) throw 0;
+        if (after >= 0) (j.msgs || []).forEach((x) => { try { onMsg(JSON.parse(x)); } catch (_) {} });
+        after = typeof j.last === 'number' ? j.last : Math.max(after, 0);
+        if (!S.pc || S.pc.connectionState !== 'connected') {
+          const a = (j.ages || {}).remote;
+          if (!S.pc) st(a != null && a < 20000 ? 'Operator onlayn — video so‘rovini kutyapman…' : '○ Kamera tayyor. Masofadagi operator ulanishini kutyapman…', 'wait');
+        }
+      } catch (_) { st('Serverga ulanib bo‘lmadi — internetni tekshiring', 'err'); await new Promise((r) => setTimeout(r, 3000)); }
+    }
+  }
+  async function wake() { try { if ('wakeLock' in navigator) S.wake = await navigator.wakeLock.request('screen'); } catch (_) {} }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.stream) wake(); });
+
+  $('#start').onclick = async () => {
+    const v = $('#code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!/^[A-Z0-9]{6}$/.test(v)) { st('Kod 6 belgidan iborat bo‘lishi kerak', 'err'); return; }
+    S.room = v; localStorage.setItem('sahnaOvozi.cam.room', v);
+    try { await getMedia(); } catch (e) { st('Kamera yoki mikrofonga ruxsat berilmadi: ' + (e.message || e), 'err'); return; }
+    wake(); S.gen++; loop(S.gen);
+    send('remote', { t: 'hello' });
+    $('#start').textContent = 'Qayta ulash';
+  };
+  $('#flip').onclick = async () => {
+    S.facing = S.facing === 'environment' ? 'user' : 'environment';
+    if (!S.stream) return;
+    try {
+      await getMedia();
+      if (S.pc) { const snd = S.pc.getSenders(); for (const t of S.stream.getTracks()) { const s = snd.find((x) => x.track && x.track.kind === t.kind); if (s) await s.replaceTrack(t); } }
+    } catch (e) { st('Kamerani almashtirib bo‘lmadi', 'err'); }
+  };
+  $('#mic').onclick = () => {
+    S.mic = !S.mic; if (S.stream) S.stream.getAudioTracks().forEach((t) => { t.enabled = S.mic; });
+    $('#mic').classList.toggle('on', S.mic); $('#mic').textContent = '🎤 Zal ovozi: ' + (S.mic ? 'yoqiq' : 'o‘chiq');
+  };
+  if (q) setTimeout(() => $('#start').click(), 300);
+})();
+</script>
+</body>
+</html>

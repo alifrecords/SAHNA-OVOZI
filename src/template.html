@@ -279,6 +279,7 @@ body.tab #lib{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
 .nuribtn .ndot{width:8px;height:8px;border-radius:50%;background:#6B7280}
 .nuribtn.ok{border-color:#3DD68C!important;color:#3DD68C}.nuribtn.ok .ndot{background:#3DD68C;box-shadow:0 0 6px #3DD68C}
 .nuribtn.off{opacity:.6}
+@media (max-width:1760px){.nuribtn .nbl,.nuribtn .rbl{display:none}}
 .lnkst{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04);font-size:13px;margin:6px 0 10px}
 .lnkst .lok{color:#3DD68C}.lnkst .lno{color:#F2A93B}.lnkst .lerr{color:#E5484D}
 .clt{color:#F2D03B;font-weight:700}
@@ -545,6 +546,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <button type="button" class="btn chbtn" id="chatBtn" aria-label="Administrator bilan yozishma"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span class="chl">Administrator</span><span class="chn" hidden>0</span></button>
     <button type="button" class="btn" id="vidBtn" title="Video ovozlashtirish — alohida oyna (boshqa monitorga sudrab olib boring)" aria-label="Video ovozlashtirish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M17 10l5-3v10l-5-3z"/></svg><span class="vbl">Video</span></button>
     <button type="button" class="btn nuribtn" id="nuriBtn" title="Sahna Nuri — chiroq bilan bog'lash (Cue-Link)" aria-label="Sahna Nuri bilan bog'lash"><span class="ndot"></span><span aria-hidden="true">💡</span><span class="nbl">NURI</span></button>
+    <button type="button" class="btn nuribtn" id="rmBtn" title="Masofaviy pult — jonli video va masofadan boshqarish" aria-label="Masofaviy pult"><span class="ndot"></span><span aria-hidden="true">📡</span><span class="rbl">Masofa</span></button>
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
@@ -2981,6 +2983,90 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 if(window.azNative&&window.azNative.onLinkClients)window.azNative.onLinkClients(n=>{const was=LINK.local;LINK.local=n||0;linkUI();if(n>was)toast('💡 Sahna Nuri ulandi (lokal)');});
 setInterval(()=>{if(LINK.on&&(LINK.room||linkNative()))linkCheck();},15000);
 setTimeout(linkCheck,2500);
+/* ---------- 📡 MASOFAVIY PULT — teatr kompyuteri «asosiy pult» ----------
+   Masofadagi operator (/masofa) faderlar, atmosfera qatlamlari, dublaj effekti va (ruxsat bo'lsa) GO'ni boshqaradi;
+   sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
+   Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
+const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
+const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
+try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
+function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}
+function rmNewRoom(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(6));RM.room=Array.from(r,x=>A[x%A.length]).join('');rmSave();}
+if(!RM.room)rmNewRoom();
+const rmAge=k=>RM.ages[k]!=null&&RM.ages[k]<15000;
+function rmState(){
+ const sc=scene&&show.scenes[scene.key];
+ return {title:show.title,live:showStart!=null,cur,next,cues:show.cues.slice(0,300).map(c=>({n:c.name,ty:c.type,lt:c.lt||''})),
+  busN:BUSES.map(b=>[b[0],b[1]]),bus:Object.fromEntries(BUSES.map(([k])=>[k,{v:buses[k]?buses[k].val:80,m:!!(buses[k]&&buses[k].muted)}])),
+  scene:scene?{name:sc?sc.name:'',layers:scene.layers.map(l=>({t:layerTitle(l),v:l.v}))}:null,
+  amt:Math.round((dub.amount==null?.6:dub.amount)*100),perms:{go:RM.go},ack:RM.ack};
+}
+async function rmPost(body){
+ try{const r=await fetch(RM_API+'/api/remote',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({room:RM.room,from:'master'},body))});const j=await r.json();RM.err=!r.ok;if(j.ages)RM.ages=j.ages;}catch(e){RM.err=true;}
+ rmUI();
+}
+setInterval(()=>{if(!RM.on)return;const s=JSON.stringify(rmState()),n=Date.now();if(s!==RM.sent||n-RM.postT>5000){RM.sent=s;RM.postT=n;rmPost({state:JSON.parse(s)});}},350);
+let rmNoteT=0,rmNoteMsg='';
+function rmNote(t){RM.last=t;rmNoteMsg=t;if(!rmNoteT)rmNoteT=setTimeout(()=>{rmNoteT=0;toast('📡 Masofadan: '+rmNoteMsg);},900);const b=$('#rmBtn');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),300);}const l=$('#rmLast');if(l)l.textContent='Oxirgi masofaviy buyruq: '+t;}
+function rmApply(m){
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,+v||0));let t='';
+ if(m.t==='sel'){if(!RM.go)return;const i=+m.i;if(i>=0&&i<show.cues.length){next=i;renderCues();t='keyingi cue Q'+(i+1);}}
+ else if(!ctx){t='';}
+ else if(m.t==='bus'&&buses[m.k]){const v=clamp(m.v,0,100);buses[m.k].val=v;applyFader(m.k);const f=document.querySelector('.vfader[data-bus="'+m.k+'"]');if(f)f.value=v;const l=$('#db_'+m.k);if(l)l.textContent=faderDb(v);storeMix(m.k);t=(BUSES.find(b=>b[0]===m.k)||[0,m.k])[1]+' '+faderDb(v)+' dB';}
+ else if(m.t==='mute'&&buses[m.k]){const b=buses[m.k];b.muted=!b.muted;applyFader(m.k);storeMix(m.k);const e=document.querySelector('[data-mute="'+m.k+'"]');if(e){e.classList.toggle('on',b.muted);e.setAttribute('aria-pressed',b.muted);}t=(BUSES.find(x=>x[0]===m.k)||[0,m.k])[1]+(b.muted?' — o\'chirildi':' — yoqildi');}
+ else if(m.t==='layer'&&scene&&scene.layers[+m.i]){const i=+m.i,v=Math.round(clamp(m.v,0,100));setLayerVol(i,v);const s=$('#ly'+i);if(s)s.value=v;const l=$('#lv'+i);if(l)l.textContent=v+'%';t=layerTitle(scene.layers[i])+' '+v+'%';}
+ else if(m.t==='amt'){const v=Math.round(clamp(m.v,0,100));dub.amount=v/100;const a=$('#amt');if(a)a.value=v;const av=$('#amtV');if(av)av.textContent=v+'%';buildDubFx();show.dubfx={preset:dub.preset,amount:dub.amount};saveShow();t='dublaj effekti '+v+'%';}
+ else if(m.t==='musoff'){$('#musOff').click();t='musiqani so\'ndirish';}
+ else if(m.t==='atmoff'){$('#atmOff').click();t='atmosferani so\'ndirish';}
+ else if(m.t==='alloff'){$('#allOff').click();t='sahnani so\'ndirish';}
+ else if(m.t==='go'&&RM.go){go();t='GO';}
+ else if(m.t==='panic'&&RM.go){panic();t='HAMMASINI TO\'XTATISH';}
+ if(m.id)RM.ack=m.id;RM.sent='';
+ if(t){rmNote(t);logEvent('📡 Masofadan: '+t);}
+}
+async function rmLoop(my){
+ let after=-1;
+ while(my===RM.gen&&RM.on){
+  try{const r=await fetch(RM_API+'/api/remote?room='+RM.room+'&role=master&after='+after,{cache:'no-store'});const j=await r.json();if(!r.ok)throw 0;
+   if(my!==RM.gen)return;RM.err=false;RM.ages=j.ages||{};
+   if(after>=0)(j.msgs||[]).forEach(x=>{try{const m=JSON.parse(x);if(m.from==='remote')rmApply(m);}catch(e){}});
+   after=typeof j.last==='number'?j.last:Math.max(after,0);rmUI();
+  }catch(e){if(my!==RM.gen)return;RM.err=true;rmUI();await new Promise(res=>setTimeout(res,3000));}
+ }
+}
+function rmStart(){RM.gen++;RM.ages={};RM.sent='';if(RM.on)rmLoop(RM.gen);rmUI();}
+function rmUI(){
+ const b=$('#rmBtn');if(b){const ok=RM.on&&rmAge('remote');b.classList.toggle('ok',ok);b.classList.toggle('off',!RM.on);const t=b.querySelector('.rbl');if(t)t.textContent=!RM.on?'Masofa':ok?'Masofa · ulangan':'Masofa · kutilmoqda';}
+ const box=$('#rmSt');if(!box)return;
+ const age=k=>RM.ages[k]!=null?Math.max(0,Math.round(RM.ages[k]/1000)):null;
+ box.innerHTML=!RM.on?'<div><b class="lno">○ O\'chiq</b> — masofadan boshqarib bo\'lmaydi</div>':RM.err?'<div><b class="lerr">✕ Serverga ulanib bo\'lmadi</b> — internetni tekshiring. Pult o\'z holicha ishlayveradi.</div>':
+  '<div>Masofadagi operator: '+(rmAge('remote')?'<b class="lok">● ulangan</b> ('+age('remote')+' s oldin)':'<b class="lno">○ kutilmoqda</b>')+'</div><div>Sahnadagi kamera: '+(rmAge('camera')?'<b class="lok">● ishlayapti</b>':'<b class="lno">○ yo\'q</b>')+'</div>'+(RM.last?'<div class="muted" id="rmLast">Oxirgi masofaviy buyruq: '+esc(RM.last)+'</div>':'<div class="muted" id="rmLast"></div>');
+}
+function rmMenu(){
+ const link=p=>RM_API+'/'+p+'?kod='+RM.room;
+ const body='<p class="hint" style="margin-top:0">Ovoz va chiroq shu kompyuterdan chiqadi. Masofadagi operator faderlar, atmosfera qatlamlari va dublaj effektini boshqaradi, sahnadagi telefon unga jonli video va zal ovozini yuboradi.</p>'+
+  '<label class="chk"><input type="checkbox" id="rmOn"'+(RM.on?' checked':'')+'> Masofadan boshqarishga ruxsat (asosiy pult — shu kompyuter)</label>'+
+  '<div class="field"><span class="flabel">Xona kodi</span><div class="frow"><span class="mono" style="font-size:28px;font-weight:800;letter-spacing:.2em;padding:4px 14px;border-radius:10px;background:rgba(255,255,255,.06)">'+RM.room+'</span><button type="button" class="btn" id="rmCopy">Nusxalash</button><button type="button" class="btn" id="rmNew">Yangi kod</button></div></div>'+
+  '<label class="chk"><input type="checkbox" id="rmGo"'+(RM.go?' checked':'')+'> Masofadan GO, cue tanlash va TO\'XTATISH ham mumkin</label>'+
+  '<div class="lnkst" id="rmSt"></div>'+
+  '<div class="field"><span class="flabel">Havolalar (kod ichida)</span>'+
+  '<div class="frow"><span class="muted" style="min-width:150px">📱 Sahnadagi telefon:</span><span class="mono" style="font-size:12px;word-break:break-all">'+esc(link('kamera'))+'</span><button type="button" class="btn" data-rmcp="kamera">Nusxalash</button></div>'+
+  '<div class="frow"><span class="muted" style="min-width:150px">💻 Masofadagi operator:</span><span class="mono" style="font-size:12px;word-break:break-all">'+esc(link('masofa'))+'</span><button type="button" class="btn" data-rmcp="masofa">Nusxalash</button></div></div>'+
+  '<p class="hint">Kod o\'zgarmaydi — bir marta yuborasiz. Biror narsa noto\'g\'ri ketsa, «Masofadan boshqarishga ruxsat» belgisini olib tashlang: boshqaruv darhol shu pultga qaytadi.</p>';
+ openModal('📡 Masofaviy pult',body,[{label:'Yopish',fn:()=>{}}],{
+  click:async(e,b)=>{
+   if(b.id==='rmCopy'||b.dataset.rmcp){const s=b.dataset.rmcp?link(b.dataset.rmcp):RM.room;try{await navigator.clipboard.writeText(s);toast('Nusxalandi: '+s);}catch(err){toast(s);}}
+   else if(b.id==='rmNew'){rmNewRoom();rmStart();closeModal();rmMenu();toast('Yangi kod: '+RM.room+' — telefon va operatorga yangisini yuboring');}
+  },
+  change:e=>{
+   if(e.target.id==='rmOn'){RM.on=e.target.checked;rmSave();rmStart();toast(RM.on?'Masofaviy boshqaruv yoqildi · kod '+RM.room:'Masofaviy boshqaruv uzildi — boshqaruv shu pultda');logEvent(RM.on?'📡 Masofaviy boshqaruv yoqildi':'📡 Masofaviy boshqaruv uzildi');}
+   else if(e.target.id==='rmGo'){RM.go=e.target.checked;rmSave();RM.sent='';toast(RM.go?'Masofadan GO ruxsat etildi':'GO faqat shu pultda');}
+  }});
+ rmUI();
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#rmBtn');if(b)rmMenu();});
+setInterval(rmUI,5000);
+rmStart();
 
 /* ---------- files ---------- */
 let fileCb=null;

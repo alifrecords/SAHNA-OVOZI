@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0F12">
+<title>Masofaviy pult — Sahna Ovozi</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#0E0F12;color:#E8E8EA;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid #23262d;position:sticky;top:0;background:#0E0F12;z-index:5}
+.brand b{letter-spacing:.06em}.brand small{color:#F2A93B;letter-spacing:.14em;font-size:10px;display:block}
+.pill{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;background:#1b1e24;border:1px solid #2f343d;white-space:nowrap}
+.pill.ok{color:#3DD68C;border-color:#24563f}.pill.wait{color:#F2A93B;border-color:#5a4520}.pill.err{color:#E5484D;border-color:#5a2427}
+button{background:#1b1e24;border:1px solid #2f343d;color:#E8E8EA;border-radius:9px;padding:9px 13px;font:600 13px system-ui,sans-serif;cursor:pointer;touch-action:manipulation}
+button:active{transform:scale(.98)}button.pri{background:#F2A93B;border-color:#F2A93B;color:#14110a}
+button.danger{border-color:#7a2a2d;color:#ff8a8d}button.on{border-color:#3DD68C;color:#3DD68C}
+button:disabled{opacity:.4;cursor:not-allowed}
+.wrap{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:14px;padding:14px;max-width:1500px;margin:0 auto}
+@media (max-width:900px){.wrap{grid-template-columns:minmax(0,1fr)}}
+.card{background:#14161b;border:1px solid #23262d;border-radius:14px;padding:12px 14px}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.1em;color:#8b90a0;margin:0 0 8px;text-transform:uppercase}
+.vid{position:relative;background:#000;border-radius:14px;overflow:hidden;aspect-ratio:16/9}
+video{width:100%;height:100%;object-fit:contain;display:block}
+.vbad{position:absolute;top:10px;left:10px;background:#E5484D;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.vmsg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#8b90a0;padding:20px}
+.vctl{position:absolute;bottom:10px;right:10px;display:flex;gap:6px}
+.cue{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #23262d;border-radius:9px;margin:5px 0;cursor:pointer;background:transparent;width:100%;text-align:left;color:inherit;font:inherit}
+.cue .n{font:700 12px ui-monospace,Consolas,monospace;color:#8b90a0;min-width:30px}.cue .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cue .tg{font-size:10px;font-weight:800;letter-spacing:.08em;color:#8b90a0}
+.cue.live{border-color:#F2A93B;background:rgba(242,169,59,.10)}.cue.live .tg{color:#F2A93B}
+.cue.next{border-style:dashed;border-color:#5a6070}.cue.done{opacity:.5}
+.cue .lt{color:#F2D03B;font-size:12px;font-weight:700}
+.cues{max-height:340px;overflow:auto}
+.fr{display:grid;grid-template-columns:86px minmax(0,1fr) 64px 34px;align-items:center;gap:8px;margin:8px 0}
+.fr span.v{text-align:right;font:600 12px ui-monospace,Consolas,monospace}
+input[type=range]{width:100%;accent-color:#F2A93B;height:28px}
+.mute{padding:5px 0;width:34px}.mute.on{background:#E5484D;border-color:#E5484D;color:#fff}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.join{max-width:460px;margin:12vh auto;padding:24px}
+.join input{background:#16181d;border:1px solid #2c3038;color:#fff;border-radius:10px;padding:12px;font:700 24px ui-monospace,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;width:200px;text-align:center}
+.hint{color:#8b90a0;font-size:12px}.log{color:#8b90a0;font-size:12px;margin-top:8px}
+.big{font-size:20px;font-weight:700;margin:0}
+</style>
+</head>
+<body>
+<div class="join" id="join">
+  <div class="brand" style="margin-bottom:18px"><b>SAHNA OVOZI · MASOFAVIY PULT</b><small>AZIMXODJAYEV MUSIC</small></div>
+  <p>Teatr kompyuteridagi <b>📡 Masofaviy</b> oynasidagi 6 belgili kodni yozing.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><input id="code" maxlength="6" placeholder="KOD" autocomplete="off" aria-label="Xona kodi"><button class="pri" id="go" type="button">Ulanish</button></div>
+  <p class="hint" id="jerr"></p>
+</div>
+<div id="app" hidden>
+  <div class="top">
+    <div class="brand"><b>SAHNA OVOZI</b><small>MASOFAVIY PULT</small></div>
+    <span class="pill wait" id="pMaster">Teatr pulti: kutilmoqda</span>
+    <span class="pill" id="pCam">Kamera: —</span>
+    <span class="pill" id="pRtt">📡 —</span>
+    <span class="pill" id="pShow">—</span>
+    <span style="flex:1"></span>
+    <button class="danger" id="panic" type="button">■ TO'XTATISH</button>
+    <button id="leave" type="button">Chiqish</button>
+  </div>
+  <div class="wrap">
+    <div>
+      <div class="vid"><video id="vid" playsinline autoplay muted></video><span class="vbad" id="vbad" hidden>● JONLI</span>
+        <div class="vmsg" id="vmsg">Sahnadagi telefon-kamera kutilmoqda…<br>Telefonda: sahna-ovozi.pages.dev/kamera → shu kod</div>
+        <div class="vctl"><button id="snd" type="button">🔇 Zal ovozi</button><button id="vre" type="button">↻</button></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl">Hozir sahnada</p>
+        <p class="big" id="now">—</p>
+        <p class="hint" id="nowSub"></p>
+        <div class="btns" style="margin-top:10px"><button class="pri" id="goBtn" type="button">GO ▶</button><span class="hint" id="goHint"></span></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl">Cue'lar · bosilsa — keyingi qilib tanlanadi</p>
+        <div class="cues" id="cues"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <p class="lbl">Mikser · teatrda o'sha zahoti o'zgaradi</p>
+        <div id="faders"></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl" id="atmT">Atmosfera</p>
+        <div id="layers"><p class="hint">Atmosfera o'chiq</p></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl">Dublaj effekti</p>
+        <div class="fr"><span>Effekt</span><input type="range" min="0" max="100" step="1" id="amt"><span class="v" id="amtV">—</span><span></span></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <p class="lbl">Tez buyruqlar</p>
+        <div class="btns"><button id="musoff" type="button">Musiqani so'ndirish</button><button id="atmoff" type="button">Atmosferani so'ndirish</button><button id="alloff" type="button">Sahnani so'ndirish</button></div>
+        <p class="log" id="log">Oxirgi buyruq: —</p>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
+  const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
+  const TYPE = { music: 'Musiqa', sfx: 'SFX', dub: 'Dublaj', atmos: 'Atmosfera' };
+  const R = { room: '', gen: 0, st: null, stTs: 0, ages: {}, sent: {}, rtt: null, touch: {}, pc: null, vidOk: false, wantT: 0, seq: 0 };
+  const faderDb = (v) => { if (v <= 0) return '−∞'; const d = (v - 80) * 0.75; return (d > 0 ? '+' : '') + d.toFixed(1).replace('-', '−') + ' dB'; };
+
+  async function post(to, msg) {
+    try {
+      const r = await fetch(API + '/api/remote', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ room: R.room, from: 'remote', to, msg }) });
+      const j = await r.json(); if (j.ages) { R.ages = j.ages; top(); }
+    } catch (_) { log('✕ Buyruq yuborilmadi — internet?'); }
+  }
+  function cmd(m, label) {
+    m.id = 'c' + (++R.seq) + Math.random().toString(36).slice(2, 5); R.sent[m.id] = performance.now();
+    post('master', m); if (label) log('Oxirgi buyruq: ' + label + ' · teatrga yuborildi');
+  }
+  const log = (t) => { $('#log').textContent = t; };
+  const thr = {};
+  function throttled(key, fn) { const t = thr[key] || (thr[key] = { last: 0, tm: 0 }); const now = Date.now(); clearTimeout(t.tm); if (now - t.last > 120) { t.last = now; fn(); } else t.tm = setTimeout(() => { t.last = Date.now(); fn(); }, 130); }
+
+  /* ---------- video (WebRTC: telefon → shu sahifa) ---------- */
+  function want() { R.wantT = Date.now(); post('camera', { t: 'want' }); }
+  const gathered = (pc) => new Promise((res) => { if (pc.iceGatheringState === 'complete') return res(); const t = setTimeout(res, 2500); pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } }); });
+  async function onOffer(sdp) {
+    if (R.pc) { try { R.pc.close(); } catch (_) {} }
+    const pc = new RTCPeerConnection({ iceServers: ICE }); R.pc = pc;
+    pc.ontrack = (e) => { const v = $('#vid'); if (v.srcObject !== e.streams[0]) v.srcObject = e.streams[0]; v.play().catch(() => {}); };
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState; R.vidOk = s === 'connected';
+      $('#vbad').hidden = !R.vidOk; $('#vmsg').hidden = R.vidOk;
+      if (s === 'failed') $('#vmsg').innerHTML = 'Video ulanmadi (tarmoq to‘sdi). ↻ bilan qayta urinib ko‘ring.';
+      if (s === 'disconnected') $('#vmsg').innerHTML = 'Kamera bilan aloqa uzildi — qayta ulanmoqda…';
+      top();
+    };
+    await pc.setRemoteDescription({ type: 'offer', sdp });
+    await pc.setLocalDescription(await pc.createAnswer());
+    await gathered(pc);
+    post('camera', { t: 'answer', sdp: pc.localDescription.sdp });
+  }
+  $('#snd').onclick = () => { const v = $('#vid'); v.muted = !v.muted; v.play().catch(() => {}); $('#snd').textContent = v.muted ? '🔇 Zal ovozi' : '🔊 Zal ovozi'; $('#snd').classList.toggle('on', !v.muted); };
+  $('#vre').onclick = () => { $('#vmsg').hidden = false; $('#vmsg').textContent = 'Kameradan video so‘ralmoqda…'; want(); };
+
+  /* ---------- holat ---------- */
+  function top() {
+    const a = R.ages, m = a.master, c = a.camera;
+    const pm = $('#pMaster');
+    pm.className = 'pill ' + (m != null && m < 15000 ? 'ok' : 'err'); pm.textContent = m != null && m < 15000 ? '● Teatr pulti ulangan' : '○ Teatr pulti ko‘rinmayapti';
+    const pc = $('#pCam');
+    pc.className = 'pill ' + (R.vidOk ? 'ok' : c != null && c < 15000 ? 'wait' : '');
+    pc.textContent = R.vidOk ? '● Kamera: jonli' : c != null && c < 15000 ? 'Kamera: ulanmoqda' : 'Kamera: yo‘q';
+    const pr = $('#pRtt');
+    pr.className = 'pill ' + (R.rtt == null ? '' : R.rtt < 800 ? 'ok' : R.rtt < 1600 ? 'wait' : 'err');
+    pr.textContent = '📡 ' + (R.rtt == null ? '—' : (R.rtt / 1000).toFixed(1).replace('.', ',') + ' s');
+  }
+  function render() {
+    const s = R.st; if (!s) return;
+    $('#pShow').textContent = (s.title || 'Spektakl') + (s.live ? ' · JONLI' : '');
+    const goOk = !!(s.perms && s.perms.go);
+    $('#goBtn').disabled = !goOk; $('#panic').disabled = !goOk;
+    $('#goHint').textContent = goOk ? (s.cues[s.next] ? 'Keyingi: Q' + (s.next + 1) + ' · ' + s.cues[s.next].n : 'Ro‘yxat tugadi') : 'GO teatrdagi pultda (ruxsat berilmagan)';
+    const c = s.cues[s.cur];
+    $('#now').textContent = c ? 'Q' + (s.cur + 1) + ' · ' + c.n : 'Spektakl boshlanishini kutmoqda';
+    $('#nowSub').textContent = c ? (TYPE[c.ty] || '') + (c.lt ? ' · 💡 ' + c.lt : '') : '';
+    $('#cues').innerHTML = s.cues.map((q, i) => {
+      const cl = i === s.cur ? 'live' : i === s.next ? 'next' : i < s.cur ? 'done' : '';
+      const tg = i === s.cur ? 'JONLI' : i === s.next ? 'KEYINGI' : i < s.cur ? 'TUGADI' : '';
+      return '<button type="button" class="cue ' + cl + '" data-i="' + i + '"><span class="n">Q' + (i + 1) + '</span><span class="nm">' + esc(q.n) + ' <span class="hint">· ' + (TYPE[q.ty] || '') + '</span></span>' + (q.lt ? '<span class="lt">💡' + esc(q.lt) + '</span>' : '') + '<span class="tg">' + tg + '</span></button>';
+    }).join('') || '<p class="hint">Cue yo‘q</p>';
+    const now = Date.now();
+    if (!$('#faders').children.length || $('#faders').dataset.k !== s.busN.map((b) => b[0]).join()) {
+      $('#faders').dataset.k = s.busN.map((b) => b[0]).join();
+      $('#faders').innerHTML = s.busN.map(([k, n]) => '<div class="fr"' + (k === 'master' ? ' style="border-top:1px solid #23262d;padding-top:8px"' : '') + '><span>' + esc(n) + '</span><input type="range" min="0" max="100" step="1" data-bus="' + k + '"><span class="v" id="bv_' + k + '"></span><button type="button" class="mute" data-mute="' + k + '">M</button></div>').join('');
+    }
+    s.busN.forEach(([k]) => {
+      const b = s.bus[k]; if (!b) return;
+      const inp = document.querySelector('[data-bus="' + k + '"]');
+      if (!(now - (R.touch['b' + k] || 0) < 1500)) { inp.value = b.v; $('#bv_' + k).textContent = faderDb(b.v); }
+      document.querySelector('[data-mute="' + k + '"]').classList.toggle('on', !!b.m);
+    });
+    const sc = s.scene;
+    $('#atmT').textContent = 'Atmosfera' + (sc ? ': ' + sc.name : '');
+    if (!sc) { $('#layers').innerHTML = '<p class="hint">Atmosfera o‘chiq</p>'; $('#layers').dataset.k = ''; }
+    else {
+      const key = sc.name + sc.layers.length;
+      if ($('#layers').dataset.k !== key) {
+        $('#layers').dataset.k = key;
+        $('#layers').innerHTML = sc.layers.map((l, i) => '<div class="fr"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(l.t) + '</span><input type="range" min="0" max="100" step="1" data-layer="' + i + '"><span class="v" id="lv_' + i + '"></span><span></span></div>').join('');
+      }
+      sc.layers.forEach((l, i) => { if (!(now - (R.touch['l' + i] || 0) < 1500)) { document.querySelector('[data-layer="' + i + '"]').value = l.v; $('#lv_' + i).textContent = l.v + '%'; } });
+    }
+    if (!(now - (R.touch.amt || 0) < 1500)) { $('#amt').value = s.amt; $('#amtV').textContent = s.amt + '%'; }
+    if (s.ack && R.sent[s.ack]) { R.rtt = performance.now() - R.sent[s.ack]; delete R.sent[s.ack]; top(); }
+  }
+
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.bus) { const k = t.dataset.bus, v = +t.value; R.touch['b' + k] = Date.now(); $('#bv_' + k).textContent = faderDb(v); throttled('b' + k, () => cmd({ t: 'bus', k, v }, (R.st.busN.find((b) => b[0] === k) || [k, k])[1] + ' → ' + faderDb(v))); }
+    else if (t.dataset.layer != null) { const i = +t.dataset.layer, v = +t.value; R.touch['l' + i] = Date.now(); $('#lv_' + i).textContent = v + '%'; throttled('l' + i, () => cmd({ t: 'layer', i, v }, 'Atmosfera qatlami ' + (i + 1) + ' → ' + v + '%')); }
+    else if (t.id === 'amt') { const v = +t.value; R.touch.amt = Date.now(); $('#amtV').textContent = v + '%'; throttled('amt', () => cmd({ t: 'amt', v }, 'Dublaj effekti → ' + v + '%')); }
+  });
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.mute) { const k = b.dataset.mute; cmd({ t: 'mute', k }, 'Mute: ' + k); b.classList.toggle('on'); }
+    else if (b.dataset.i != null) { if (!(R.st && R.st.perms.go)) { log('Cue tanlash uchun teatr pultida GO ruxsati kerak'); return; } cmd({ t: 'sel', i: +b.dataset.i }, 'Keyingi: Q' + (+b.dataset.i + 1)); }
+    else if (b.id === 'goBtn') cmd({ t: 'go' }, 'GO');
+    else if (b.id === 'panic') { if (b.dataset.arm) { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; cmd({ t: 'panic' }, 'HAMMASINI TO‘XTATISH'); } else { b.dataset.arm = 1; b.textContent = 'Yana bosing ■'; setTimeout(() => { delete b.dataset.arm; b.textContent = '■ TO\'XTATISH'; }, 2500); } }
+    else if (b.id === 'musoff') cmd({ t: 'musoff' }, 'Musiqani so‘ndirish');
+    else if (b.id === 'atmoff') cmd({ t: 'atmoff' }, 'Atmosferani so‘ndirish');
+    else if (b.id === 'alloff') cmd({ t: 'alloff' }, 'Sahnani so‘ndirish');
+  });
+
+  async function loop(my) {
+    let after = -1;
+    while (my === R.gen) {
+      try {
+        const r = await fetch(API + '/api/remote?room=' + R.room + '&role=remote&after=' + after + '&since=' + R.stTs, { cache: 'no-store' });
+        const j = await r.json(); if (!r.ok) throw 0;
+        if (my !== R.gen) return;
+        R.ages = j.ages || {};
+        if (j.state) { R.st = j.state; R.stTs = j.stateTs; render(); }
+        if (after >= 0) for (const x of j.msgs || []) { try { const m = JSON.parse(x); if (m.t === 'offer') onOffer(m.sdp); else if (m.t === 'hello') want(); } catch (_) {} }
+        after = typeof j.last === 'number' ? j.last : Math.max(after, 0);
+        const c = R.ages.camera;
+        if (!R.vidOk && c != null && c < 15000 && Date.now() - R.wantT > 10000) want();
+        top();
+      } catch (_) { R.ages = {}; top(); await new Promise((res) => setTimeout(res, 3000)); }
+    }
+  }
+  function start(code) {
+    R.room = code; localStorage.setItem('sahnaOvozi.rm.room', code);
+    $('#join').hidden = true; $('#app').hidden = false;
+    R.gen++; loop(R.gen); want();
+  }
+  $('#go').onclick = () => { const v = $('#code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!/^[A-Z0-9]{6}$/.test(v)) { $('#jerr').textContent = 'Kod 6 belgidan iborat bo‘lishi kerak'; return; } start(v); };
+  $('#code').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#go').click(); });
+  $('#leave').onclick = () => { R.gen++; if (R.pc) try { R.pc.close(); } catch (_) {} localStorage.removeItem('sahnaOvozi.rm.room'); location.href = location.pathname; };
+  const q = (new URLSearchParams(location.search).get('kod') || localStorage.getItem('sahnaOvozi.rm.room') || '').toUpperCase();
+  $('#code').value = q;
+  if (/^[A-Z0-9]{6}$/.test(q) && new URLSearchParams(location.search).get('kod')) start(q);
+  setInterval(top, 3000);
+})();
+</script>
+</body>
+</html>

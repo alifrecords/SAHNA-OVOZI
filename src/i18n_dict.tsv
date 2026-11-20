@@ -1151,3 +1151,34 @@ Sinov signali yuborildi — Sahna Nuri’da xabar chiqishi kerak	Тестовы�
 Sahna Nuri signallari yoqildi	Сигналы Sahna Nuri включены	Sahna Nuri signals on
 Sahna Nuri signallari o'chirildi	Сигналы Sahna Nuri выключены	Sahna Nuri signals off
 💡 Sahna Nuri ulandi (lokal)	💡 Sahna Nuri подключён (локально)	💡 Sahna Nuri connected (local)
+Masofaviy pult — jonli video va masofadan boshqarish	Удалённый пульт — живое видео и удалённое управление	Remote console — live video and remote control
+Masofaviy pult	Удалённый пульт	Remote console
+📡 Masofaviy pult	📡 Удалённый пульт	📡 Remote console
+Masofa	Удалённо	Remote
+Masofa · ulangan	Удалённо · подключено	Remote · connected
+Masofa · kutilmoqda	Удалённо · ожидание	Remote · waiting
+Masofadan boshqarishga ruxsat (asosiy pult — shu kompyuter)	Разрешить удалённое управление (главный пульт — этот компьютер)	Allow remote control (this computer is the main console)
+Xona kodi	Код комнаты	Room code
+Yangi kod	Новый код	New code
+Nusxalash	Копировать	Copy
+Masofadan GO, cue tanlash va TO'XTATISH ham mumkin	Удалённо можно также GO, выбор cue и СТОП	Remote may also GO, pick cues and STOP
+Havolalar (kod ichida)	Ссылки (с кодом)	Links (with code)
+📱 Sahnadagi telefon:	📱 Телефон на сцене:	📱 Phone on stage:
+💻 Masofadagi operator:	💻 Удалённый оператор:	💻 Remote operator:
+Masofadagi operator:	Удалённый оператор:	Remote operator:
+Sahnadagi kamera:	Камера на сцене:	Stage camera:
+● ulangan	● подключён	● connected
+○ kutilmoqda	○ ожидание	○ waiting
+● ishlayapti	● работает	● running
+○ yo'q	○ нет	○ none
+○ O'chiq	○ Выключено	○ Off
+masofadan boshqarib bo'lmaydi	удалённое управление недоступно	remote control is off
+✕ Serverga ulanib bo'lmadi	✕ Нет связи с сервером	✕ Cannot reach the server
+internetni tekshiring. Pult o'z holicha ishlayveradi.	проверьте интернет. Пульт продолжает работать.	check the internet. The console keeps working.
+Oxirgi masofaviy buyruq:	Последняя удалённая команда:	Last remote command:
+📡 Masofadan:	📡 Удалённо:	📡 Remote:
+Masofaviy boshqaruv uzildi — boshqaruv shu pultda	Удалённое управление отключено — управление на этом пульте	Remote control off — this console is in control
+Masofadan GO ruxsat etildi	Удалённый GO разрешён	Remote GO allowed
+GO faqat shu pultda	GO только на этом пульте	GO only on this console
+Ovoz va chiroq shu kompyuterdan chiqadi. Masofadagi operator faderlar, atmosfera qatlamlari va dublaj effektini boshqaradi, sahnadagi telefon unga jonli video va zal ovozini yuboradi.	Звук и свет идут с этого компьютера. Удалённый оператор управляет фейдерами, слоями атмосферы и эффектом дубляжа, а телефон на сцене передаёт ему живое видео и звук зала.	Sound and light come from this computer. The remote operator controls faders, atmosphere layers and the dubbing effect; the phone on stage sends live video and hall sound.
+Kod o'zgarmaydi — bir marta yuborasiz. Biror narsa noto'g'ri ketsa, «Masofadan boshqarishga ruxsat» belgisini olib tashlang: boshqaruv darhol shu pultga qaytadi.	Код не меняется — отправляете один раз. Если что-то пошло не так, снимите «Разрешить удалённое управление»: управление сразу вернётся на этот пульт.	The code doesn't change — send it once. If anything goes wrong, untick “Allow remote control”: control returns to this console at once.

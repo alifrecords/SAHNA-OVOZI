@@ -3,6 +3,21 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.22.0: 📡 Masofaviy pult — jonli video va masofadan boshqarish
+
+Teatr kompyuteri **asosiy pult** bo'lib qoladi (ovoz va chiroq shu yerdan chiqadi). Masofadagi operator sahnani telefon-kamera orqali jonli ko'rib-eshitib, balansni boshqaradi.
+
+| Qism | Qayerda | Nima qiladi |
+|---|---|---|
+| **📡 Masofa** tugmasi | Teatr kompyuteridagi pult | «Masofadan boshqarishga ruxsat», 6 belgili xona kodi, «GO ham mumkin» ruxsati, operator va kamera holati, havolalar |
+| `/kamera?kod=…` | Sahnadagi telefon | Kamera + zal mikrofoni → WebRTC orqali operatorga. Old/orqa kamera, mikrofonni o'chirish, ekran o'chmaydi |
+| `/masofa?kod=…` | Masofadagi operator (PC, planshet, telefon) | Jonli video va zal ovozi, cue ro'yxati (JONLI / KEYINGI), faderlar va M, atmosfera qatlamlari, dublaj effekti, so'ndirish tugmalari, GO va TO'XTATISH (ruxsat bo'lsa), 📡 kechikish o'lchagichi |
+| Server | `functions/api/remote.js` | Xona kodi bo'yicha buyruqlar, pult holati va WebRTC signallari (D1: `so_rm`, `so_rm_state`, `so_rm_seen`) |
+
+Masofadan qilingan har bir o'zgarish teatr pultida ham ko'rinadi (fader siljiydi, «📡 Masofadan: …» xabari, jurnalga yoziladi). Ruxsat belgisini olib tashlash — boshqaruvni darhol pultga qaytaradi. Internet uzilsa, pult o'z holicha ishlayveradi.
+
+Eslatma: video to'g'ridan-to'g'ri telefondan operatorga boradi (STUN). Ba'zi mobil tarmoqlar bunday ulanishni to'sadi — unda TURN server kerak bo'ladi.
+
 ## 1.21.0: 💡 Cue-Link — Sahna Nuri (chiroq) bilan bog'lash
 
 Cue GO bo'lganda unga biriktirilgan **Sahna Nuri** chiroq cue'si o'zi yonadi.
