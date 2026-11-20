@@ -3134,7 +3134,7 @@ setTimeout(linkCheck,2500);
    sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
    Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
 const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
-const RM_VER='1.22.3';
+const RM_VER='1.22.4';
 const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
 try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
 function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}
@@ -3178,6 +3178,7 @@ function rmKey(m){
 function rmApply(m){
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,+v||0));let t='';
  if(m.t==='sel'){if(!RM.go)return;const i=+m.i;if(i>=0&&i<show.cues.length){next=i;renderCues();t='keyingi cue Q'+(i+1);}}
+ else if(m.t==='cueg'){const i=+m.i,c=show.cues[i];if(c){const v=Math.round(clamp(m.v,-30,12)*2)/2;c.g=v;if(!c.g)delete c.g;applyCueGain(c);saveShow();renderCues();t='Q'+(i+1)+' · '+c.name+': '+dbStr(c.g||0)+(voices.some(x=>x.cue===c&&!x.stopping)?' (jonli)':'');}}
  else if(!ctx){t='';}
  else if(m.t==='bus'&&buses[m.k]){const v=clamp(m.v,0,100);buses[m.k].val=v;applyFader(m.k);const f=document.querySelector('.vfader[data-bus="'+m.k+'"]');if(f)f.value=v;const l=$('#db_'+m.k);if(l)l.textContent=faderDb(v);storeMix(m.k);t=(BUSES.find(b=>b[0]===m.k)||[0,m.k])[1]+' '+faderDb(v)+' dB';}
  else if(m.t==='mute'&&buses[m.k]){const b=buses[m.k];b.muted=!b.muted;applyFader(m.k);storeMix(m.k);const e=document.querySelector('[data-mute="'+m.k+'"]');if(e){e.classList.toggle('on',b.muted);e.setAttribute('aria-pressed',b.muted);}t=(BUSES.find(x=>x[0]===m.k)||[0,m.k])[1]+(b.muted?' — o\'chirildi':' — yoqildi');}
