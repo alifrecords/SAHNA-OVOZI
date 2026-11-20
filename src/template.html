@@ -2996,17 +2996,18 @@ if(!RM.room)rmNewRoom();
 const rmAge=k=>RM.ages[k]!=null&&RM.ages[k]<15000;
 function rmState(){
  const sc=scene&&show.scenes[scene.key];
- return {title:show.title,live:showStart!=null,cur,next,cues:show.cues.slice(0,300).map(c=>({n:c.name,ty:c.type,lt:c.lt||''})),
+ return {title:show.title,live:showStart!=null,cur,next,cues:show.cues.slice(0,300).map(c=>({n:c.name,ty:c.type,lt:c.lt||'',g:c.g||0})),
   busN:BUSES.map(b=>[b[0],b[1]]),bus:Object.fromEntries(BUSES.map(([k])=>[k,{v:buses[k]?buses[k].val:80,m:!!(buses[k]&&buses[k].muted)}])),
   scene:scene?{name:sc?sc.name:'',layers:scene.layers.map(l=>({t:layerTitle(l),v:l.v}))}:null,
   amt:Math.round((dub.amount==null?.6:dub.amount)*100),perms:{go:RM.go},ack:RM.ack,
-  pads:{bank:(show.banks[bank]||{}).name||'',sel:selPad,list:((show.banks[bank]||{}).pads||[]).map((p,i)=>p?{k:KEYS[i][1],t:padTitle(p)}:null)}};
+  pads:{bank:(show.banks[bank]||{}).name||'',sel:selPad,list:((show.banks[bank]||{}).pads||[]).map((p,i)=>p?{k:KEYS[i][1],t:padTitle(p),g:p.g||0}:null)},note:RM.note||null};
 }
 async function rmPost(body){
  try{const r=await fetch(RM_API+'/api/remote',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({room:RM.room,from:'master'},body))});const j=await r.json();RM.err=!r.ok;if(j.ages)RM.ages=j.ages;}catch(e){RM.err=true;}
  rmUI();
 }
-setInterval(()=>{if(!RM.on)return;const s=JSON.stringify(rmState()),n=Date.now();if(s!==RM.sent||n-RM.postT>5000){RM.sent=s;RM.postT=n;rmPost({state:JSON.parse(s)});}},350);
+function rmPush(force){if(!RM.on)return;const s=JSON.stringify(rmState()),n=Date.now();if(force||s!==RM.sent||n-RM.postT>5000){RM.sent=s;RM.postT=n;rmPost({state:JSON.parse(s)});}}
+setInterval(()=>rmPush(false),350);
 let rmNoteT=0,rmNoteMsg='';
 function rmNote(t){RM.last=t;rmNoteMsg=t;if(!rmNoteT)rmNoteT=setTimeout(()=>{rmNoteT=0;toast('📡 Masofadan: '+rmNoteMsg);},900);const b=$('#rmBtn');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),300);}const l=$('#rmLast');if(l)l.textContent='Oxirgi masofaviy buyruq: '+t;}
 function rmKey(m){
@@ -3042,8 +3043,10 @@ function rmApply(m){
  else if(m.t==='pad'&&RM.go){const i=+m.i,p=show.banks[bank].pads[i];if(p&&!editing){hitPad(i);t='SFX '+KEYS[i][1]+' · '+padTitle(p);}}
  else if(m.t==='go'&&RM.go){go();t='GO';}
  else if(m.t==='panic'&&RM.go){panic();t='HAMMASINI TO\'XTATISH';}
- if(m.id)RM.ack=m.id;RM.sent='';
+ if(m.id)RM.ack=m.id;
  if(t){rmNote(t);logEvent('📡 Masofadan: '+t);}
+ RM.note={id:m.id||'',t:t||'bajarilmadi (ruxsat yo\'q yoki ovoz yoqilmagan)'};
+ Promise.resolve().then(()=>rmPush(true));
 }
 async function rmLoop(my){
  let after=-1;

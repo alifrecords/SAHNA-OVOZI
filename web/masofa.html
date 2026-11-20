@@ -32,6 +32,8 @@ video{width:100%;height:100%;object-fit:contain;display:block}
 .cue.live{border-color:#F2A93B;background:rgba(242,169,59,.10)}.cue.live .tg{color:#F2A93B}
 .cue.next{border-style:dashed;border-color:#5a6070}.cue.done{opacity:.5}
 .cue .lt{color:#F2D03B;font-size:12px;font-weight:700}
+.cue .cg,.pad .g{color:#F2A93B;font:700 11px ui-monospace,Consolas,monospace}
+.tnote{font-size:12px;margin-top:4px;color:#3DD68C}.tnote.bad{color:#F2A93B}
 .cues{max-height:340px;overflow:auto}
 .fr{display:grid;grid-template-columns:86px minmax(0,1fr) 64px 34px;align-items:center;gap:8px;margin:8px 0}
 .fr span.v{text-align:right;font:600 12px ui-monospace,Consolas,monospace}
@@ -107,6 +109,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
         <p class="lbl">Tez buyruqlar</p>
         <div class="btns"><button id="musoff" type="button">Musiqani so'ndirish</button><button id="atmoff" type="button">Atmosferani so'ndirish</button><button id="alloff" type="button">Sahnani so'ndirish</button></div>
         <p class="log" id="log">Oxirgi buyruq: —</p>
+        <p class="tnote" id="tnote"></p>
       </div>
       <div class="card" style="margin-top:14px">
         <p class="lbl">Klaviatura — Sahna Ovozi'dagi kabi</p>
@@ -140,6 +143,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
   const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
   const TYPE = { music: 'Musiqa', sfx: 'SFX', dub: 'Dublaj', atmos: 'Atmosfera' };
   const R = { room: '', gen: 0, st: null, stTs: 0, ages: {}, sent: {}, rtt: null, touch: {}, pc: null, vidOk: false, wantT: 0, seq: 0 };
+  const dbStr = (d) => (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d).toFixed(Number.isInteger(d) ? 0 : 1) + ' dB';
   const faderDb = (v) => { if (v <= 0) return '−∞'; const d = (v - 80) * 0.75; return (d > 0 ? '+' : '') + d.toFixed(1).replace('-', '−') + ' dB'; };
 
   async function post(to, msg) {
@@ -202,7 +206,7 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
     $('#cues').innerHTML = s.cues.map((q, i) => {
       const cl = i === s.cur ? 'live' : i === s.next ? 'next' : i < s.cur ? 'done' : '';
       const tg = i === s.cur ? 'JONLI' : i === s.next ? 'KEYINGI' : i < s.cur ? 'TUGADI' : '';
-      return '<button type="button" class="cue ' + cl + '" data-i="' + i + '"><span class="n">Q' + (i + 1) + '</span><span class="nm">' + esc(q.n) + ' <span class="hint">· ' + (TYPE[q.ty] || '') + '</span></span>' + (q.lt ? '<span class="lt">💡' + esc(q.lt) + '</span>' : '') + '<span class="tg">' + tg + '</span></button>';
+      return '<button type="button" class="cue ' + cl + '" data-i="' + i + '"><span class="n">Q' + (i + 1) + '</span><span class="nm">' + esc(q.n) + ' <span class="hint">· ' + (TYPE[q.ty] || '') + '</span></span>' + (q.g ? '<span class="cg">' + dbStr(q.g) + '</span>' : '') + (q.lt ? '<span class="lt">💡' + esc(q.lt) + '</span>' : '') + '<span class="tg">' + tg + '</span></button>';
     }).join('') || '<p class="hint">Cue yo‘q</p>';
     const now = Date.now();
     if (!$('#faders').children.length || $('#faders').dataset.k !== s.busN.map((b) => b[0]).join()) {
@@ -227,9 +231,11 @@ kbd{font:700 11px ui-monospace,Consolas,monospace;padding:2px 6px;border:1px sol
       sc.layers.forEach((l, i) => { if (!(now - (R.touch['l' + i] || 0) < 1500)) { document.querySelector('[data-layer="' + i + '"]').value = l.v; $('#lv_' + i).textContent = l.v + '%'; } });
     }
     const pd = s.pads;
+    if (!pd) { $('#padT').textContent = 'SFX tugmalari'; $('#pads').innerHTML = '<p class="hint" style="grid-column:1/-1">Teatr kompyuteridagi Sahna Ovozi eski versiyada. U yerda sahifani yangilang (Ctrl+F5) yoki dasturni yangilang.</p>'; }
+    if (s.note && s.note.id && s.note.id !== R.noteId) { R.noteId = s.note.id; const n = $('#tnote'); const ok = !/^bajarilmadi/.test(s.note.t); n.className = 'tnote' + (ok ? '' : ' bad'); n.textContent = (ok ? '✓ Teatrda bajarildi: ' : '⚠ Teatrda ') + s.note.t; }
     if (pd) {
       $('#padT').textContent = 'SFX tugmalari · ' + (pd.bank || '');
-      $('#pads').innerHTML = pd.list.map((p, i) => p ? '<button type="button" class="pad' + (i === pd.sel ? ' sel' : '') + '" data-pad="' + i + '"><span class="k">' + esc(p.k) + '</span><span class="t">' + esc(p.t) + '</span></button>' : '<button type="button" class="pad vac" disabled><span class="k">' + ['1','2','3','4','5','6','7','8','Q','W','E','R','A','S','D','F'][i] + '</span><span class="t">bo‘sh</span></button>').join('');
+      $('#pads').innerHTML = pd.list.map((p, i) => p ? '<button type="button" class="pad' + (i === pd.sel ? ' sel' : '') + '" data-pad="' + i + '"><span class="k">' + esc(p.k) + '</span><span class="t">' + esc(p.t) + '</span>' + (p.g ? '<span class="g">' + dbStr(p.g) + '</span>' : '') + '</button>' : '<button type="button" class="pad vac" disabled><span class="k">' + ['1','2','3','4','5','6','7','8','Q','W','E','R','A','S','D','F'][i] + '</span><span class="t">bo‘sh</span></button>').join('');
     }
     $('#keyHint').textContent = goOk ? '' : 'GO, Esc, ↑↓, L va SFX tugmalari teatr pultida «GO ham mumkin» ruxsati yoqilganda ishlaydi.';
     if (!(now - (R.touch.amt || 0) < 1500)) { $('#amt').value = s.amt; $('#amtV').textContent = s.amt + '%'; }

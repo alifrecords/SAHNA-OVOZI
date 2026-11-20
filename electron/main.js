@@ -177,7 +177,8 @@ function createMain() {
     backgroundColor: '#0E0F12', title: APP_NAME,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'), contextIsolation: true, sandbox: true,
-      nodeIntegration: false, autoplayPolicy: 'no-user-gesture-required', spellcheck: false
+      nodeIntegration: false, autoplayPolicy: 'no-user-gesture-required', spellcheck: false,
+      backgroundThrottling: false // oyna orqada qolsa ham masofaviy pult va taymerlar sekinlashmasin
     }
   });
   win.loadFile(path.join(ROOT, 'app', 'index.html'));
