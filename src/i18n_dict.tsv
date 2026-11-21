@@ -1182,3 +1182,24 @@ Masofadan GO ruxsat etildi	Удалённый GO разрешён	Remote GO allo
 GO faqat shu pultda	GO только на этом пульте	GO only on this console
 Ovoz va chiroq shu kompyuterdan chiqadi. Masofadagi operator faderlar, atmosfera qatlamlari va dublaj effektini boshqaradi, sahnadagi telefon unga jonli video va zal ovozini yuboradi.	Звук и свет идут с этого компьютера. Удалённый оператор управляет фейдерами, слоями атмосферы и эффектом дубляжа, а телефон на сцене передаёт ему живое видео и звук зала.	Sound and light come from this computer. The remote operator controls faders, atmosphere layers and the dubbing effect; the phone on stage sends live video and hall sound.
 Kod o'zgarmaydi — bir marta yuborasiz. Biror narsa noto'g'ri ketsa, «Masofadan boshqarishga ruxsat» belgisini olib tashlang: boshqaruv darhol shu pultga qaytadi.	Код не меняется — отправляете один раз. Если что-то пошло не так, снимите «Разрешить удалённое управление»: управление сразу вернётся на этот пульт.	The code doesn't change — send it once. If anything goes wrong, untick “Allow remote control”: control returns to this console at once.
+▦ Kesimlar	▦ Слайсы	▦ Slices
+⚡ Avto	⚡ Авто	⚡ Auto
+4 teng	4 равных	4 equal
+8 teng	8 равных	8 equal
+16 teng	16 равных	16 equal
+🔀 Aralashtirish	🔀 Перемешать	🔀 Shuffle
+⇄ Teskari	⇄ Обратно	⇄ Reverse
+↺ Asl tartib	↺ Исходный порядок	↺ Original order
+✕ Kesimlarsiz	✕ Без слайсов	✕ No slices
+IJRO TARTIBI · sudrab almashtiring	ПОРЯДОК ВОСПРОИЗВЕДЕНИЯ · перетаскивайте	PLAY ORDER · drag to rearrange
+tartib oʻzgargan	порядок изменён	order changed
+asl tartib	исходный порядок	original order
+▦ kesimlar yoqiq — tugma yangi tartibda chaladi	▦ слайсы включены — кнопка играет в новом порядке	▦ slices on — the pad plays in the new order
+▦ Kesimlar yoqildi	▦ Слайсы включены	▦ Slices on
+▦ Kesimlar oʻchirildi — butun sample chalinadi	▦ Слайсы выключены — играет весь сэмпл	▦ Slices off — the whole sample plays
+🔀 Kesimlar aralashtirildi	🔀 Слайсы перемешаны	🔀 Slices shuffled
+⇄ Tartib teskari	⇄ Порядок обратный	⇄ Order reversed
+↺ Asl tartib	↺ Исходный порядок	↺ Original order
+Kesimlarsiz — butun sample chalinadi	Без слайсов — играет весь сэмпл	No slices — the whole sample plays
+Belgi olib tashlandi	Метка удалена	Marker removed
+Aniq zarbalar topilmadi — 8 ta teng kesimga boʻlindi	Чётких ударов не найдено — разделено на 8 равных слайсов	No clear hits found — split into 8 equal slices

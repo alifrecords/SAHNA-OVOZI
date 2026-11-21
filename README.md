@@ -3,6 +3,18 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.23.0: ▦ Kesimlar — Xfer Nerve uslubida sample bo'laklari
+
+SFX tugmasi tanlanganda to'lqin ustidagi **▦ Kesimlar** tugmasi sample'ni zarbalar (transient) bo'yicha avtomatik bo'laklarga bo'ladi.
+
+| Qism | Nima qiladi |
+|---|---|
+| Yuqori qator — asl sample | Har bo'lak o'z rangida va raqamida. Belgini sudrash — chegarani surish, 2× bosish — yangi belgi, o'ng tugma / Alt+bosish — belgini o'chirish, bo'lak ustiga bosish — tinglash |
+| Pastki qator — ijro tartibi | Bo'lakni sichqoncha bilan bosib sudrab, boshqa o'ringa qo'yasiz; bosish — shu bo'lakni tinglash |
+| Tugmalar | ⚡ Avto · 4 / 8 / 16 teng · 🔀 Aralashtirish · ⇄ Teskari · ↺ Asl tartib · ✕ Kesimlarsiz |
+
+Tugma (klaviatura, GO, takrorlash) bo'laklarni yangi tartibda chaladi; bo'laklar ulanish joyida 3 ms silliq o'tadi. Asl fayl o'zgarmaydi, loyiha bilan saqlanadi. Kesimlar yoqiqligida ✂ Kesish (S/E) o'chiq turadi.
+
 ## 1.22.6: Masofaviy pultda cue ustiga 2 marta bosish — GO
 
 Masofaviy pultdagi cue ro'yxatida: **1 marta** bosish — keyingi qilib tanlaydi, **2 marta** bosish — shu cue'ni darhol GO qiladi. Teatr pulti uni oddiy GO kabi chaladi: «O'tish (fade) vaqti» bo'yicha, oldingi musiqa shu fade bilan so'nadi. «GO ham mumkin» ruxsati kerak.

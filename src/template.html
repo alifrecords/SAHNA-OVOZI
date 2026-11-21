@@ -516,6 +516,28 @@ header .brand svg{width:24px;height:24px}
 .azviz svg{position:absolute;inset:0;width:100%;height:100%}
 .azviz span{position:absolute;right:8px;top:4px;font-size:10px;color:#9AA0A8}
 .swv{cursor:crosshair;touch-action:none}
+/* ▦ Kesimlar (Xfer Nerve uslubi): yuqorida asl sample + belgilar, pastda ijro tartibi — sudrab almashtiriladi */
+.slw{display:flex;flex-direction:column;gap:4px}
+.slv{position:relative;height:62px;border-radius:8px;background:#0B0C0F;overflow:hidden;border:1px solid var(--line);touch-action:none;cursor:copy}
+.slv .slz{position:absolute;top:0;bottom:0;opacity:.16}
+.slv .swb{inset:5px 4px}
+.slv .swb i{opacity:.85}
+.slk{position:absolute;top:0;bottom:0;width:9px;margin-left:-4px;cursor:ew-resize;z-index:2}
+.slk::before{content:"";position:absolute;left:4px;top:0;bottom:0;width:1px;background:#fff;opacity:.75}
+.slk b{position:absolute;left:5px;top:2px;font-size:9px;font-weight:800;color:#fff;background:rgba(0,0,0,.55);padding:0 3px;border-radius:3px;pointer-events:none}
+.slk:hover::before{width:2px;opacity:1}
+.slo{position:relative;height:50px;border-radius:8px;background:#0B0C0F;border:1px solid var(--line);display:flex;overflow:hidden;touch-action:none}
+.slb{position:relative;height:100%;border-right:1px solid #0B0C0F;cursor:grab;display:flex;align-items:center;padding:0 1px;min-width:6px;user-select:none;transition:transform .12s}
+.slb .swb{position:absolute;inset:14px 2px 3px;display:flex;align-items:center;gap:0}
+.slb .swb i{flex:1;background:#0B0C0F;opacity:.55;border-radius:0}
+.slb > em{position:absolute;left:3px;top:1px;font:800 10px/12px var(--mono,monospace);color:#0B0C0F;font-style:normal;pointer-events:none}
+.slb.drag{cursor:grabbing;z-index:5;box-shadow:0 0 0 2px #fff,0 6px 18px rgba(0,0,0,.6);transition:none;opacity:.92}
+.slb.pl{outline:2px solid #fff;outline-offset:-2px}
+.slins{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;background:#fff;z-index:6;pointer-events:none;box-shadow:0 0 8px #fff}
+.sltools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px}
+.sltools .btn.on{background:var(--amber);color:#111;border-color:var(--amber)}
+.sllab{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted);display:flex;justify-content:space-between}
+#sbSlice.on{background:var(--amber);color:#111;border-color:var(--amber)}
 
 .lrow[draggable="true"]{cursor:grab}
 .lrow.dragging{opacity:.45}
@@ -1375,13 +1397,74 @@ function lockUI(){const b=$('#sfxLock');const on=sfxLocked();if(b){b.classList.t
 function lockToggle(){show.lockSfx=show.lockSfx?0:1;saveShow();lockUI();renderPads();toast(show.lockSfx?'SFX banki qulflandi 🔒 — faqat ijro':'SFX banki ochildi 🔓');logEvent(show.lockSfx?'SFX banki qulflandi':'SFX banki ochildi');}
 function selectPad(i){if(selPad!==i)sbInfo='';selPad=i;document.querySelectorAll('.pad').forEach(el=>el.classList.toggle('sel',+el.dataset.pad===selPad));renderSB();if(azvTarget==='pad')azvRefresh();nmRender('sfx');}
 function azvRefresh(){const a=document.activeElement;if(a&&a.dataset&&a.dataset.azk)return;renderAzv();}
+/* ---------- ▦ Kesimlar (Xfer Nerve uslubi) ----------
+   p.sl = {on, pts:[ichki chegaralar, s], ord:[ijro tartibi]} — vaqtlar to'lqin oralig'ida (0..D).
+   Yoqiq bo'lsa tugma kesimlarni ord tartibida chaladi (asl fayl o'zgarmaydi). */
+const SL_COL=['#F2A93B','#4FC3B5','#A78BFA','#F27A8A','#7DD3FC','#FDE047','#86EFAC','#FDA4AF','#C4B5FD','#FDBA74','#5EEAD4','#F9A8D4','#BEF264','#93C5FD','#FCD34D','#D8B4FE'];
+const slCol=i=>SL_COL[i%SL_COL.length];
+function slRange(id,buf){const m=META[id]||{};const la=!overrides[id]&&m.loop;return {base:la?m.loopStart:0,D:la?m.dur:buf.duration};}
+function slSegs(sl,D){const pts=(sl.pts||[]).filter(t=>t>0.005&&t<D-0.005).sort((a,b)=>a-b);const b=[0,...pts,D];return b.slice(0,-1).map((x,i)=>[x,b[i+1]]);}
+function slOrd(sl,n){const o=(sl.ord||[]).filter(i=>i>=0&&i<n);const seen=new Set(o);for(let i=0;i<n;i++)if(!seen.has(i))o.push(i);return [...new Set(o)];}
+const SL_CACHE=new WeakMap();
+function slBuf(p,id,buf){
+ const sl=p.sl;if(!sl||!sl.on||!ctx)return null;const {base,D}=slRange(id,buf);const segs=slSegs(sl,D);if(segs.length<2)return null;const ord=slOrd(sl,segs.length);
+ const key=segs.map(x=>x[0].toFixed(4)).join(',')+'|'+ord.join(',')+'|'+base;let c=SL_CACHE.get(buf);if(!c){c=new Map();SL_CACHE.set(buf,c);}if(c.has(key))return c.get(key);
+ const sr=buf.sampleRate,F=Math.max(8,Math.round(.003*sr)),nc=buf.numberOfChannels;const parts=ord.map(i=>[Math.round((base+segs[i][0])*sr),Math.min(buf.length,Math.round((base+segs[i][1])*sr))]);
+ const total=parts.reduce((t,[a,z])=>t+Math.max(0,z-a),0);if(total<16)return null;const out=ctx.createBuffer(nc,total,sr);
+ for(let ch=0;ch<nc;ch++){const src=buf.getChannelData(ch),dst=out.getChannelData(ch);let w=0;
+  for(const [a,z] of parts){const L=z-a,f=Math.min(F,L>>1);for(let k=0;k<L;k++){let v=src[a+k];if(k<f)v*=k/f;else if(k>L-f)v*=(L-k)/f;dst[w+k]=v;}w+=L;}}
+ if(c.size>6)c.delete(c.keys().next().value);c.set(key,out);return out;
+}
+// Avto kesish: transient (zarba boshlanishi) bo'yicha — energiya o'sishi cho'qqilari
+function slDetect(buf,base,D,maxN){
+ const sr=buf.sampleRate,hop=Math.max(64,Math.round(sr*.005)),a0=Math.round(base*sr),n=Math.floor(D*sr/hop);if(n<8)return [];
+ const ch=[];for(let i=0;i<buf.numberOfChannels;i++)ch.push(buf.getChannelData(i));
+ const le=new Float32Array(n);for(let f=0;f<n;f++){let s=0;const a=a0+f*hop;for(let k=0;k<hop;k++){let v=0;for(const d of ch)v+=d[a+k]||0;s+=v*v;}le[f]=Math.log10(1e-9+s/hop/ch.length);}
+ const fl=new Float32Array(n);for(let f=2;f<n;f++)fl[f]=Math.max(0,le[f]-Math.min(le[f-1],le[f-2]));
+ let mu=0;for(const v of fl)mu+=v;mu/=n;let sd=0;for(const v of fl)sd+=(v-mu)*(v-mu);sd=Math.sqrt(sd/n)||1e-6;
+ const cand=[];for(let f=3;f<n-1;f++){const v=fl[f];if(v<mu+.6*sd||v<.12)continue;let pk=true;for(let j=Math.max(0,f-6);j<=Math.min(n-1,f+6);j++)if(fl[j]>v){pk=false;break;}if(pk)cand.push([f,v]);}
+ cand.sort((x,y)=>y[1]-x[1]);const minGap=Math.max(.06,D/(maxN*4)),out=[];
+ for(const [f,v] of cand){if(out.length>=maxN-1)break;let t=(f-1)*hop/sr;if(t<minGap||t>D-minGap)continue;if(out.some(x=>Math.abs(x-t)<minGap))continue;out.push(t);}
+ return out.sort((a,b)=>a-b);
+}
+function slAuto(p,mode){
+ const buf=buffers[p.a];if(!buf)return;const {base,D}=slRange(p.a,buf);let pts;
+ if(mode==='auto'){pts=slDetect(buf,base,D,16);if(pts.length<1){pts=Array.from({length:7},(_,i)=>D*(i+1)/8);toast('Aniq zarbalar topilmadi — 8 ta teng kesimga boʻlindi');}}
+ else{const n=+mode;pts=Array.from({length:n-1},(_,i)=>D*(i+1)/n);}
+ p.sl={on:1,pts,ord:pts.map((_,i)=>i).concat(pts.length),mode};
+ saveShow();renderSB();renderPads();toast('▦ '+(pts.length+1)+' ta kesim — pastki qatorda sudrab joyini almashtiring');logEvent('SFX '+KEYS[selPad][1]+' kesimlar: '+(pts.length+1)+' ta ('+(mode==='auto'?'avto':'teng')+')');
+}
+let slPv=null;
+function slPreview(p,i){ // bitta kesimni tinglash
+ const buf=buffers[p.a];if(!buf||!ctx)return;const {D}=slRange(p.a,buf);const sg=slSegs(p.sl,D)[i];if(!sg)return;
+ if(slPv)stopVoice(slPv,.02);slPv=play(p.a,'sfx',{title:'▦ '+(i+1)+' · '+padTitle(p),preview:true,trim:{s:sg[0],e:sg[1],fi:0,fo:.004},level:dbToG(p.g||0),verb:p.verb,pad:null,whole:true});
+}
+function slWave(p,buf){
+ const {base,D}=slRange(p.a,buf),sl=p.sl,segs=slSegs(sl,D),ord=slOrd(sl,segs.length),N=600;
+ const pk=peaksOf(buf,N*Math.max(1,Math.round(buf.duration/D))),pkN=pk.length,at=t=>pk[Math.min(pkN-1,Math.floor((base+t)/buf.duration*pkN))]||0;
+ const bars=(a,z,n,c)=>{let h='';for(let i=0;i<n;i++)h+='<i style="height:'+Math.max(3,Math.round(at(a+(z-a)*(i+.5)/n)*100))+'%'+(c?';background:'+c:'')+'"></i>';return h;};
+ const pos=segs.map(()=>0);ord.forEach((o,k)=>pos[o]=k);
+ const top='<div class="slv" id="slTop" title="Belgini sudrang — kesim chegarasi · 2× bosing — yangi belgi · belgini o\'ng tugma / Alt+bosing — o\'chirish · kesim ustiga bosing — tinglash">'+
+  segs.map((g,i)=>'<span class="slz" style="left:'+(g[0]/D*100)+'%;width:'+((g[1]-g[0])/D*100)+'%;background:'+slCol(i)+'"></span>').join('')+
+  '<div class="swb">'+segs.map((g,i)=>'<span style="display:flex;align-items:center;gap:1px;height:100%;flex:'+(g[1]-g[0])+' 1 0">'+bars(g[0],g[1],Math.max(1,Math.round((g[1]-g[0])/D*180)),slCol(i))+'</span>').join('')+'</div>'+
+  segs.slice(1).map((g,i)=>'<span class="slk" data-slk="'+i+'" style="left:'+(g[0]/D*100)+'%"><b>'+(i+2)+'</b></span>').join('')+
+  '<span class="swph" id="slPh" hidden></span></div>';
+ const bot='<div class="slo" id="slOrd" title="Kesimni sichqoncha bilan bosib sudrang — joyini almashtiring · bosing — tinglash">'+ord.map((o,k)=>{const g=segs[o],w=Math.max(4,Math.round((g[1]-g[0])/D*90));return '<div class="slb" data-slb="'+k+'" style="flex:'+(g[1]-g[0])+' 1 0;background:'+slCol(o)+'"><em>'+(o+1)+'</em><div class="swb">'+bars(g[0],g[1],w)+'</div></div>';}).join('')+'</div>';
+ const moved=ord.some((o,k)=>o!==k);
+ return '<div class="slw"><div class="sllab"><span>ASL SAMPLE · '+segs.length+' TA KESIM</span><span>'+fmtT(D)+'</span></div>'+top+
+  '<div class="sllab"><span>IJRO TARTIBI · sudrab almashtiring</span><span>'+(moved?'tartib oʻzgargan':'asl tartib')+'</span></div>'+bot+
+  '<div class="sltools"><button type="button" class="btn sm'+(sl.mode==='auto'?' on':'')+'" data-sla="auto" title="Zarbalar (transient) boʻyicha avtomatik kesish">⚡ Avto</button>'+['4','8','16'].map(n=>'<button type="button" class="btn sm'+(sl.mode===n?' on':'')+'" data-sla="'+n+'">'+n+' teng</button>').join('')+
+  '<span style="flex:1"></span><button type="button" class="btn sm" data-sla="shuf" title="Kesimlarni tasodifiy aralashtirish">🔀 Aralashtirish</button><button type="button" class="btn sm" data-sla="rev" title="Tartibni teskari qilish">⇄ Teskari</button><button type="button" class="btn sm" data-sla="reset"'+(moved?'':' disabled')+'>↺ Asl tartib</button><button type="button" class="btn sm" data-sla="off" title="Kesimlarni oʻchirish — butun fayl chalinadi">✕ Kesimlarsiz</button></div></div>';
+}
 function renderSB(){
  const box=$('#sbox');if(!box)return;const b=show.banks[bank];if(!b)return;const p=b.pads[selPad];
  const g=p?groupOf(p.a):lastGroup,gl=groupList();
  let info=sbInfo;if(!info&&p){const L=groupAssets(g);const k=L.indexOf(p.a);info=k>=0?(k+1)+' / '+L.length+' · '+groupName(g):groupName(g);}
  const buf=p&&buffers[p.a];
  let wave='<div class="swe">Bo\'sh tugma — ◀ ▶ bilan sample tanlang, faylni sudrab tashlang yoki “Papkadan sample\'lar”</div>';
- if(buf){const m=META[p.a]||{};const loopAsset=!overrides[p.a]&&m.loop;const dur=loopAsset?m.dur:buf.duration,base=loopAsset?m.loopStart:0;
+ const slOn=!!(p&&buf&&p.sl&&p.sl.on);
+ if(slOn){wave=slWave(p,buf);box.dataset.dur=slRange(p.a,buf).D;}
+ else if(buf){const m=META[p.a]||{};const loopAsset=!overrides[p.a]&&m.loop;const dur=loopAsset?m.dur:buf.duration,base=loopAsset?m.loopStart:0;
   const N=180,pk=peaksOf(buf,N),a0=Math.floor(base/buf.duration*N),z0=Math.max(a0+1,Math.floor((base+dur)/buf.duration*N)),sl=Array.from(pk).slice(a0,z0);
   let bars='';for(let i=0;i<N;i++){const v=sl[Math.floor(i/N*sl.length)]||0;bars+='<i style="height:'+Math.max(2,Math.round(v*100))+'%"></i>';}
   const s=p.trim?p.trim.s/dur*100:0,e=p.trim?p.trim.e/dur*100:100;
@@ -1390,10 +1473,10 @@ function renderSB(){
  box.innerHTML='<div class="sbar"><button type="button" class="ibtn" id="sbPrev" aria-label="Oldingi sample (←)">◀</button><button type="button" class="ibtn" id="sbNext" aria-label="Keyingi sample (→)">▶</button>'+
   '<span class="sbpad"><span class="key mono">'+KEYS[selPad][1]+'</span> <b>'+(p?esc(padTitle(p)):'Bo\'sh')+'</b></span>'+
   '<select class="inp" id="sbGroup" aria-label="Sample guruhi">'+gl.map(x=>'<option value="'+esc(x)+'"'+(x===g?' selected':'')+'>'+esc(groupName(x))+'</option>').join('')+'</select>'+
-  '<span class="muted sbinfo mono">'+esc(info)+(p&&buf?' · '+fmtT(p.trim?trimLen(p.trim):+box.dataset.dur)+(p.trim?' ✂':''):'')+'</span><span style="flex:1"></span>'+
-  '<button type="button" class="btn sm" id="sbPlay"'+(buf?'':' disabled')+'>▶ Tinglash</button><button type="button" class="btn sm" id="sbTrim"'+(buf?'':' disabled')+'>✂ Kesish</button><button type="button" class="btn sm" id="sbFolder">Papkadan sample\'lar</button></div>'+
+  '<span class="muted sbinfo mono">'+esc(info)+(p&&buf?' · '+fmtT(p.trim?trimLen(p.trim):+box.dataset.dur)+(p.trim&&!slOn?' ✂':'')+(slOn?' ▦'+slSegs(p.sl,+box.dataset.dur).length:''):'')+'</span><span style="flex:1"></span>'+
+  '<button type="button" class="btn sm" id="sbPlay"'+(buf?'':' disabled')+'>▶ Tinglash</button><button type="button" class="btn sm" id="sbTrim"'+(buf&&!slOn?'':' disabled')+'>✂ Kesish</button><button type="button" class="btn sm'+(slOn?' on':'')+'" id="sbSlice"'+(buf?'':' disabled')+' title="▦ Kesimlar: sample avtomatik boʻlaklarga boʻlinadi, boʻlaklar joyini sichqoncha bilan sudrab almashtirasiz (Xfer Nerve kabi)">▦ Kesimlar</button><button type="button" class="btn sm" id="sbFolder">Papkadan sample\'lar</button></div>'+
   wave+
-  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="mono acc" id="sbSel" style="font-size:11px">'+(p.trim?fmtT(p.trim.s)+' — '+fmtT(p.trim.e)+' · '+fmtT(trimLen(p.trim)):'')+'</span><span class="muted" style="font-size:11px;margin-left:auto">to\'lqinda sudrang — joyni belgilash · bosing — tugmadagidek tinglash · 2× — butun fayl · ← → — sample</span></div>':'');
+  (p?'<div class="sbgain wfield"><label for="sbG" class="muted">Gain</label><input type="range" id="sbG" min="-18" max="6" step="1" value="'+(p.g||0)+'" style="accent-color:var(--amber)"><b class="mono" id="sbGv">'+dbStr(p.g||0)+'</b><span class="mono acc" id="sbSel" style="font-size:11px">'+(p.trim?fmtT(p.trim.s)+' — '+fmtT(p.trim.e)+' · '+fmtT(trimLen(p.trim)):'')+'</span><span class="muted" style="font-size:11px;margin-left:auto">'+(slOn?'▦ kesimlar yoqiq — tugma yangi tartibda chaladi':'to\'lqinda sudrang — joyni belgilash · bosing — tugmadagidek tinglash · 2× — butun fayl · ← → — sample')+'</span></div>':'');
 }
 async function importFolder(files){
  const L=[...files].filter(f=>/\.(wav|mp3|ogg|oga|flac|m4a|aac|aif|aiff|opus|webm)$/i.test(f.name)).sort((a,b)=>(a.webkitRelativePath||a.name).localeCompare(b.webkitRelativePath||b.name,undefined,{numeric:true}));
@@ -1410,6 +1493,16 @@ document.addEventListener('click',e=>{
  if(t.id==='sbPrev')browsePad(-1);else if(t.id==='sbNext')browsePad(1);
  else if(t.id==='sbPlay')padPreview(selPad);
  else if(t.id==='sbTrim'){if(sfxLocked()){lockToast();return;}editPad(selPad);}
+ else if(t.id==='sbSlice'){if(sfxLocked()){lockToast();return;}const p=sbCur();if(!p||!buffers[p.a])return;if(p.sl&&p.sl.pts){p.sl.on=p.sl.on?0:1;saveShow();renderSB();renderPads();toast(p.sl.on?'▦ Kesimlar yoqildi':'▦ Kesimlar oʻchirildi — butun sample chalinadi');}else slAuto(p,'auto');}
+ else if(t.dataset.sla){const p=sbCur();if(!p||!p.sl)return;if(sfxLocked()){lockToast();return;}const a=t.dataset.sla,n=slSegs(p.sl,+$('#sbox').dataset.dur).length;
+  if(a==='auto'||/^\d+$/.test(a))slAuto(p,a);
+  else{const o=slOrd(p.sl,n);
+   if(a==='shuf'){for(let i=o.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[o[i],o[j]]=[o[j],o[i]];}p.sl.ord=o;toast('🔀 Kesimlar aralashtirildi');}
+   else if(a==='rev'){p.sl.ord=o.reverse();toast('⇄ Tartib teskari');}
+   else if(a==='reset'){p.sl.ord=o.map((_,i)=>i);toast('↺ Asl tartib');}
+   else if(a==='off'){p.sl.on=0;toast('Kesimlarsiz — butun sample chalinadi');}
+   saveShow();renderSB();renderPads();if(a!=='off')padPreview(selPad);}
+ }
  else if(t.id==='sbFolder'){if(!ctx)return;if(sfxLocked()){lockToast();return;}$('#dirIn').click();}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sbGroup'){sbInfo='';browsePad(0,e.target.value);}});
@@ -1596,6 +1689,51 @@ function padPause(i){
 function padStop(i){const p=show.banks[bank].pads[i];if(!p)return;pausedPads.delete(p);const vs=padVoices(p);vs.forEach(v=>stopVoice(v,.12));renderPadStates();}
 function applyPadGain(p){if(!ctx)return;const n=ctx.currentTime;voices.forEach(v=>{if(v.padObj===p&&!v.stopping){v.lvl0=dbToG(gainFor(v.ref))*dbToG(p.g||0);v.g.gain.cancelScheduledValues(n);v.g.gain.setTargetAtTime(v.lvl0,n,.03);}});}
 function padGainStep(d){const p=show.banks[bank].pads[selPad];if(!p){toast('SFX tugmasi tanlanmagan');return;}if(sfxLocked()){lockToast();return;}p.g=Math.max(-30,Math.min(12,(p.g||0)+d));applyPadGain(p);saveShow();renderPads();toast('SFX '+KEYS[selPad][1]+' · '+padTitle(p)+': '+dbStr(p.g));}
+/* ▦ kesimlar: pastki qatorda sudrab tartibni almashtirish, yuqorida belgilarni surish */
+let slDrag=null;
+document.addEventListener('pointerdown',e=>{
+ const p=sbCur();if(!p||!p.sl||!p.sl.on||!buffers[p.a])return;
+ const blk=e.target.closest&&e.target.closest('.slb'),mk=e.target.closest&&e.target.closest('.slk'),top=e.target.closest&&e.target.closest('#slTop');
+ if(!blk&&!top)return;e.preventDefault();
+ const D=+$('#sbox').dataset.dur;
+ if(blk){const row=$('#slOrd'),r=row.getBoundingClientRect(),els=[...row.querySelectorAll('.slb')];
+  slDrag={kind:'ord',k:+blk.dataset.slb,el:blk,row,r,x0:e.clientX,mids:els.map(x=>{const b=x.getBoundingClientRect();return b.left+b.width/2;}),moved:false,ins:null};}
+ else if(mk){if(e.button===2||e.altKey){if(sfxLocked()){lockToast();return;}slDelMark(p,+mk.dataset.slk);return;}
+  const r=top.getBoundingClientRect();slDrag={kind:'mk',i:+mk.dataset.slk,r,D,el:mk,moved:false};}
+ else{const r=top.getBoundingClientRect(),t=(e.clientX-r.left)/r.width*D;const sg=slSegs(p.sl,D);const i=sg.findIndex(g=>t>=g[0]&&t<g[1]);slPreview(p,i<0?sg.length-1:i);return;}
+ try{e.target.setPointerCapture(e.pointerId);}catch(_){}
+});
+document.addEventListener('pointermove',e=>{
+ const d=slDrag;if(!d)return;
+ if(d.kind==='ord'){const dx=e.clientX-d.x0;if(!d.moved&&Math.abs(dx)<5)return;if(!d.moved){if(sfxLocked()){slDrag=null;lockToast();return;}d.moved=true;d.el.classList.add('drag');}
+  d.el.style.transform='translateX('+dx+'px)';
+  let ins=d.mids.findIndex(m=>e.clientX<m);if(ins<0)ins=d.mids.length;d.ins=ins;
+  let mark=d.row.querySelector('.slins');if(!mark){mark=document.createElement('span');mark.className='slins';d.row.appendChild(mark);}
+  const els=[...d.row.querySelectorAll('.slb')],x=ins>=els.length?d.r.width:els[ins].getBoundingClientRect().left-d.r.left;mark.style.left=x+'px';}
+ else if(d.kind==='mk'){if(sfxLocked())return;d.moved=true;const p=sbCur(),pts=[...p.sl.pts].sort((a,b)=>a-b);const lo=(d.i>0?pts[d.i-1]:0)+.02,hi=(d.i<pts.length-1?pts[d.i+1]:d.D)-.02;
+  const t=Math.max(lo,Math.min(hi,(e.clientX-d.r.left)/d.r.width*d.D));pts[d.i]=t;p.sl.pts=pts;d.el.style.left=(t/d.D*100)+'%';
+  const z=[...document.querySelectorAll('#slTop .slz')];if(z[d.i]&&z[d.i+1]){const a=d.i>0?pts[d.i-1]:0,b=d.i<pts.length-1?pts[d.i+1]:d.D;z[d.i].style.width=((t-a)/d.D*100)+'%';z[d.i+1].style.left=(t/d.D*100)+'%';z[d.i+1].style.width=((b-t)/d.D*100)+'%';}}
+});
+document.addEventListener('pointerup',()=>{
+ const d=slDrag;if(!d)return;slDrag=null;const p=sbCur();if(!p||!p.sl)return;
+ if(d.kind==='ord'){
+  if(!d.moved){const o=slOrd(p.sl,d.mids.length);slPreview(p,o[d.k]);return;}
+  const o=slOrd(p.sl,d.mids.length),it=o.splice(d.k,1)[0];let ins=d.ins==null?d.k:d.ins;if(ins>d.k)ins--;o.splice(ins,0,it);
+  p.sl.ord=o;saveShow();renderSB();renderPads();if(ins!==d.k){toast('▦ '+(it+1)+'-kesim '+(ins+1)+'-oʻringa qoʻyildi');padPreview(selPad);}
+ }else if(d.kind==='mk'&&d.moved){saveShow();renderSB();}
+});
+document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.slk'))e.preventDefault();});
+function slDelMark(p,i){const pts=[...p.sl.pts].sort((a,b)=>a-b);if(i<0||i>=pts.length)return;
+ // i-belgi o'chsa i va i+1 kesimlar qo'shiladi: tartibda i+1 ni olib tashlab, kattalarini bittaga suramiz
+ pts.splice(i,1);const o=slOrd(p.sl,pts.length+2).filter(x=>x!==i+1).map(x=>x>i+1?x-1:x);p.sl.pts=pts;p.sl.ord=o;
+ if(!pts.length)p.sl.on=0;saveShow();renderSB();renderPads();toast('Belgi olib tashlandi');}
+document.addEventListener('dblclick',e=>{
+ const top=e.target.closest&&e.target.closest('#slTop');if(!top||e.target.closest('.slk'))return;const p=sbCur();if(!p||!p.sl)return;if(sfxLocked()){lockToast();return;}
+ const D=+$('#sbox').dataset.dur,r=top.getBoundingClientRect(),t=(e.clientX-r.left)/r.width*D;const pts=[...p.sl.pts].sort((a,b)=>a-b);if(pts.some(x=>Math.abs(x-t)<.03))return;
+ const n=pts.length+1,i=[...pts,D].findIndex(x=>t<x); // i-kesim ikkiga bo'linadi
+ pts.splice(i,0,t);const o=[];slOrd(p.sl,n).forEach(x=>{if(x<i)o.push(x);else if(x===i)o.push(i,i+1);else o.push(x+1);});p.sl.pts=pts;p.sl.ord=o;
+ saveShow();renderSB();renderPads();toast('Yangi belgi: '+(n+1)+' ta kesim');
+});
 let sbDrag=null;
 function sbCur(){return show.banks[bank]&&show.banks[bank].pads[selPad];}
 function sbPaint(s,e,D){const a=$('#sbM1'),b=$('#sbM2'),S=$('#sbS'),E=$('#sbE');if(!a)return;a.style.width=(s/D*100)+'%';b.style.left=(e/D*100)+'%';S.style.left=(s/D*100)+'%';E.style.left=(e/D*100)+'%';const l=$('#sbSel');if(l)l.textContent=fmtT(s)+' — '+fmtT(e)+' · '+fmtT(e-s);}
@@ -2839,13 +2977,15 @@ window.addEventListener('click',e=>{if(performance.now()-SWP.sup<400&&e.target.c
 document.addEventListener('dragstart',e=>{if(SWP.p&&SWP.p.on)e.preventDefault();},true);
 /* ---------- playback ---------- */
 function play(id,bus,o){
- o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;buf=nmPick(id,buf,o);
+ o=o||{};let buf=buffers[id];if(!buf||!ctx)return null;
+ let slm=false;if(o.pad&&o.pad.sl&&o.pad.sl.on){const d=slBuf(o.pad,id,buf);if(d){buf=d;slm=true;o=Object.assign({},o,{trim:null});}}
+ buf=nmPick(id,buf,o);
  const src=ctx.createBufferSource();src.buffer=buf;const g=ctx.createGain();
  const lvl0=dbToG(gainFor(id))*(o.level==null?1:o.level),lvl=lvl0*(o.cue?dbToG(o.cue.g||0):1),now=ctx.currentTime,fi=o.fadeIn||0;
  if(fi>0){g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(lvl,now+fi);}else g.gain.setValueAtTime(lvl,now);
  src.connect(g);
  const out=o.preview&&monOn()?mon.bus:buses[bus].input;let vi=null,pxSt=0;
- const m=META[id]||{};let off=0;const base=(!overrides[id]&&m.loop)?m.loopStart:0;
+ const m=slm?{}:(META[id]||{});let off=0;const base=(!slm&&!overrides[id]&&m.loop)?m.loopStart:0;
  const tr=o.trim&&o.trim.e>o.trim.s?o.trim:null;let dur=buf.duration,regLen;const off0=Math.max(0,o.offset||0);
  if(tr){
   regLen=tr.e-tr.s;const st=Math.min(off0,Math.max(0,regLen-.02));pxSt=st;off=base+tr.s+st;dur=regLen-st;
@@ -2853,7 +2993,7 @@ function play(id,bus,o){
   if(o.loop){src.loop=true;src.loopStart=base+tr.s;src.loopEnd=base+tr.e;src.start(now,off);}
   else{if(tr.fo>0){const f=Math.min(tr.fo,dur/2);g.gain.setValueAtTime(lvl,now+dur-f);g.gain.linearRampToValueAtTime(0.0001,now+dur);}src.start(now,off,dur);}
  }else{
-  const lp=o.loop&&!overrides[id]&&m.loop;regLen=lp?m.dur:buf.duration;
+  const lp=o.loop&&!slm&&!overrides[id]&&m.loop;regLen=lp?m.dur:buf.duration;
   if(o.loop){src.loop=true;if(lp){src.loopStart=m.loopStart;src.loopEnd=m.loopEnd;}}
   off=(lp?m.loopStart:0)+Math.min(off0,regLen-.02);src.start(now,off);dur=buf.duration-off;
  }
