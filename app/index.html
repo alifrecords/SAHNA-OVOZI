@@ -1006,9 +1006,9 @@ function makeBus(name){
 }
 /* ---------- Audio qurilma: chiqish, quloqchin (monitor), kirish, kechikish, chastota ---------- */
 const AUD_KEY='sahnaOvozi.audio';
-const AUD=Object.assign({engine:'system',asio:null,out:'',outName:'',mon:'',monName:'',inp:'',inpName:'',inCh:'1',lat:'interactive',sr:0},(()=>{try{return JSON.parse(localStorage.getItem(AUD_KEY)||'{}');}catch(e){return {};}})());
+const AUD=Object.assign({engine:'system',asio:null,out:'',outName:'',mon:'',monName:'',inp:'',inpName:'',inCh:'1',lat:'balanced',sr:0},(()=>{try{return JSON.parse(localStorage.getItem(AUD_KEY)||'{}');}catch(e){return {};}})());
 const audSave=()=>{try{localStorage.setItem(AUD_KEY,JSON.stringify(AUD));}catch(e){}};
-const LAT_OPTS=[['interactive',"Past (tavsiya) — jonli spektakl uchun"],['0.005',"Juda past ≈5 ms — kuchli karta / ASIO o'rnidagi rejim"],['0.01',"≈10 ms"],['0.02',"≈20 ms"],['balanced',"O'rtacha — barqaror"],['playback',"Yuqori — eng barqaror (kuchsiz kompyuter)"]];
+const LAT_OPTS=[['interactive',"Past — jonli mikrofon uchun"],['0.005',"Juda past ≈5 ms — kuchli karta / ASIO o'rnidagi rejim"],['0.01',"≈10 ms"],['0.02',"≈20 ms"],['balanced',"O'rtacha — barqaror (tavsiya)"],['playback',"Yuqori — eng barqaror (kuchsiz kompyuter)"]];
 const SR_OPTS=[[0,'Qurilma bo\'yicha'],[44100,'44 100 Hz'],[48000,'48 000 Hz'],[88200,'88 200 Hz'],[96000,'96 000 Hz']];
 const canSink=()=>typeof AudioContext!=='undefined'&&'setSinkId' in AudioContext.prototype;
 const canElSink=()=>typeof HTMLMediaElement!=='undefined'&&'setSinkId' in HTMLMediaElement.prototype;
@@ -1744,16 +1744,29 @@ function azvIR(p){
  azvCache.set(key,pr);if(azvCache.size>40)azvCache.delete(azvCache.keys().next().value);
  return pr;
 }
+/* Umumiy reverb shinalari: bir xil sozlamali AZ VERB'ga ega barcha ovozlar BITTA konvolverdan foydalanadi
+   (avval har bir ovoz o'z konvolverini ochardi — 8 s dumli reverb bilan 5–6 ovoz birga chalinsa protsessor
+   ulgurmay, ovoz qotib-qotib chiqardi). Ovoz o'z send darajasi bilan ulanadi, dum umumiy shinada tabiiy so'nadi. */
+const VPOOL=new Map(),VP_OUT=new WeakMap();let vpN=0;
+function vpGet(q,output){let oid=VP_OUT.get(output);if(!oid){oid=++vpN;VP_OUT.set(output,oid);}const k=azvKey(q)+'#'+oid;let e=VPOOL.get(k);
+ if(!e){const conv=ctx.createConvolver();conv.normalize=false;const og=ctx.createGain();conv.connect(og);og.connect(output);e={k,conv,og,users:0,t:0};VPOOL.set(k,e);azvIR(q).then(ir=>{try{if(!conv.buffer)conv.buffer=ir;}catch(_){}}).catch(()=>{});}
+ e.users++;e.t=ctx.currentTime;return e;}
+function vpRel(e){if(!e)return;e.users=Math.max(0,e.users-1);if(ctx)e.t=ctx.currentTime;}
+setInterval(()=>{if(!ctx)return;const n=ctx.currentTime;for(const [k,e] of VPOOL)if(!e.users&&n-e.t>45){try{e.og.disconnect();e.conv.disconnect();}catch(_){}VPOOL.delete(k);}},15000);
+// Hammasini to'xtatish: umumiy shinalardagi reverb dumini ham kesamiz (yangi ovozlar yangi shina oladi)
+function vpFlush(t){if(!ctx)return;const n=ctx.currentTime,d=t||.1;for(const e of VPOOL.values()){const g=e.og.gain;g.cancelScheduledValues(n);g.setValueAtTime(g.value,n);g.linearRampToValueAtTime(0,n+d);setTimeout(()=>{try{e.og.disconnect();e.conv.disconnect();}catch(_){}},d*1000+80);}VPOOL.clear();}
 function makeVerb(input,output,p){
- const dry=ctx.createGain(),wet=ctx.createGain(),conv=ctx.createConvolver();conv.normalize=false;
- input.connect(dry);dry.connect(output);input.connect(conv);conv.connect(wet);wet.connect(output);
- const vi={dry,wet,conv,p:null,_t:null,
+ const dry=ctx.createGain(),wet=ctx.createGain();
+ input.connect(dry);dry.connect(output);input.connect(wet);
+ const vi={dry,wet,p:null,e:null,_k:null,_t:null,
   set(q){this.p=q;const on=!!(q&&q.on),m=on?+q.mix:0,n=ctx.currentTime;
    dry.gain.setTargetAtTime(on?Math.cos(m*Math.PI/2):1,n,.02);wet.gain.setTargetAtTime(on?Math.sin(m*Math.PI/2):0,n,.02);
    if(!on)return;const k=azvKey(q);if(this._k===k)return;clearTimeout(this._t);
-   const go=()=>azvIR(q).then(ir=>{if(this.p===q||azvKey(this.p||{})===k){try{conv.buffer=ir;this._k=k;}catch(e){}}}).catch(()=>{});
+   const go=()=>{if(this.p!==q&&azvKey(this.p||{})!==k)return;const e=vpGet(q,output);if(this.e){try{wet.disconnect(this.e.conv);}catch(_){}vpRel(this.e);}wet.connect(e.conv);this.e=e;this._k=k;};
    if(azvCache.has(k))go();else this._t=setTimeout(go,120);},
-  kill(t){const n=ctx.currentTime;wet.gain.cancelScheduledValues(n);wet.gain.setValueAtTime(wet.gain.value,n);wet.gain.linearRampToValueAtTime(0,n+(t||.1));}
+  kill(t){const n=ctx.currentTime,d=t||.1;wet.gain.cancelScheduledValues(n);wet.gain.setValueAtTime(wet.gain.value,n);wet.gain.linearRampToValueAtTime(0,n+d);
+},
+  release(){clearTimeout(this._t);if(this.e){try{wet.disconnect(this.e.conv);}catch(_){}vpRel(this.e);this.e=null;this._k=null;}}
  };
  vi.set(p);return vi;
 }
@@ -3149,7 +3162,7 @@ function play(id,bus,o){
  const v={vid:++vid,ref:id,lvl0,cue:o.cue||null,padObj:o.pad||null,vi,off0,regLen,title:o.title||titleOf(id),bus,src,g,start:now,dur:o.loop?Infinity:dur,loop:!!o.loop,color:o.color||TYPE[bus].c,preview:!!o.preview,reopt:Object.assign({},o,{offset:0})};
  voices.push(v);
  if(VS.doc)vsHit(id,bus,o);
- src.onended=()=>{voices=voices.filter(x=>x!==v);renderVoices();renderPadStates();};
+ src.onended=()=>{voices=voices.filter(x=>x!==v);if(v.vi&&v.vi.release)setTimeout(()=>v.vi.release(),60);renderVoices();renderPadStates();};
  renderVoices();renderPadStates();return v;
 }
 function stopVoice(v,t){if(!v||v.stopping)return;t=Math.max(t||0,.02);const now=ctx.currentTime;v.stopping=true;
@@ -3221,7 +3234,7 @@ function zoomMenu(){openModal('Masshtab','<div class="zgrid">'+ZOOMS.map(z=>'<bu
 try{const z=+localStorage.getItem('sahnaOvozi.zoom');if(z)setZoom(z,true);}catch(e){}
 
 function go(){if(next>=show.cues.length){toast('Cue ro\'yxati tugadi. Boshidan boshlash uchun Q1 ni tanlang.');return;}fireCue(next);}
-function panic(){voices.forEach(v=>{v.panicCut=true;});if(dub.verbIns){dub.verbIns.kill(.1);const q=dub.verbIns.p;setTimeout(()=>{try{dub.verbIns.conv.buffer=null;dub.verbIns._k=null;dub.verbIns.set(q);}catch(e){}},180);}pausedPads.clear();if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
+function panic(){voices.forEach(v=>{v.panicCut=true;});vpFlush(.1);if(dub.verbIns){dub.verbIns.kill(.1);const q=dub.verbIns.p;setTimeout(()=>{try{dub.verbIns.release();dub.verbIns.set(q);}catch(e){}},180);}pausedPads.clear();if(ctx&&voices.length)logEvent('HAMMASINI TO\'XTATISH');voices.slice().forEach(v=>stopVoice(v,.12));scene=null;renderScene();toast('Hamma ovoz to\'xtatildi');}
 /* ---------- 💡 CUE-LINK: Sahna Nuri (chiroq) bilan bog'lash ----------
    Cue GO bo'lganda unga biriktirilgan Sahna Nuri cue'si yonadi (c.lt = Nuri cue raqami yoki nomi, BO = blackout; c.ltd = kechikish ms).
    Lokal: o'rnatilgan dastur 127.0.0.1:47810 orqali (internetsiz). Online: 6 belgili xona kodi → sahna-nuri.pages.dev/api/link */
@@ -3279,7 +3292,7 @@ setTimeout(linkCheck,2500);
    sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
    Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
 const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
-const RM_VER='1.23.2';
+const RM_VER='1.23.3';
 const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
 try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
 function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}

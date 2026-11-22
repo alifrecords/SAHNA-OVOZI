@@ -3,6 +3,15 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.23.3: Ko'p ovoz + reverb — qotishsiz
+
+| Avval | Endi |
+|---|---|
+| Har bir chalinayotgan ovoz o'z AZ VERB konvolverini ochardi (8 s dum bilan 6 ovoz = 6 og'ir konvolver) — protsessor ulgurmay, ovoz qotib-qotib chiqardi | Bir xil sozlamali reverb'ga ega barcha ovozlar **bitta umumiy shina**dan foydalanadi; sinovda 18 marta bosilgan 6 ta reverb'li SFX — 1 ta konvolver |
+| Standart bufer: Past (interactive) | Standart bufer: **O'rtacha — barqaror** (yangi o'rnatishlarda; eskisida Ovoz sozlamalari → Kechikish) |
+
+Ovoz o'zgarmaydi: mix (dry/wet) har ovozda alohida, dum umumiy shinada tabiiy so'nadi. Esc (hammasini to'xtatish) reverb dumini ham kesadi.
+
 ## 1.23.2: SFX so'ndirishga fade vaqti
 
 SFX sarlavhasida o'z "O'tish (fade) vaqti" tanlovi: Darhol · 1 · 3 · 5 · 8 s. ■ SFX'ni so'ndirish (Num 7) shu vaqt ichida silliq pasayib o'chadi. Tanlov spektakl bilan saqlanadi.
