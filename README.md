@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.23.1: ■ SFX'ni so'ndirish — Num 7
+
+Tezkor effektlar (SFX) sarlavhasida yangi tugma: SFX bo'limidagi tugmalardan chalinayotgan hamma ovozni (sfx, musiqa namunalari, tinglash) qisqa fade bilan so'ndiradi. Klaviatura: **Num 7** (NumLock yoqiq yoki o'chiq — farqi yo'q), masofaviy pultdan ham ishlaydi.
+
 ## 1.23.0: ▦ Kesimlar — Xfer Nerve uslubida sample bo'laklari
 
 SFX tugmasi tanlanganda to'lqin ustidagi **▦ Kesimlar** tugmasi sample'ni zarbalar (transient) bo'yicha avtomatik bo'laklarga bo'ladi.
