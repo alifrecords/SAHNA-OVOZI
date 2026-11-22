@@ -3,6 +3,10 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.23.2: SFX so'ndirishga fade vaqti
+
+SFX sarlavhasida o'z "O'tish (fade) vaqti" tanlovi: Darhol · 1 · 3 · 5 · 8 s. ■ SFX'ni so'ndirish (Num 7) shu vaqt ichida silliq pasayib o'chadi. Tanlov spektakl bilan saqlanadi.
+
 ## 1.23.1: ■ SFX'ni so'ndirish — Num 7
 
 Tezkor effektlar (SFX) sarlavhasida yangi tugma: SFX bo'limidagi tugmalardan chalinayotgan hamma ovozni (sfx, musiqa namunalari, tinglash) qisqa fade bilan so'ndiradi. Klaviatura: **Num 7** (NumLock yoqiq yoki o'chiq — farqi yo'q), masofaviy pultdan ham ishlaydi.

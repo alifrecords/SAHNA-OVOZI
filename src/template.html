@@ -60,6 +60,7 @@ header{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
 .seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
 .seg button{height:40px;min-width:44px;padding:0 10px;background:var(--bg);border:none;border-right:1px solid var(--line2);font-size:12px;font-weight:600;color:var(--muted)}
 .seg button:last-child{border-right:none}
+.seg.sm button{height:28px;min-width:34px;padding:0 7px;font-size:11px}.sfxfw{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.sfxfw .lbl{font-size:9px}
 .seg button.on{background:#2A2113;color:var(--amber)}
 
 .layers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -633,7 +634,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
       </section>
 
       <section class="panel" aria-label="SFX tugmalari" style="display:flex;flex-direction:column;gap:12px">
-        <div class="between"><h2>Tezkor effektlar (SFX)</h2><span style="display:flex;align-items:center;gap:12px"><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span><button type="button" class="btn sm" id="sfxOff" title="Chalinayotgan barcha SFX tugmalarini (sfx va musiqa) so'ndirish · Num 7">■ SFX'ni so'ndirish<kbd class="nk">Num 7</kbd></button><button type="button" class="btn sm" id="sfxLock" aria-pressed="false"><svg class="lk-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg><svg class="lk-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lkt">Qulflash</span></button></span></div>
+        <div class="between"><h2>Tezkor effektlar (SFX)</h2><span style="display:flex;align-items:center;gap:12px"><span class="muted" style="font-size:12px">Oxirgi: <b style="color:var(--amber)" id="lastPad">—</b></span><span class="sfxfw" title="SFX'ni so'ndirish (Num 7) shu vaqt ichida silliq pasayib o'chadi"><span class="lbl">O'tish (fade) vaqti</span><span class="seg sm" id="sfxFadeSeg" role="group" aria-label="SFX so'ndirish fade vaqti"></span></span><button type="button" class="btn sm" id="sfxOff" title="Chalinayotgan barcha SFX tugmalarini (sfx va musiqa) so'ndirish · Num 7">■ SFX'ni so'ndirish<kbd class="nk">Num 7</kbd></button><button type="button" class="btn sm" id="sfxLock" aria-pressed="false"><svg class="lk-open" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/></svg><svg class="lk-closed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span class="lkt">Qulflash</span></button></span></div>
         <div class="nmbar" id="nm_sfx"></div>
         <div class="banks" id="banks" role="group" aria-label="SFX banklari"></div>
         <div class="pads" id="pads"></div>
@@ -3024,7 +3025,7 @@ function setLayerVol(i,vol){if(!scene)return;const l=scene.layers[i];l.v=vol;con
 function sceneOff(t){if(scene){scene.layers.forEach(l=>stopVoice(l.voice,t));scene=null;renderScene();}}
 function busOff(bus,t){voices.filter(v=>v.bus===bus).forEach(v=>stopVoice(v,t));}
 // SFX bo'limidagi tugmalardan chalinayotgan hamma ovozni (sfx, musiqa namunasi, tinglash) qisqa fade bilan so'ndirish — Num 7
-function sfxOff(){const vs=voices.filter(v=>v.bus==='sfx'&&!v.stopping);vs.forEach(v=>stopVoice(v,.12));if(slPv){try{stopVoice(slPv,.05);}catch(e){}slPv=null;}
+function sfxOff(){const vs=voices.filter(v=>v.bus==='sfx'&&!v.stopping),ft=sfxFadeT()>0?sfxFadeT():.12;vs.forEach(v=>stopVoice(v,ft));if(slPv){try{stopVoice(slPv,.05);}catch(e){}slPv=null;}
  const b=$('#sfxOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}
  if(vs.length)logEvent('SFX so\'ndirildi ('+vs.length+' ta)');if(typeof renderPads==='function')renderPads();return vs.length;}
 
@@ -3453,7 +3454,9 @@ function renderPresets(){
  $('#presets').innerHTML=PRESETS.map(([k,n,h])=>'<button type="button" class="preset'+(dub.preset===k?' on':'')+'" data-preset="'+k+'" aria-pressed="'+(dub.preset===k)+'"><span>'+n+'</span><small>'+h+'</small></button>').join('');
  renderMic();
 }
-function renderFades(){$('#fadeSeg').innerHTML=FADES.map(f=>'<button type="button" class="'+(f===fadeT?'on':'')+'" data-fade="'+f+'" aria-pressed="'+(f===fadeT)+'">'+(f?f+' s':'Darhol')+'</button>').join('');renderCueFades();}
+function sfxFadeT(){return +show.sfxFade||0;}
+function renderSfxFades(){const el=$('#sfxFadeSeg');if(!el)return;const t=sfxFadeT();el.innerHTML=FADES.map(f=>'<button type="button" class="'+(f===t?'on':'')+'" data-sfxfade="'+f+'" aria-pressed="'+(f===t)+'">'+(f?f+' s':'Darhol')+'</button>').join('');}
+function renderFades(){$('#fadeSeg').innerHTML=FADES.map(f=>'<button type="button" class="'+(f===fadeT?'on':'')+'" data-fade="'+f+'" aria-pressed="'+(f===fadeT)+'">'+(f?f+' s':'Darhol')+'</button>').join('');renderCueFades();renderSfxFades();}
 /* cue ro'yxatining alohida o'tish vaqti (show.cueFade); belgilanmagan bo'lsa — umumiy vaqt */
 function cueFadeT(){return show.cueFade==null?fadeT:+show.cueFade;}
 function renderCueFades(){const el=$('#cueFadeSeg');if(!el)return;const v=cueFadeT();el.innerHTML=FADES.map(f=>'<button type="button" class="'+(f===v?'on':'')+'" data-cfade="'+f+'" aria-pressed="'+(f===v)+'" title="Cue\'lar o\'tish vaqti: '+(f?f+' s':'Darhol')+'">'+(f?f+' s':'Darhol')+'</button>').join('');}
@@ -4342,6 +4345,7 @@ $('#showEdit').addEventListener('click',e=>{e.stopPropagation();editShow();});
 $('#cueAdd').addEventListener('click',e=>{e.stopPropagation();editCue(null);});
 $('#atmOff').addEventListener('click',()=>sceneOff(Math.max(cueFadeT(),.05)));
 $('#musOff').addEventListener('click',()=>busOff('music',Math.max(cueFadeT(),.05)));
+$('#sfxFadeSeg').addEventListener('click',e=>{const b=e.target.closest('[data-sfxfade]');if(!b)return;show.sfxFade=+b.dataset.sfxfade;saveShow();renderSfxFades();toast('SFX so\'ndirish: '+(show.sfxFade?show.sfxFade+' s fade':'darhol'));});
 $('#sfxOff').addEventListener('click',()=>{const n=sfxOff();toast(n?"SFX so'ndirildi · Num 7":"Chalinayotgan SFX yo'q");});
 $('#allOff').addEventListener('click',()=>{const f=Math.max(cueFadeT(),.05);sceneOff(f);['music','sfx','dub'].forEach(b=>busOff(b,f));});
 $('#dubLoad').addEventListener('click',()=>pickFile(f=>replaceAsset('dub_monolog',f)));
@@ -4366,7 +4370,7 @@ document.addEventListener('keydown',e=>{
  if(typing(e.target))return;
  if(e.code==='Space'){e.preventDefault();if(!e.repeat)go();return;}
  if(e.code==='KeyL'&&!e.shiftKey&&!e.repeat){e.preventDefault();if(cur>=0&&show.cues[cur]&&show.cues[cur].type!=='atmos')cueLoopToggle(cur);else toast('Hozir sahnada cue yo\'q');return;}
- if(e.code==='Numpad7'){e.preventDefault();if(e.repeat)return;const n=sfxOff();toast(n?"SFX so'ndirildi · Num 7":"Chalinayotgan SFX yo'q · Num 7");return;} // NumLock o'chiq bo'lsa ham (Home emas)
+ if(e.code==='Numpad7'){e.preventDefault();if(e.repeat)return;const n=sfxOff();toast(n?"SFX so'ndirildi · Num 7"+(sfxFadeT()?' · '+sfxFadeT()+' s':''):"Chalinayotgan SFX yo'q · Num 7");return;} // NumLock o'chiq bo'lsa ham (Home emas)
  if((e.key==='End'||e.key==='Home')&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();if(e.repeat)return;if(e.key==='End'){busOff('music',Math.max(cueFadeT(),.05));const b=$('#musOff');if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}toast("Musiqani so'ndirish · End");}else padPause(selPad);return;}
  if(e.code==='NumpadDivide'||e.code==='NumpadMultiply'||e.code==='Numpad0'){e.preventDefault();if(e.repeat)return;const ft=Math.max(cueFadeT(),.05),fl=id=>{const b=$(id);if(b){b.classList.add('kflash');setTimeout(()=>b.classList.remove('kflash'),350);}};if(e.code==='NumpadDivide'){busOff('music',ft);fl('#musOff');toast("Musiqani so'ndirish · Num /");}else if(e.code==='NumpadMultiply'){sceneOff(ft);fl('#atmOff');toast("Atmosferani so'ndirish · Num *");}else{$('#allOff').click();fl('#allOff');toast("Sahnani so'ndirish · Num 0");}return;}
  if(e.code==='Escape'){e.preventDefault();if($('#lib').classList.contains('open')){$('#libClose').click();return;}panic();return;}
