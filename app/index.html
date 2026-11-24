@@ -3295,7 +3295,7 @@ setTimeout(linkCheck,2500);
    sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
    Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
 const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
-const RM_VER='1.24.0';
+const RM_VER='1.24.1';
 const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
 try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
 function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}
@@ -3885,7 +3885,7 @@ function srUnmount(){
  else if(SR.root){SR.root.remove();SR.doc=null;SR.mode=null;SR.root=null;}
  srBtnUI();
 }
-function srClose(){if(SR.rec){toast('Avval yozishni to\'xtating (■ STOP)');return;}if(SR.xq.length||Object.values(SR.devs).some(d=>d.xfer&&!d.xfer.done)){toast('Fayllar hali yig\'ilmoqda — biroz kuting');return;}srUnmount();}
+function srClose(){if(SR.rec){toast('Avval yozishni to\'xtating (■ STOP)');return;}if(SR.xcur||SR.xq.length){toast('Fayllar hali yig\'ilmoqda — biroz kuting');return;}srUnmount();}
 addEventListener('pagehide',()=>{try{if(SR.win)SR.win.close();}catch(e){}});
 function srBtnUI(){const b=$('#srBtn');if(!b)return;b.classList.toggle('on',!!SR.doc);b.classList.toggle('rec',!!SR.rec);const s=b.querySelector('.srl');if(s)s.textContent=SR.rec?vsShort(Math.max(0,(performance.now()-SR.rec.T)/1000)):'REC';}
 
@@ -3901,7 +3901,7 @@ async function srLoop(my){
    after=typeof j.last==='number'?j.last:Math.max(after,0);
   }catch(e){if(my!==SR.gen)return;SR.err=true;srDraw();await new Promise(res=>setTimeout(res,3000));}
   // oyna yopilgan, yozuv va yig'ish tugagan bo'lsa — kutishni to'xtatamiz (ulangan telefonlar kanali ochiq qoladi)
-  if(!SR.doc&&!SR.rec&&!SR.xq.length){SR.looping=false;SR.gen++;return;}
+  if(!SR.doc&&!SR.rec&&!SR.xq.length&&!SR.xcur){SR.looping=false;SR.gen++;return;}
  }
 }
 const srGathered=pc=>new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const t=setTimeout(res,2500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);res();}});});
@@ -3909,9 +3909,10 @@ async function srAccept(m){
  const id=m.from;let d=SR.devs[id];
  if(d&&d.pc){try{d.pc.close();}catch(e){}}
  d=SR.devs[id]=Object.assign(d||{id},{name:srSafe(m.name)||(d&&d.name)||('Telefon '+id.slice(3)),pc:null,dc:null,st:'conn',lvl:0,bat:null,chg:false,rtt:null,off:null,sy:[],rec:false,dur:0,take:false,seen:Date.now()});
- if(d.xfer&&!d.xfer.done){d.xfer.err='aloqa uzildi';d.xfer=null;}
+ if(d.xfer&&!d.xfer.done){d.pend=d.xfer;d.xfer=null;}
  const pc=new RTCPeerConnection({iceServers:SR_ICE});d.pc=pc;
  pc.ondatachannel=e=>srDc(d,pc,e.channel);
+ pc.ontrack=e=>{if(d.pc!==pc)return;const a=srMonEl(d);a.srcObject=e.streams&&e.streams[0]?e.streams[0]:new MediaStream([e.track]);a.muted=!d.mon;a.play().catch(()=>{});};
  pc.onconnectionstatechange=()=>{if(d.pc!==pc)return;const s=pc.connectionState;if(s==='failed'||s==='disconnected'||s==='closed'){d.st='lost';srDraw();}};
  try{await pc.setRemoteDescription({type:'offer',sdp:m.sdp});await pc.setLocalDescription(await pc.createAnswer());await srGathered(pc);
   if(d.pc===pc)srPost(id,{t:'answer',sdp:pc.localDescription.sdp});}catch(e){d.st='lost';}
@@ -3919,8 +3920,8 @@ async function srAccept(m){
 }
 function srDc(d,pc,dc){
  dc.binaryType='arraybuffer';
- const open=()=>{if(d.pc!==pc)return;d.dc=dc;d.st='ok';d.sy=[];srPing(d);srSend(d,{t:'hi',sess:SR.rec?SR.sess:'',rec:!!SR.rec});srDraw();logEvent('🎙 Qurilma ulandi: '+d.name);};
- dc.onopen=open;dc.onclose=()=>{if(d.dc!==dc)return;d.dc=null;d.st='lost';if(d.xfer&&!d.xfer.done){d.xfer.err='aloqa uzildi';srXferEnd(d);}srDraw();};
+ const open=()=>{if(d.pc!==pc)return;d.dc=dc;d.st='ok';d.sy=[];srPing(d);srSend(d,{t:'hi',sess:SR.rec?SR.sess:'',rec:!!SR.rec});srDraw();logEvent('🎙 Qurilma ulandi: '+d.name);if(d.pend&&!SR.rec)setTimeout(()=>{if(d.pend&&d.dc)srFetch(d.id);},1200);};
+ dc.onopen=open;dc.onclose=()=>{if(d.dc!==dc)return;d.dc=null;d.st='lost';if(d.xfer&&!d.xfer.done)srXferPause(d,'aloqa uzildi');srDraw();};
  dc.onmessage=e=>srDcMsg(d,e.data);
  if(dc.readyState==='open')open();
 }
@@ -3928,7 +3929,7 @@ function srSend(d,o){if(d&&d.dc&&d.dc.readyState==='open')try{d.dc.send(JSON.str
 function srPing(d){srSend(d,{t:'ping',a:performance.now(),q:d.rtt!=null?Math.max(1,Math.round(d.rtt/2)):null});}
 setInterval(()=>{for(const d of Object.values(SR.devs))if(d.dc)srPing(d);},1500);
 function srDcMsg(d,x){
- if(typeof x!=='string'){const X=d.xfer;if(X&&X.w&&!X.done){const u=new Uint8Array(x);X.w.push(u);X.got+=u.length;}return;}
+ if(typeof x!=='string'){const X=d.xfer;if(X&&X.w&&!X.done){const u=new Uint8Array(x);X.w.push(u);X.got+=u.length;X.lastT=Date.now();}return;}
  let m;try{m=JSON.parse(x);}catch(e){return;}
  d.seen=Date.now();
  if(m.t==='pong'){const now=performance.now(),rtt=now-m.a;if(rtt<0||rtt>3000)return;d.sy.push({rtt,off:m.b-(m.a+rtt/2)});if(d.sy.length>20)d.sy.shift();
@@ -3936,7 +3937,7 @@ function srDcMsg(d,x){
  else if(m.t==='st'){d.lvl=+m.lvl||0;d.bat=m.bat==null?null:m.bat;d.chg=!!m.chg;const was=d.rec;d.rec=!!m.rec;d.dur=+m.dur||0;d.take=!!m.take;d.sr=m.sr;d.clip=!!m.clip;if(m.name&&srSafe(m.name)!==d.name){d.name=srSafe(m.name);SR.sig='';}if(was!==d.rec)SR.sig='';}
  else if(m.t==='file')srXferBegin(d,m);
  else if(m.t==='eof')srXferEnd(d);
- else if(m.t==='nofile'){if(d.xfer)d.xfer=null;srXferNext();}
+ else if(m.t==='nofile'){d.xfer=null;srXferDone(d);srXferNext();}
  else if(m.t==='late'){toast('⚠ '+d.name+': REC buyrug\'i kech keldi — boshiga '+Math.round(m.ms)+' ms jimlik qo\'shildi (sinxron saqlandi)');}
 }
 /* ===== fayl yig'ish: STOP'dan keyin telefonlar navbat bilan yuboradi ===== */
@@ -3947,34 +3948,62 @@ function srSessDir(){
  SR.sessRel='yozuvlar/'+SR.sess;SR.used=new Set();SR.files=[];
 }
 function srXferBegin(d,m){
- srSessDir();const fn=srUniq(srSafe(d.name)+'.wav');
- d.xfer={name:fn,size:+m.size||0,got:0,dur:+m.dur||0,w:srWriter(SR.sessRel+'/'+fn,null),done:false,err:null};SR.sig='';srDraw();
+ srSessDir();SR.xcur=d.id;const off=+m.off||0,P=d.pend;
+ if(off>0&&P&&P.size===(+m.size||0)&&P.got===off){d.xfer=P;d.pend=null;P.lastT=Date.now();P.err=null;SR.sig='';srDraw();return;} // uzilgan joyidan davom
+ if(off>0){srSend(d,{t:'send',off:0});return;} // mos qism yo'q — boshidan
+ if(d.pend){d.pend=null;}
+ const fn=srUniq(srSafe(d.name)+'.wav');
+ d.xfer={name:fn,size:+m.size||0,got:0,dur:+m.dur||0,w:srWriter(SR.sessRel+'/'+fn,null),done:false,err:null,lastT:Date.now(),tries:0};SR.sig='';srDraw();
 }
 async function srXferEnd(d){
- const X=d.xfer;if(!X||X.done)return;X.done=true;
- await X.w.close();
- const ok=!X.err&&!X.w.err&&(!X.size||X.got>=X.size);
- SR.files.push({name:X.name,size:X.got,w:X.w,dev:d.name,err:ok?null:(X.err||(X.w.err&&X.w.err.message)||'to\'liq kelmadi')});
+ const X=d.xfer;if(!X||X.done)return;
+ if(X.size&&X.got<X.size){srXferPause(d,'to\'liq kelmadi');return;}
+ X.done=true;await X.w.close();
+ const ok=!X.w.err;
+ SR.files.push({name:X.name,size:X.got,w:X.w,dev:d.name,err:ok?null:String((X.w.err&&X.w.err.message)||X.w.err)});
  if(ok){srSend(d,{t:'got'});logEvent('🎙 Fayl qabul qilindi: '+X.name+' · '+srMb(X.got));}
- else toast('⚠ '+d.name+': fayl to\'liq kelmadi — telefonda «Telefonga saqlash» bilan oling');
- d.xfer=null;SR.sig='';srDraw();srXferNext();
+ d.xfer=null;srXferDone(d);SR.sig='';srDraw();srXferNext();
+}
+// yuborish uzildi / qotdi: qabul qilingan qism saqlanadi, telefon qayta ulanganda shu joyidan davom etadi
+function srXferPause(d,why){
+ const X=d.xfer;if(!X||X.done)return;X.err=why;d.pend=X;d.xfer=null;
+ toast('⏸ '+d.name+': fayl yuborish to\'xtadi ('+why+') — '+(d.dc?'qayta urinilmoqda':'telefon qayta ulanganda o\'zi davom etadi'));
+ logEvent('🎙 Fayl yuborish to\'xtadi: '+d.name+' · '+srMb(X.got)+' / '+srMb(X.size)+' · '+why);
+ SR.xq=SR.xq.filter(i=>i!==d.id);srXferDone(d);SR.sig='';srDraw();srXferNext();
+ if(d.dc&&X.tries<4){X.tries++;setTimeout(()=>{if(d.pend===X&&d.dc&&!SR.rec)srFetch(d.id);},1500);}
+}
+function srXferWatch(){
+ const now=Date.now();
+ for(const d of Object.values(SR.devs)){const X=d.xfer;if(!X||X.done)continue;
+  if(!d.dc){srXferPause(d,'aloqa uzildi');continue;}
+  if(now-X.lastT>12000)srXferPause(d,'telefon 12 s javob bermadi — ekran o\'chgan yoki boshqa ilovaga o\'tilgan bo\'lishi mumkin');}
+ // navbatdagi qurilma «send»ga javob bermasa — keyingisiga o'tamiz
+ if(SR.xcur&&now-SR.xqT>15000){const d=SR.devs[SR.xcur];if(!d||!d.xfer){if(d)toast('⚠ '+d.name+': telefon faylni yubormadi — kartochkada «📥 Faylni olish»');SR.xcur=null;srXferNext();}}
 }
 function srXferNext(){
+ if(SR.xcur)return; // bitta telefon yuboryapti yoki so'rovga javob kutilmoqda
  while(SR.xq.length){
-  const id=SR.xq[0],d=SR.devs[id];
-  if(d&&d.xfer&&!d.xfer.done)return; // shu qurilma hali yuboryapti
-  SR.xq.shift();
-  if(d&&d.dc&&srSend(d,{t:'send'}))return;
+  const id=SR.xq.shift(),d=SR.devs[id];
+  if(d&&d.dc&&srSend(d,{t:'send',off:d.pend?d.pend.got:0})){SR.xcur=id;SR.xqT=Date.now();SR.sig='';srDraw();return;}
  }
- if(SR.collect){SR.collect=false;const ok=SR.files.filter(f=>!f.err).length;toast('✓ Sahna yozuvi tayyor: '+ok+' ta fayl'+(NATIVE?' — Hujjatlar / Sahna Ovozi / yozuvlar':''));logEvent('🎙 Sahna yozuvi yig\'ildi: '+SR.sess+' · '+ok+' fayl');}
+ if(SR.collect){SR.collect=false;const ok=SR.files.filter(f=>!f.err&&/\.wav$/i.test(f.name)).length,pend=Object.values(SR.devs).filter(d=>d.pend).length;
+  toast((pend?'⚠ ':'✓ ')+'Sahna yozuvi: '+ok+' ta WAV'+(pend?' · '+pend+' ta telefon fayli to\'liq kelmadi — kartochkada «📥 Davom ettirish»':'')+(NATIVE?' — Hujjatlar / Sahna Ovozi / yozuvlar':''));
+  logEvent('🎙 Sahna yozuvi yig\'ildi: '+SR.sess+' · '+ok+' fayl'+(pend?' · '+pend+' kutilmoqda':''));}
  SR.sig='';srDraw();
 }
-function srFetch(id){const d=SR.devs[id];if(!d||!d.dc)return;if(SR.rec){toast('Yozuv davom etmoqda');return;}if(!SR.xq.includes(id))SR.xq.push(id);if(SR.xq.length===1)srXferNext();}
+function srXferDone(d){if(SR.xcur===d.id)SR.xcur=null;}
+function srFetch(id){const d=SR.devs[id];if(!d||!d.dc){toast('Telefon ulanmagan');return;}if(SR.rec){toast('Yozuv davom etmoqda');return;}if(SR.xcur===id||SR.xq.includes(id)||(d.xfer&&!d.xfer.done))return;SR.xq.push(id);srXferNext();}
+
+/* ===== jonli tinglash (🎧): telefon mikrofoni WebRTC orqali pultga ham keladi ===== */
+function srMonEl(d){if(!d.au){d.au=new Audio();d.au.autoplay=true;d.au.muted=true;}return d.au;}
+function srMon(d,on){const a=srMonEl(d);d.mon=on;a.muted=!on;if(on){a.play().catch(()=>{});
+ const T=SR.monOut;if(T&&a.setSinkId)a.setSinkId(T).catch(()=>{});}
+ SR.sig='';srDraw();}
 
 /* ===== REC / STOP ===== */
 async function srRecStart(){
  if(SR.rec)return;
- if(SR.xq.length||Object.values(SR.devs).some(d=>d.xfer&&!d.xfer.done)){toast('Oldingi yozuv fayllari hali yig\'ilmoqda — kuting');return;}
+ if(SR.xcur||SR.xq.length){toast('Oldingi yozuv fayllari hali yig\'ilmoqda — kuting');return;}
  const ready=Object.values(SR.devs).filter(d=>d.dc&&d.st==='ok'&&d.off!=null);
  const pult=SR.opt.pult&&!!ctx;
  if(!ready.length&&!pult){toast(SR.opt.pult?'Hech qanday telefon ulanmagan, pult ovozi ham yoqilmagan':'Hech qanday telefon ulanmagan — telefonda /yozuv sahifasini oching');return;}
@@ -4010,7 +4039,7 @@ async function srRecStop(){
  SR.rec=null;SR.xq=R.devs.slice();SR.collect=true;
  logEvent('■ Sahna yozuvi to\'xtatildi: '+vsShort(tot)+' · '+R.markers.length+' cue belgisi');
  SR.sig='';srDraw();srBtnUI();
- setTimeout(srXferNext,600); // telefonlar faylni yopib olsin
+ SR.xcur=null;setTimeout(srXferNext,600); // telefonlar faylni yopib olsin
 }
 function srMark(label){const R=SR.rec;if(!R||R.stage==='stop')return;const t=(performance.now()-R.T)/1000;if(t<0)return;R.markers.push({t,label});srDrawMk();}
 
@@ -4037,13 +4066,13 @@ function srRight(){
 }
 function srDrawMk(){const M=srE('srMks');if(!M)return;const L=SR.rec?SR.rec.markers:SR.lastMk||[];if(SR.rec)SR.lastMk=SR.rec.markers;
  M.innerHTML=L.length?L.slice(-60).map(m=>'<div class="sr-mk"><i>'+vsTC(m.t,SR_FPS)+'</i><span>'+esc(m.label)+'</span></div>').join(''):'<div class="sr-none">Yozuv paytida pultda GO bosilgan har bir cue shu yerda vaqti bilan belgilanadi va markerlar.csv fayliga yoziladi.</div>';M.scrollTop=M.scrollHeight;}
-function srDevSt(d){if(d.xfer&&!d.xfer.done)return 'xfer';if(d.st!=='ok'||!d.dc)return 'lost';if(Date.now()-d.seen>6000)return 'lost';return d.rec?'rec':'ok';}
+function srDevSt(d){if(d.xfer&&!d.xfer.done)return 'xfer';if(d.pend&&(!d.dc||d.st!=='ok'))return 'lost';if(d.st!=='ok'||!d.dc)return 'lost';if(Date.now()-d.seen>6000)return 'lost';return d.rec?'rec':'ok';}
 function srDraw(force){
  if(!SR.root)return;
  const D=Object.values(SR.devs).sort((a,b)=>a.id.localeCompare(b.id));
- const sig=JSON.stringify([!!SR.rec,SR.rec&&SR.rec.stage,SR.opt.pult,!!ctx,SR.err,SR.xq.length,SR.files.length,D.map(d=>[d.id,d.name,srDevSt(d),d.take,!!d.xfer])]);
+ const sig=JSON.stringify([!!SR.rec,SR.rec&&SR.rec.stage,SR.opt.pult,!!ctx,SR.err,SR.xq.length,SR.xcur,SR.files.length,D.map(d=>[d.id,d.name,srDevSt(d),d.take,!!d.xfer,!!d.pend,!!d.mon,!!d.au]),SR.playing]);
  if(!force&&sig===SR.sig)return;SR.sig=sig;
- const R=SR.rec,top=srE('srTop'),ready=D.filter(d=>srDevSt(d)==='ok'||srDevSt(d)==='rec').length,coll=SR.xq.length||D.some(d=>d.xfer&&!d.xfer.done);
+ const R=SR.rec,top=srE('srTop'),ready=D.filter(d=>d.dc&&d.st==='ok').length,coll=!!(SR.xcur||SR.xq.length);
  if(top)top.innerHTML='<button type="button" class="sr-rec'+(R?' on':'')+'" data-sr="rec" id="srRecBtn"'+(coll&&!R?' disabled':'')+'>'+(R?'■ STOP':'● REC')+'</button>'+
   '<span class="sr-tc'+(R?' on':'')+'" id="srTc">00:00:00:00</span>'+
   '<div class="sr-stt"><b id="srSt">'+(R?(R.stage==='pre'?'Tayyorlanmoqda…':'Yozilmoqda'):coll?'Fayllar yig\'ilmoqda…':'Tayyor')+'</b><span>'+ready+' ta telefon ulangan'+(SR.opt.pult?(ctx?' · pult chiqishi ham yoziladi':' · pult ovozi yoqilmagan'):'')+(SR.err?' · ⚠ serverga ulanib bo\'lmadi':'')+'</span></div>'+
@@ -4054,10 +4083,11 @@ function srDraw(force){
   g.innerHTML=pc+(D.length?D.map(d=>{const s=srDevSt(d);return '<div class="sr-dev '+s+'"><div class="sr-dh"><span class="sr-ld"></span><span style="color:#8A93A3;font-size:11px">#'+d.id.slice(3)+'</span><input value="'+esc(d.name)+'" data-srname="'+d.id+'" title="Ism — bosing va o\'zgartiring (fayl nomi shu bo\'ladi)" aria-label="Qurilma nomi"></div>'+
    '<div class="sr-mt"><i id="srL_'+d.id+'"></i></div><div class="sr-dm" id="srM_'+d.id+'"></div>'+
    (s==='xfer'?'<div class="sr-pg"><i id="srP_'+d.id+'"></i></div>':'')+
-   '<div class="sr-db">'+(s==='lost'?'<span style="color:#F2A93B;font-size:11px;align-self:center">'+(d.st==='conn'?'ulanmoqda…':'aloqa uzildi — telefon o\'zi qayta ulanadi')+'</span><span style="flex:1"></span><button type="button" data-srdel="'+d.id+'" title="Ro\'yxatdan olib tashlash">✕</button>':
-   (d.take&&!R&&s!=='xfer'?'<button type="button" data-srget="'+d.id+'">📥 Faylni olish</button>':''))+'</div></div>';}).join(''):'<div class="sr-none" style="align-self:center">Hali telefon ulanmagan. O\'ng tomondagi havolani aktyorlar telefonida oching.</div>');}
+   '<div class="sr-db">'+(s==='lost'?'<span style="color:#F2A93B;font-size:11px;align-self:center">'+(d.st==='conn'?'ulanmoqda…':d.pend?'fayl '+Math.round(d.pend.got/Math.max(1,d.pend.size)*100)+'% keldi — telefon qayta ulanganda davom etadi':'aloqa uzildi — telefon o\'zi qayta ulanadi')+'</span><span style="flex:1"></span><button type="button" data-srdel="'+d.id+'" title="Ro\'yxatdan olib tashlash">✕</button>':
+   ((d.au?'<button type="button" data-srmon="'+d.id+'" title="Shu telefon mikrofonini pultda jonli tinglash (quloqchinda tinglang — karnayda qaytish bo\'ladi)" style="'+(d.mon?'border-color:#5AC8B0;color:#5AC8B0':'')+'">🎧 '+(d.mon?'Tinglanmoqda':'Tinglash')+'</button>':'')+
+    (d.pend&&!R&&s!=='xfer'?'<button type="button" data-srget="'+d.id+'">📥 Davom ettirish ('+Math.round(d.pend.got/Math.max(1,d.pend.size)*100)+'%)</button>':d.take&&!R&&s!=='xfer'?'<button type="button" data-srget="'+d.id+'">📥 Faylni olish</button>':'')))+'</div></div>';}).join(''):'<div class="sr-none" style="align-self:center">Hali telefon ulanmagan. O\'ng tomondagi havolani aktyorlar telefonida oching.</div>');}
  const F=srE('srFiles');
- if(F)F.innerHTML=SR.files.length?SR.files.map((f,i)=>'<div class="sr-file'+(f.err?' err':'')+'"><span>'+(f.err?'⚠ ':'✓ ')+esc(f.name)+'</span><small>'+srMb(f.size)+(f.err?' · '+esc(f.err):'')+'</small>'+(f.w&&f.w.url?'<button type="button" class="sr-b" data-srdl="'+i+'">⬇ Yuklab olish</button>':'')+'</div>').join('')+(NATIVE?'<div><button type="button" class="sr-b" data-sr="folder">📂 Papkani ochish</button></div>':''):'<div class="sr-none">STOP bosilgandan keyin hamma telefon va pult yozuvlari shu yerda ko\'rinadi.</div>';
+ if(F)F.innerHTML=SR.files.length?SR.files.map((f,i)=>'<div class="sr-file'+(f.err?' err':'')+'"><span>'+(f.err?'⚠ ':'✓ ')+esc(f.name)+'</span><small>'+srMb(f.size)+(f.err?' · '+esc(f.err):'')+'</small>'+(!f.err&&/\.wav$/i.test(f.name)?'<button type="button" class="sr-b" data-srpl="'+i+'"'+(SR.playing===i?' style="border-color:#5AC8B0;color:#5AC8B0"':'')+'>'+(SR.playing===i?'■ To\'xtatish':'▶ Tinglash')+'</button>':'')+(f.w&&f.w.url?'<button type="button" class="sr-b" data-srdl="'+i+'">⬇ Yuklab olish</button>':'')+'</div>').join('')+(NATIVE?'<div><button type="button" class="sr-b" data-sr="folder">📂 Papkani ochish</button></div>':''):'<div class="sr-none">STOP bosilgandan keyin hamma telefon va pult yozuvlari shu yerda ko\'rinadi.</div>';
  const dot=srE('srDot');if(dot)dot.classList.toggle('on',!!R);
 }
 function srMeterW(v){if(!(v>0))return 0;const db=20*Math.log10(v);return Math.max(0,Math.min(100,(db+60)/60*100));}
@@ -4066,6 +4096,7 @@ function srLoopUI(){
  const tick=()=>{SR.raf=0;if(!SR.root&&!SR.rec)return;
   const R=SR.rec,now=performance.now();
   if(R){if(R.stage==='pre'&&now>=R.T){R.stage='rec';SR.sig='';}srDrainPult();}
+  srXferWatch();
   srDraw();
   if(SR.root){
    const tc=srE('srTc');if(tc)tc.textContent=R?vsTC(Math.max(0,(now-R.T)/1000),SR_FPS):'00:00:00:00';
@@ -4085,9 +4116,23 @@ function srLoopUI(){
   SR.raf=setTimeout(tick,100);};
  SR.raf=setTimeout(tick,100);
 }
+// ▶ yig'ilgan faylni pultning o'zida tinglash (quloqchin / monitor)
+async function srPlay(i){
+ if(!SR.pl){SR.pl=new Audio();SR.pl.onended=()=>{SR.playing=null;SR.sig='';srDraw();};}
+ if(SR.playing===i){SR.pl.pause();SR.playing=null;SR.sig='';srDraw();return;}
+ const f=SR.files[i];if(!f)return;
+ try{let url=f.w&&f.w.url;
+  if(!url&&NATIVE){if(f.size>400e6){toast('Fayl katta ('+srMb(f.size)+') — papkadan Cubase yoki pleerda oching');azNative.reveal({rel:SR.sessRel+'/'+f.name});return;}
+   if(!f.purl){const u=await azNative.read({rel:SR.sessRel+'/'+f.name});f.purl=URL.createObjectURL(new Blob([u],{type:'audio/wav'}));}url=f.purl;}
+  if(!url)return;SR.pl.src=url;if(SR.monOut&&SR.pl.setSinkId)await SR.pl.setSinkId(SR.monOut).catch(()=>{});
+  await SR.pl.play();SR.playing=i;SR.sig='';srDraw();
+ }catch(e){toast('Ijro etib bo\'lmadi: '+(e.message||e));}
+}
 function srClick(e){
- const b=e.target.closest('[data-sr],[data-srdel],[data-srget],[data-srdl]');if(!b)return;const d=b.dataset;
- if(d.srdel){const x=SR.devs[d.srdel];if(x){try{x.pc&&x.pc.close();}catch(err){}delete SR.devs[d.srdel];}SR.sig='';srDraw();return;}
+ const b=e.target.closest('[data-sr],[data-srdel],[data-srget],[data-srdl],[data-srmon],[data-srpl]');if(!b)return;const d=b.dataset;
+ if(d.srmon){const x=SR.devs[d.srmon];if(x)srMon(x,!x.mon);return;}
+ if(d.srpl!=null){srPlay(+d.srpl);return;}
+ if(d.srdel){const x=SR.devs[d.srdel];if(x){try{x.pc&&x.pc.close();}catch(err){}if(x.au){x.au.srcObject=null;}delete SR.devs[d.srdel];}SR.sig='';srDraw();return;}
  if(d.srget){srFetch(d.srget);return;}
  if(d.srdl){const f=SR.files[+d.srdl];if(f&&f.w&&f.w.url){const a=SR.doc.createElement('a');a.href=f.w.url;a.download=f.name;SR.doc.body.appendChild(a);a.click();a.remove();}return;}
  const a=d.sr;

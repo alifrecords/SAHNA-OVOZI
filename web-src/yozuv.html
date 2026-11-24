@@ -50,7 +50,7 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
   <div class="st" id="st">Kodni yozing, raqam va ismni tanlang, «Ulanish»ni bosing.</div>
   <button class="stop" id="stopBtn" type="button" hidden>■ Shu telefonda to'xtatish</button>
   <div id="takeBox" hidden><div class="take"><span id="takeT"></span><button type="button" id="save">⬇ Telefonga saqlash</button></div></div>
-  <p class="hint">Telefonni aktyorga yaqin joylang (yoki lavalier mikrofon ulang) va quvvatga ulab qo'ying. Bu sahifa ochiq tursin — ekran o'chmaydi. Yozuv telefonning o'zida saqlanadi, Wi-Fi uzilib qolsa ham yo'qolmaydi; STOP'dan keyin pultga o'zi yuboriladi.</p>
+  <p class="hint"><b style="color:#F2A93B">Yozuv va yuborish paytida ekranni o'chirmang, boshqa ilovaga o'tmang</b> — telefon sahifani to'xtatib qo'yadi. Telefonni aktyorga yaqin joylang (yoki lavalier mikrofon ulang) va quvvatga ulab qo'ying. Bu sahifa ochiq tursin — ekran o'chmaydi. Yozuv telefonning o'zida saqlanadi, Wi-Fi uzilib qolsa ham yo'qolmaydi; STOP'dan keyin pultga o'zi yuboriladi.</p>
 </main>
 <script>
 (() => {
@@ -58,7 +58,7 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
   const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
   const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
   const LS = 'sahnaOvozi.yozuv';
-  const S = { room: '', role: '', name: '', stream: null, ac: null, node: null, pc: null, dc: null, gen: 0, wake: null, lvl: 0, clip: 0, rec: null, take: null, stopping: null, offerT: 0, bat: null, chg: false, sync: null };
+  const S = { room: '', role: '', name: '', stream: null, ac: null, node: null, pc: null, dc: null, gen: 0, wake: null, lvl: 0, clip: 0, rec: null, take: null, stopping: null, offerT: 0, sendGen: 0, sending: false, bat: null, chg: false, sync: null };
   const qs = new URLSearchParams(location.search);
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(LS) || '{}'); } catch (_) {}
   $('#code').value = (qs.get('kod') || saved.room || '').toUpperCase();
@@ -151,23 +151,38 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
     });
     return S.stopping;
   }
-  async function sendFile() {
+  // pult so'raganda yuboradi; uzilsa pult «off» bilan qolgan joyidan qayta so'raydi
+  async function sendFile(off) {
+    const my = ++S.sendGen;
     if (S.stopping) await S.stopping;
     const T = S.take, dc = S.dc;
-    if (!dc || dc.readyState !== 'open') return;
+    if (!dc || dc.readyState !== 'open' || my !== S.sendGen) return;
     if (!T) { dc.send(JSON.stringify({ t: 'nofile' })); return; }
-    const size = T.blob.size, CH = (S.pc.sctp && S.pc.sctp.maxMessageSize >= 65536) ? 65536 : 16384;
-    dc.send(JSON.stringify({ t: 'file', size, dur: T.dur, name: S.name }));
+    const size = T.blob.size, CH = (S.pc.sctp && S.pc.sctp.maxMessageSize >= 65536) ? 65536 : 16384, BIG = 1 << 20;
+    off = Math.max(0, Math.min(size, +off || 0));
+    dc.send(JSON.stringify({ t: 'file', size, dur: T.dur, name: S.name, off }));
     dc.bufferedAmountLowThreshold = 1 << 20;
-    big('Pultga yuborilmoqda…', 'wait');
-    for (let o = 0; o < size; o += CH) {
-      if (dc.readyState !== 'open') { big('Yuborish uzildi', 'err'); st('Aloqa uzildi. Qayta ulanganda pultda «📥 Faylni olish» bosing yoki «Telefonga saqlash».'); return; }
-      if (dc.bufferedAmount > 8 << 20) await new Promise((r) => { const f = () => { dc.removeEventListener('bufferedamountlow', f); r(); }; dc.addEventListener('bufferedamountlow', f); setTimeout(f, 3000); });
-      dc.send(await T.blob.slice(o, o + CH).arrayBuffer());
-      if ((o / CH) % 32 === 0) st('Yuborilmoqda: ' + Math.round(o / size * 100) + '%');
-    }
-    dc.send(JSON.stringify({ t: 'eof' }));
-    st('Yuborildi — pult tasdiqlashini kutyapman…');
+    S.sending = true; $('#save').disabled = true; wake();
+    big('Pultga yuborilmoqda — ekranni o‘chirmang', 'wait');
+    let last = 0;
+    try {
+      for (let o = off; o < size; o += BIG) {
+        const buf = new Uint8Array(await T.blob.slice(o, Math.min(size, o + BIG)).arrayBuffer());
+        for (let k = 0; k < buf.length; k += CH) {
+          if (my !== S.sendGen) return;
+          if (dc.readyState !== 'open') throw new Error('uzildi');
+          if (dc.bufferedAmount > 4 << 20) await new Promise((r) => { const f = () => { dc.removeEventListener('bufferedamountlow', f); r(); }; dc.addEventListener('bufferedamountlow', f); setTimeout(f, 2000); });
+          dc.send(buf.subarray(k, Math.min(buf.length, k + CH)));
+        }
+        const pc = Math.round(Math.min(size, o + BIG) / size * 100);
+        if (pc !== last) { last = pc; st('Yuborilmoqda: ' + pc + '% · ' + mb(Math.min(size, o + BIG)) + ' / ' + mb(size)); }
+      }
+      if (my !== S.sendGen) return;
+      dc.send(JSON.stringify({ t: 'eof' }));
+      st('Yuborildi — pult tasdiqlashini kutyapman…');
+    } catch (_) {
+      big('Yuborish uzildi', 'err'); st('Pult qayta ulanganda o‘zi qolgan joyidan davom ettiradi. Sahifani yopmang.');
+    } finally { if (my === S.sendGen) { S.sending = false; $('#save').disabled = false; } }
   }
 
   // ---- aloqa: signal /api/remote orqali, keyin to'g'ridan-to'g'ri WebRTC kanali ----
@@ -178,9 +193,11 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
     S.offerT = Date.now();
     if (S.pc) { try { S.pc.close(); } catch (_) {} }
     const pc = new RTCPeerConnection({ iceServers: ICE }); S.pc = pc; S.dc = null;
+    // 🎧 jonli tinglash: mikrofon pultga ham boradi (yozuv baribir telefonda, 24-bit WAV)
+    try { const t = S.stream && S.stream.getAudioTracks()[0]; if (t) pc.addTrack(t, S.stream); } catch (_) {}
     const dc = pc.createDataChannel('sahna-yozuv', { ordered: true }); dc.binaryType = 'arraybuffer';
     dc.onopen = () => { if (S.pc !== pc) return; S.dc = dc; if (!S.rec) big('Tayyor — pult REC kutilmoqda', 'ok'); st('● Pultga ulandi. REC pultdan boshqariladi.'); status(); };
-    dc.onclose = () => { if (S.dc !== dc) return; S.dc = null; if (!S.rec) big('Pult bilan aloqa uzildi', 'wait'); st('Qayta ulanmoqda… (yozuv bo‘lsa — davom etyapti)'); };
+    dc.onclose = () => { if (S.dc !== dc) return; S.dc = null; S.sendGen++; S.sending = false; $('#save').disabled = false; if (!S.rec) big('Pult bilan aloqa uzildi', 'wait'); st('Qayta ulanmoqda… (yozuv bo‘lsa — davom etyapti)'); };
     dc.onmessage = (e) => onDc(e.data);
     await pc.setLocalDescription(await pc.createOffer());
     await gathered(pc);
@@ -192,8 +209,8 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
     if (m.t === 'ping') { send({ t: 'pong', a: m.a, b: performance.now() }); if (m.q != null) $('#iSy').textContent = '±' + m.q + ' ms'; }
     else if (m.t === 'rec') { startRec(m.at, m.sess || ''); }
     else if (m.t === 'stop') { stopRec(); }
-    else if (m.t === 'send') { sendFile(); }
-    else if (m.t === 'got') { if (S.take) S.take.sent = true; big('✓ Pultga yetib bordi', 'ok'); st('Fayl pultda saqlandi. Keyingi REC kutilmoqda.'); }
+    else if (m.t === 'send') { sendFile(m.off); }
+    else if (m.t === 'got') { S.sending = false; $('#save').disabled = false; if (S.take) S.take.sent = true; big('✓ Pultga yetib bordi', 'ok'); st('Fayl pultda saqlandi. Keyingi REC kutilmoqda.'); }
     else if (m.t === 'name') { S.name = m.name; $('#name').value = m.name; store(); }
     else if (m.t === 'hi') { if (S.rec && !m.rec) stopRec(); } // aloqa uzilgan paytda STOP bosilgan bo'lsa
   }
@@ -221,7 +238,7 @@ button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
   setInterval(() => { status(); if (S.rec) $('#tc').textContent = hms(S.rec.frames / S.ac.sampleRate); }, 150);
   try { navigator.getBattery && navigator.getBattery().then((b) => { const u = () => { S.bat = Math.round(b.level * 100); S.chg = b.charging; $('#iBat').innerHTML = 'Batareya: <b>' + S.bat + '%</b>' + (S.chg ? ' ⚡' : ''); }; u(); b.addEventListener('levelchange', u); b.addEventListener('chargingchange', u); }); } catch (_) {}
   async function wake() { try { if ('wakeLock' in navigator) S.wake = await navigator.wakeLock.request('screen'); } catch (_) {} }
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.stream) { wake(); if (S.ac && S.ac.state !== 'running') S.ac.resume(); } });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.stream) { wake(); if (S.ac && S.ac.state !== 'running') S.ac.resume(); if (!S.dc) { S.offerT = 0; } } });
   addEventListener('beforeunload', (e) => { if (S.rec || (S.take && !S.take.sent)) { e.preventDefault(); e.returnValue = ''; } });
   function store() { try { localStorage.setItem(LS, JSON.stringify({ room: S.room, slot: $('#slot').value, name: S.name })); } catch (_) {} }
 

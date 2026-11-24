@@ -3,6 +3,18 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.24.1: ● Sahna yozuvi — fayl yetib kelmasligi tuzatildi, 🎧 jonli tinglash
+
+| Avval | Endi |
+|---|---|
+| Telefon fayl yuborishni yarim yo'lda to'xtatsa (ekran o'chdi, boshqa ilovaga o'tildi, Wi-Fi uzildi), oyna «Fayllar yig'ilmoqda…» holatida qotib qolardi | 12 s javob bo'lmasa pult buni sezadi, **kelgan qismni saqlab qoladi** va telefondan **qolgan joyidan** qayta so'raydi (avtomatik 4 marta urinadi, telefon qayta ulanganda ham davom etadi). Kartochkada **📥 Davom ettirish (N%)** |
+| Fayl kelgandan keyin pult uni qayta so'rashi mumkin edi | Navbat tuzatildi: har bir telefondan bir marta, ketma-ket so'raladi |
+| Telefon ovozini pultda eshitib bo'lmasdi | **🎧 Tinglash** — har bir telefon mikrofonini pultda jonli eshitish (quloqchinda tinglang). Yozuv baribir telefonda 24-bit WAV bo'lib qoladi |
+| Kelgan faylni tekshirish uchun papkani ochish kerak edi | Fayllar ro'yxatida **▶ Tinglash** — shu oynaning o'zida |
+| Yuborish 64 KB bo'laklarda sekin o'qilardi | 1 MB bloklab o'qiladi, yuborishda foiz va MB ko'rinadi; «Telefonga saqlash» yuborish paytida o'chiq |
+
+Sinov: yuborish o'rtasida aloqa qotdi → pult 12 s da sezdi → qolgan joyidan davom etdi; pultdagi fayl telefondagi bilan bayt-ba-bayt bir xil (MD5 mos).
+
 ## 1.24.0: ● Sahna yozuvi — ko'p qurilmali spektakl yozuvi (Multi-Device Stage Recording)
 
 Header'dagi **● REC** tugmasi yozuv oynasini ochadi. Oyna **alohida oyna** bo'lib ochiladi, uni sichqoncha bilan **boshqa monitorga** sudrab olib o'tish mumkin. **⇲** tugmasi oynani pult ichiga qaytaradi: u yerda sarlavhasidan ushlab surish va burchagidan kattalashtirish mumkin, **⧉** esa uni yana alohida oynaga chiqaradi.
