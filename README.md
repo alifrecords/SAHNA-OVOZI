@@ -3,6 +3,24 @@
 
 Spektakl paytida cue'lar (GO), SFX banklar, qatlamli atmosferalar, mikser va obraz ovozi effektlari bilan ishlash uchun dastur. Tuzilishi AZ MUS kabi: o'rnatuvchi `.exe`, ochilish oynasi (splash), Bosh sahifa va Hujjatlar ichidagi baza.
 
+## 1.24.0: ● Sahna yozuvi — ko'p qurilmali spektakl yozuvi (Multi-Device Stage Recording)
+
+Header'dagi **● REC** tugmasi yozuv oynasini ochadi. Oyna **alohida oyna** bo'lib ochiladi, uni sichqoncha bilan **boshqa monitorga** sudrab olib o'tish mumkin. **⇲** tugmasi oynani pult ichiga qaytaradi: u yerda sarlavhasidan ushlab surish va burchagidan kattalashtirish mumkin, **⧉** esa uni yana alohida oynaga chiqaradi.
+
+| Qism | Nima qiladi |
+|---|---|
+| Telefon (aktyor) | `sahna-ovozi.pages.dev/yozuv?kod=XXXXXX` — raqam (1–8) va ism tanlanadi → **Ulanish**. Ilova o'rnatish shart emas |
+| Ulanish | 📡 masofaviy xona kodi orqali tanishadi, keyin **to'g'ridan-to'g'ri WebRTC kanali** (bir Wi-Fi'da — lokal tarmoq ichida) |
+| Soat sinxroni | Pult har 1,5 s telefon soatini o'lchaydi (ping); oynada har telefon uchun `sinxron ±N ms` |
+| ● REC / ■ STOP | Pultdan — hamma telefon va pult chiqishi **bitta aniq vaqtda** (1,5 s oldindan rejalashtirilgan kadr) boshlaydi. Buyruq kech kelsa, boshiga jimlik qo'shiladi — sinxron buzilmaydi |
+| Yozuv | Har telefon o'z xotirasiga **24-bit WAV** (mono); pult chiqishi (master, limiterdan keyin) — 24-bit stereo, diskka bo'laklab |
+| Kuzatish | Har qurilma: daraja metri, CLIP, yozuv vaqti, batareya, chastota, ulanish holati |
+| Cue belgilari | Yozuv paytida GO bosilgan har cue vaqti bilan → `markerlar.csv` (timecode 25 fps) |
+| Fayl yig'ish | STOP'dan keyin telefonlar fayllarni navbat bilan yuboradi → **Hujjatlar / Sahna Ovozi / yozuvlar / <sana> <spektakl>/** |
+| Ishonchlilik | Wi-Fi uzilsa yozuv telefonda davom etadi; qayta ulanganda **📥 Faylni olish**; telefonda **⬇ Telefonga saqlash** ham bor |
+
+Sinov (2 telefon + pult, 4,4 s): uchala WAV uzunligi bir xil, cue belgisi CSV'da. Server: `functions/api/remote.js` — `rec1…rec8` rollari qo'shildi.
+
 ## 1.23.3: Ko'p ovoz + reverb — qotishsiz
 
 | Avval | Endi |

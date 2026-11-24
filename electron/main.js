@@ -79,7 +79,7 @@ let BASE = null;
 function base() {
   if (!BASE) {
     BASE = path.join(app.getPath('documents'), APP_NAME);
-    for (const d of ['', 'ovozlar', 'loyihalar', 'zaxira', 'savat']) fs.mkdirSync(path.join(BASE, d), { recursive: true });
+    for (const d of ['', 'ovozlar', 'loyihalar', 'zaxira', 'savat', 'yozuvlar']) fs.mkdirSync(path.join(BASE, d), { recursive: true });
   }
   return BASE;
 }
@@ -121,6 +121,11 @@ ipcMain.handle('fs', async (_e, op, a, b) => {
     case 'read': return await fsp.readFile(resolveId(a));
     case 'write': await writeAtomic(resolveId(a), toBuf(b)); return true;
     case 'append': { const p = resolveId(a); await fsp.mkdir(path.dirname(p), { recursive: true }); await fsp.appendFile(p, toBuf(b)); return true; }
+    case 'patch': { // WAV sarlavhasini yozuv tugagach to'g'rilash (fayl boshidan b.off baytdan)
+      const fh = await fsp.open(resolveId(a), 'r+');
+      try { const buf = toBuf(b.data); await fh.write(buf, 0, buf.length, Math.max(0, +b.off || 0)); } finally { await fh.close(); }
+      return true;
+    }
     case 'remove': await fsp.rm(resolveId(a), { recursive: true, force: true }); return true;
   }
   throw new Error('Noma\'lum amal: ' + op);
@@ -187,6 +192,10 @@ function createMain() {
     // 🎬 Video ovozlashtirish — alohida oyna (boshqa monitorga sudraladi), pult bilan bir jarayonda
     if (frameName === 'sahnaovozi_video' && (url === 'about:blank' || url === '')) {
       return { action: 'allow', overrideBrowserWindowOptions: { width: 1260, height: 860, minWidth: 760, minHeight: 520, backgroundColor: '#0B0D11', autoHideMenuBar: true, title: 'Video ovozlashtirish — Sahna Ovozi' } };
+    }
+    // ● Sahna yozuvi — ko'p qurilmali yozuv oynasi (boshqa monitorga sudraladi)
+    if (frameName === 'sahnaovozi_rec' && (url === 'about:blank' || url === '')) {
+      return { action: 'allow', overrideBrowserWindowOptions: { width: 1180, height: 780, minWidth: 720, minHeight: 460, backgroundColor: '#0B0D11', autoHideMenuBar: true, title: 'Sahna yozuvi — Sahna Ovozi' } };
     }
     if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' };
   });

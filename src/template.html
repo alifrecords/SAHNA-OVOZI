@@ -302,6 +302,7 @@ body.tab-phone #chatBox{left:8px;right:8px;width:auto;bottom:calc(80px + env(saf
 .chb2.u{align-self:flex-end;background:rgba(242,169,59,.16);border:1px solid rgba(242,169,59,.4)}.chb2.a{align-self:flex-start;background:#1f2633;border:1px solid #2c3647}
 .chf{padding:8px;border-top:1px solid #2A3140;display:flex;flex-direction:column;gap:6px}.chrow{display:flex;gap:6px}.chrow textarea{flex:1;resize:none;min-height:44px;height:44px;font-family:inherit}.chrow .btn{width:50px;font-size:18px}
 .lcfb{border:1px solid var(--line2);border-radius:12px;padding:10px 12px;margin-top:10px;display:flex;flex-direction:column;gap:6px}.lcfbr{display:flex;gap:8px}.lcfbr .inp{flex:1}
+.srbtn{display:inline-flex;align-items:center;gap:6px;font-weight:700;letter-spacing:.06em;font-family:ui-monospace,Consolas,monospace}.srbtn .srdot{width:9px;height:9px;border-radius:50%;background:#E5484D}.srbtn.on{border-color:#E5484D!important;color:#ff8a8d}.srbtn.rec{border-color:#E5484D!important;color:#fff;background:#7A1F23;animation:chpulse 1.1s infinite}.srbtn.rec .srdot{background:#fff;animation:srb 1s infinite}@keyframes srb{50%{opacity:.3}}
 #vidBtn{display:inline-flex;align-items:center;gap:6px}#vidBtn.on{border-color:#2F6B5F!important;color:#5AC8B0}#vidBtn.rec{border-color:#E5484D!important;color:#fff;background:#7A1F23;animation:chpulse 1.1s infinite}
 .plg-modal{width:min(1080px,96vw)!important;max-width:96vw!important}
 #mBody.plg-wide{max-height:74vh;overflow:auto}
@@ -570,6 +571,7 @@ body.dnd-asset .pads{outline:2px dashed rgba(79,195,181,.45);outline-offset:6px;
     <button type="button" class="btn" id="vidBtn" title="Video ovozlashtirish — alohida oyna (boshqa monitorga sudrab olib boring)" aria-label="Video ovozlashtirish"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M17 10l5-3v10l-5-3z"/></svg><span class="vbl">Video</span></button>
     <button type="button" class="btn nuribtn" id="nuriBtn" title="Sahna Nuri — chiroq bilan bog'lash (Cue-Link)" aria-label="Sahna Nuri bilan bog'lash"><span class="ndot"></span><span aria-hidden="true">💡</span><span class="nbl">NURI</span></button>
     <button type="button" class="btn nuribtn" id="rmBtn" title="Masofaviy pult — jonli video va masofadan boshqarish" aria-label="Masofaviy pult"><span class="ndot"></span><span aria-hidden="true">📡</span><span class="rbl">Masofa</span></button>
+    <button type="button" class="btn srbtn" id="srBtn" title="Sahna yozuvi — telefonlar va pultdan bir vaqtda yozib olish (alohida oyna, boshqa monitorga sudraladi)" aria-label="Sahna yozuvi"><span class="srdot" aria-hidden="true"></span><span class="srl">REC</span></button>
     <div style="flex:1 1 0"></div>
     <div class="zoomc" role="group" aria-label="Oyna masshtabi"><button type="button" id="zoomOut" aria-label="Kichraytirish (Ctrl −)">−</button><button type="button" id="zoomV" aria-label="Masshtab: tayyor o'lchamlar">100%</button><button type="button" id="zoomIn" aria-label="Kattalashtirish (Ctrl =)">+</button></div>
     <div class="langseg" data-notr role="group" aria-label="Til · Язык · Language"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div>
@@ -3044,6 +3046,7 @@ function sfxOff(){const vs=voices.filter(v=>v.bus==='sfx'&&!v.stopping),ft=sfxFa
 
 function fireCue(i){
  const c=show.cues[i];if(!c)return;
+ srMark('Q'+(i+1)+' · '+c.name);
  if(showStart==null){showStart=performance.now();$('#clockBox').classList.add('live');$('#liveTxt').textContent='JONLI';}
  const cf=cueFadeT();
  if(c.type==='atmos')startScene(c.ref,cf,c);
@@ -3672,6 +3675,306 @@ const Store={
  }
 };
 let logRing=[];
+/* ---------- 🎙 SAHNA YOZUVI — ko'p qurilmali spektakl yozuvi (Multi-Device Stage Recording) ----------
+   Header'dagi ● REC → alohida oyna (boshqa monitorga sudraladi) yoki pult ichida suriladigan panel.
+   Telefonlar /yozuv sahifasini ochib, 📡 masofaviy xona kodi bilan ulanadi (signal: /api/remote, rol rec1…rec8),
+   keyin to'g'ridan-to'g'ri WebRTC kanali (bir Wi-Fi'da — lokal tarmoq ichida): soat sinxroni, REC/STOP, daraja, fayl yig'ish.
+   Har bir telefon o'z xotirasiga 24-bit WAV yozadi; STOP'dan keyin fayllar pultga keladi:
+   Hujjatlar / Sahna Ovozi / yozuvlar / <sana> <spektakl>/  (+ pult chiqishi, cue belgilari markerlar.csv). */
+const SR={doc:null,win:null,mode:null,root:null,dockRect:null,gen:0,devs:{},rec:null,files:[],opt:{pult:true},sig:'',err:false,sess:'',sessRel:'',used:null,xq:[],collect:false,raf:0};
+const SR_ICE=[{urls:['stun:stun.cloudflare.com:3478','stun:stun.l.google.com:19302']}];
+const SR_FPS=25;
+const srE=id=>SR.doc&&SR.doc.getElementById(id);
+const srSafe=s=>String(s||'').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'-').replace(/\s+/g,' ').trim().slice(0,60);
+function srUniq(n){const m=/^(.*?)(\.[a-z0-9]+)?$/i.exec(n),b=m[1]||'fayl',x=m[2]||'';let s=n,i=2;while(SR.used.has(s.toLowerCase()))s=b+' ('+(i++)+')'+x;SR.used.add(s.toLowerCase());return s;}
+function srMb(b){return b>=1e9?(b/1e9).toFixed(2)+' GB':(b/1e6).toFixed(1)+' MB';}
+function srEnc24(chs){const n=chs[0].length,c=chs.length,o=new Uint8Array(n*c*3);let j=0;for(let i=0;i<n;i++)for(let k=0;k<c;k++){let v=chs[k][i];v=v>1?1:v<-1?-1:(v||0);const s=Math.round(v*8388607);o[j++]=s&255;o[j++]=(s>>8)&255;o[j++]=(s>>16)&255;}return o;}
+function srWavHdr(sr,ch,bits,data){const b=new ArrayBuffer(44),v=new DataView(b),w=(o,s)=>{for(let i=0;i<4;i++)v.setUint8(o+i,s.charCodeAt(i));};
+ w(0,'RIFF');v.setUint32(4,36+data,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,ch,true);v.setUint32(24,sr,true);
+ v.setUint32(28,sr*ch*bits/8,true);v.setUint16(32,ch*bits/8,true);v.setUint16(34,bits,true);w(36,'data');v.setUint32(40,data,true);return new Uint8Array(b);}
+/* fayl yozuvchi: o'rnatilgan dasturda — diskka bo'laklab (Hujjatlar / Sahna Ovozi / yozuvlar), brauzerda — xotiradagi Blob */
+function srWriter(rel,first){
+ const w={rel,size:0,buf:[],bl:0,q:Promise.resolve(),err:null,parts:NATIVE?null:[],blob:null,url:null};
+ if(first&&first.length)w.size=first.length;
+ if(NATIVE)w.q=azNative.write({rel},first||new Uint8Array(0)).catch(e=>{w.err=e;});else if(first)w.parts.push(first);
+ w.push=u8=>{w.size+=u8.length;if(w.parts){w.parts.push(u8);return;}w.buf.push(u8);w.bl+=u8.length;if(w.bl>=(1<<20))w.flush();};
+ w.flush=()=>{if(!w.bl)return w.q;const all=new Uint8Array(w.bl);let o=0;for(const x of w.buf){all.set(x,o);o+=x.length;}w.buf=[];w.bl=0;
+  w.q=w.q.then(()=>w.err?0:azNative.append({rel},all)).catch(e=>{w.err=e;});return w.q;};
+ w.close=async hdr=>{if(w.parts){if(hdr)w.parts[0]=hdr;w.blob=new Blob(w.parts,{type:/\.csv$/i.test(rel)?'text/csv':'audio/wav'});w.parts=null;w.url=URL.createObjectURL(w.blob);return;}
+  await w.flush();if(hdr&&!w.err)try{await azNative.patch({rel},0,hdr);}catch(e){w.err=e;}};
+ return w;
+}
+
+/* ===== oyna: alohida (boshqa monitor) yoki pult ichida ===== */
+const SR_CSS=".srw{display:flex;flex-direction:column;background:#101318;color:var(--text,#E6EAF2);font-family:inherit;font-size:13px}\n.sr-popbody{margin:0;background:#0B0D11;overflow:hidden}\n.sr-pop{position:fixed;inset:0}\n.sr-dock{position:fixed;z-index:86;border:1px solid #6B2A2E;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.65);overflow:hidden;resize:both;min-width:720px;min-height:460px;max-width:100vw;max-height:100vh}\n.sr-title{display:flex;align-items:center;gap:10px;padding:7px 10px 7px 14px;background:#1A1517;border-bottom:1px solid #3A2529;flex:none;user-select:none}\n.sr-dock .sr-title{cursor:move}\n.sr-dot{width:10px;height:10px;border-radius:50%;background:#4A3438;flex:none}.sr-dot.on{background:#E5484D;box-shadow:0 0 8px #E5484D;animation:srblink 1s infinite}\n@keyframes srblink{50%{opacity:.35}}\n.sr-sub{color:#8A93A3;font-size:11.5px}.sr-sp{flex:1}\n.sr-ic{width:30px;height:28px;border-radius:7px;border:1px solid #2A3140;background:#11151C;color:#C9D1DE;font-size:13px;cursor:pointer}.sr-ic:hover{border-color:#4A5A78}.sr-x:hover{background:#4c1d1d;border-color:#7A2A31}\n.sr-top{display:flex;align-items:center;gap:14px;padding:12px 14px;background:#13171E;border-bottom:1px solid #262E3C;flex:none;flex-wrap:wrap}\n.sr-rec{height:54px;min-width:150px;padding:0 18px;border-radius:12px;border:0;background:#E5484D;color:#fff;font-weight:800;font-size:18px;letter-spacing:.06em;cursor:pointer}\n.sr-rec.on{background:#7A1F23;box-shadow:0 0 0 4px rgba(229,72,77,.3);animation:srrec 1.2s infinite}@keyframes srrec{50%{box-shadow:0 0 0 10px rgba(229,72,77,.06)}}\n.sr-rec:disabled{opacity:.45;cursor:not-allowed;animation:none}\n.sr-tc{font:700 30px ui-monospace,Consolas,monospace;letter-spacing:.04em;color:#E6EAF2}.sr-tc.on{color:#ff8a8d}\n.sr-stt{display:flex;flex-direction:column;gap:2px;min-width:0}.sr-stt b{font-size:14px}.sr-stt span{color:#8A93A3;font-size:11.5px}\n.sr-main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 290px}\n.sr-left{min-width:0;min-height:0;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}\n.sr-right{min-height:0;overflow:auto;padding:12px;background:#12161D;border-left:1px solid #262E3C;display:flex;flex-direction:column;gap:8px;font-size:12px}\n.sr-fl{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#8A93A3;margin-top:4px}\n.sr-devs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}\n.sr-dev{border:1px solid #2A3140;border-radius:12px;padding:9px 10px;background:#151A22;display:flex;flex-direction:column;gap:5px}\n.sr-dev.ok{border-color:#2F6B5F}.sr-dev.rec{border-color:#E5484D;background:#1C1416}.sr-dev.lost{border-color:#6b4f1f;opacity:.8}.sr-dev.off{opacity:.55}\n.sr-dh{display:flex;align-items:center;gap:7px}.sr-dh input{flex:1;min-width:0;background:transparent;border:1px solid transparent;border-radius:6px;color:#E6EAF2;font:600 13px inherit;padding:2px 4px}.sr-dh input:hover,.sr-dh input:focus{border-color:#2A3140;outline:none;background:#0F1217}\n.sr-ld{width:8px;height:8px;border-radius:50%;background:#6B7280;flex:none}.ok .sr-ld{background:#3DD68C;box-shadow:0 0 6px #3DD68C}.rec .sr-ld{background:#E5484D;box-shadow:0 0 6px #E5484D}.lost .sr-ld{background:#F2A93B}\n.sr-mt{height:8px;border-radius:4px;background:#1d222b;overflow:hidden;position:relative}.sr-mt i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e 0 70%,#eab308 70% 88%,#ef4444 88%);background-size:180px 100%;transition:width .08s}\n.sr-dm{display:flex;flex-wrap:wrap;gap:4px 10px;color:#8A93A3;font-size:11px}.sr-dm b{color:#C9D1DE;font-weight:600}\n.sr-pg{height:5px;border-radius:3px;background:#1d222b;overflow:hidden}.sr-pg i{display:block;height:100%;background:#5AC8B0;width:0}\n.sr-db{display:flex;gap:5px}.sr-db button,.sr-b{height:28px;padding:0 9px;border-radius:7px;border:1px solid #2A3140;background:#1A2030;color:#E6EAF2;font-size:11.5px;cursor:pointer;white-space:nowrap}.sr-db button:hover,.sr-b:hover{border-color:#4A5A78}\n.sr-code{font:800 30px ui-monospace,Consolas,monospace;letter-spacing:.22em;padding:6px 10px;border-radius:10px;background:rgba(255,255,255,.06);text-align:center}\n.sr-link{font:11px ui-monospace,Consolas,monospace;word-break:break-all;color:#9ecbff}\n.sr-steps{margin:0;padding-left:18px;color:#B8C0CE;line-height:1.55}\n.sr-opt{display:flex;gap:7px;align-items:flex-start;color:#C9D1DE;line-height:1.35;cursor:pointer}.sr-opt input{margin:2px 0 0;accent-color:#E5484D}\n.sr-mks{display:flex;flex-direction:column;gap:3px;max-height:220px;overflow:auto}.sr-mk{display:flex;gap:8px;font-size:11.5px;padding:3px 6px;border-radius:6px;background:rgba(242,169,59,.08)}.sr-mk i{font-style:normal;font-family:ui-monospace,monospace;color:#F2A93B}\n.sr-files{display:flex;flex-direction:column;gap:5px}.sr-file{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid #2A3140;border-radius:8px}.sr-file span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sr-file small{color:#8A93A3}.sr-file.err{border-color:#7A2A31}\n.sr-none{color:#6B7486;font-size:11.5px}.sr-warn{font-size:11px;color:#F2A93B;background:rgba(242,169,59,.08);border:1px solid rgba(242,169,59,.3);border-radius:8px;padding:6px 8px}\n@media (max-width:900px){.sr-main{grid-template-columns:1fr}.sr-right{border-left:0;border-top:1px solid #262E3C}}\n";
+function srOpen(mode){
+ if(SR.doc&&SR.mode===mode){if(SR.win)SR.win.focus();return;}
+ if(SR.doc)srUnmount();
+ if(mode==='pop'&&!IS_FRAME){
+  let w=null;try{w=window.open('','sahnaovozi_rec','popup=yes,width=1180,height=780');}catch(e){}
+  if(!w){toast('Brauzer alohida oynani to\'sdi — pult ichida ochildi. Manzil satridagi 🚫 belgisidan «oynalarga ruxsat» bering');return srOpen('dock');}
+  w.document.open();w.document.write('<!DOCTYPE html><html lang="'+(document.documentElement.lang||'uz')+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>● Sahna yozuvi — Sahna Ovozi</title></head><body class="sr-popbody"></body></html>');w.document.close();
+  document.querySelectorAll('head style').forEach(s=>w.document.head.appendChild(s.cloneNode(true)));
+  const st=w.document.createElement('style');st.textContent=SR_CSS;w.document.head.appendChild(st);
+  w.document.body.innerHTML='<div class="srw sr-pop" id="srRoot" tabindex="-1"></div>';
+  SR.win=w;SR.doc=w.document;SR.mode='pop';
+  w.addEventListener('pagehide',()=>{if(SR.win===w){SR.win=null;SR.doc=null;SR.mode=null;SR.root=null;srBtnUI();}});
+  srWireDoc(w.document);
+ }else{
+  SR.win=null;SR.doc=document;SR.mode='dock';
+  if(!document.getElementById('srCss')){const st=document.createElement('style');st.id='srCss';st.textContent=SR_CSS;document.head.appendChild(st);}
+  const d=document.createElement('div');d.className='srw sr-dock';d.id='srRoot';d.tabIndex=-1;
+  const r=SR.dockRect||{x:Math.max(10,(innerWidth-1080)/2),y:90,w:Math.min(1080,innerWidth-20),h:Math.min(720,innerHeight-110)};
+  Object.assign(d.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'});
+  document.body.appendChild(d);
+  new ResizeObserver(()=>{if(SR.root===d)SR.dockRect={x:d.offsetLeft,y:d.offsetTop,w:d.offsetWidth,h:d.offsetHeight};}).observe(d);
+  srWireRoot(d);
+ }
+ SR.root=srE('srRoot');SR.sig='';srRender();srBtnUI();srStartLoop();
+ try{if(window.AZ_I18N&&AZ_I18N.observe&&SR.mode==='pop')AZ_I18N.observe(SR.doc);}catch(e){}
+ logEvent('Sahna yozuvi oynasi ochildi ('+(SR.mode==='pop'?'alohida oyna':'pult ichida')+')');
+}
+function srUnmount(){
+ if(SR.mode==='pop'&&SR.win){const w=SR.win;SR.win=null;SR.doc=null;SR.mode=null;SR.root=null;try{w.close();}catch(e){}}
+ else if(SR.root){SR.root.remove();SR.doc=null;SR.mode=null;SR.root=null;}
+ srBtnUI();
+}
+function srClose(){if(SR.rec){toast('Avval yozishni to\'xtating (■ STOP)');return;}if(SR.xq.length||Object.values(SR.devs).some(d=>d.xfer&&!d.xfer.done)){toast('Fayllar hali yig\'ilmoqda — biroz kuting');return;}srUnmount();}
+addEventListener('pagehide',()=>{try{if(SR.win)SR.win.close();}catch(e){}});
+function srBtnUI(){const b=$('#srBtn');if(!b)return;b.classList.toggle('on',!!SR.doc);b.classList.toggle('rec',!!SR.rec);const s=b.querySelector('.srl');if(s)s.textContent=SR.rec?vsShort(Math.max(0,(performance.now()-SR.rec.T)/1000)):'REC';}
+
+/* ===== signal: telefonlar /api/remote orqali taklif (offer) yuboradi, pult javob beradi ===== */
+function srPost(to,msg){return fetch(RM_API+'/api/remote',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({room:RM.room,from:'master',to,msg})}).catch(()=>{});}
+function srStartLoop(){if(SR.looping)return;SR.looping=true;const my=++SR.gen;srLoop(my);}
+async function srLoop(my){
+ let after=-1;
+ while(my===SR.gen){
+  try{const r=await fetch(RM_API+'/api/remote?room='+RM.room+'&role=master&after='+after,{cache:'no-store'});const j=await r.json();if(!r.ok)throw 0;
+   if(my!==SR.gen)return;SR.err=false;
+   if(after>=0)(j.msgs||[]).forEach(x=>{try{const m=JSON.parse(x);if(/^rec[1-8]$/.test(m.from||'')&&m.t==='offer')srAccept(m);}catch(e){}});
+   after=typeof j.last==='number'?j.last:Math.max(after,0);
+  }catch(e){if(my!==SR.gen)return;SR.err=true;srDraw();await new Promise(res=>setTimeout(res,3000));}
+  // oyna yopilgan, yozuv va yig'ish tugagan bo'lsa — kutishni to'xtatamiz (ulangan telefonlar kanali ochiq qoladi)
+  if(!SR.doc&&!SR.rec&&!SR.xq.length){SR.looping=false;SR.gen++;return;}
+ }
+}
+const srGathered=pc=>new Promise(res=>{if(pc.iceGatheringState==='complete')return res();const t=setTimeout(res,2500);pc.addEventListener('icegatheringstatechange',()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);res();}});});
+async function srAccept(m){
+ const id=m.from;let d=SR.devs[id];
+ if(d&&d.pc){try{d.pc.close();}catch(e){}}
+ d=SR.devs[id]=Object.assign(d||{id},{name:srSafe(m.name)||(d&&d.name)||('Telefon '+id.slice(3)),pc:null,dc:null,st:'conn',lvl:0,bat:null,chg:false,rtt:null,off:null,sy:[],rec:false,dur:0,take:false,seen:Date.now()});
+ if(d.xfer&&!d.xfer.done){d.xfer.err='aloqa uzildi';d.xfer=null;}
+ const pc=new RTCPeerConnection({iceServers:SR_ICE});d.pc=pc;
+ pc.ondatachannel=e=>srDc(d,pc,e.channel);
+ pc.onconnectionstatechange=()=>{if(d.pc!==pc)return;const s=pc.connectionState;if(s==='failed'||s==='disconnected'||s==='closed'){d.st='lost';srDraw();}};
+ try{await pc.setRemoteDescription({type:'offer',sdp:m.sdp});await pc.setLocalDescription(await pc.createAnswer());await srGathered(pc);
+  if(d.pc===pc)srPost(id,{t:'answer',sdp:pc.localDescription.sdp});}catch(e){d.st='lost';}
+ srDraw();
+}
+function srDc(d,pc,dc){
+ dc.binaryType='arraybuffer';
+ const open=()=>{if(d.pc!==pc)return;d.dc=dc;d.st='ok';d.sy=[];srPing(d);srSend(d,{t:'hi',sess:SR.rec?SR.sess:'',rec:!!SR.rec});srDraw();logEvent('🎙 Qurilma ulandi: '+d.name);};
+ dc.onopen=open;dc.onclose=()=>{if(d.dc!==dc)return;d.dc=null;d.st='lost';if(d.xfer&&!d.xfer.done){d.xfer.err='aloqa uzildi';srXferEnd(d);}srDraw();};
+ dc.onmessage=e=>srDcMsg(d,e.data);
+ if(dc.readyState==='open')open();
+}
+function srSend(d,o){if(d&&d.dc&&d.dc.readyState==='open')try{d.dc.send(JSON.stringify(o));return true;}catch(e){}return false;}
+function srPing(d){srSend(d,{t:'ping',a:performance.now(),q:d.rtt!=null?Math.max(1,Math.round(d.rtt/2)):null});}
+setInterval(()=>{for(const d of Object.values(SR.devs))if(d.dc)srPing(d);},1500);
+function srDcMsg(d,x){
+ if(typeof x!=='string'){const X=d.xfer;if(X&&X.w&&!X.done){const u=new Uint8Array(x);X.w.push(u);X.got+=u.length;}return;}
+ let m;try{m=JSON.parse(x);}catch(e){return;}
+ d.seen=Date.now();
+ if(m.t==='pong'){const now=performance.now(),rtt=now-m.a;if(rtt<0||rtt>3000)return;d.sy.push({rtt,off:m.b-(m.a+rtt/2)});if(d.sy.length>20)d.sy.shift();
+  const best=d.sy.reduce((p,c)=>c.rtt<p.rtt?c:p);d.rtt=best.rtt;d.off=best.off;}
+ else if(m.t==='st'){d.lvl=+m.lvl||0;d.bat=m.bat==null?null:m.bat;d.chg=!!m.chg;const was=d.rec;d.rec=!!m.rec;d.dur=+m.dur||0;d.take=!!m.take;d.sr=m.sr;d.clip=!!m.clip;if(m.name&&srSafe(m.name)!==d.name){d.name=srSafe(m.name);SR.sig='';}if(was!==d.rec)SR.sig='';}
+ else if(m.t==='file')srXferBegin(d,m);
+ else if(m.t==='eof')srXferEnd(d);
+ else if(m.t==='nofile'){if(d.xfer)d.xfer=null;srXferNext();}
+ else if(m.t==='late'){toast('⚠ '+d.name+': REC buyrug\'i kech keldi — boshiga '+Math.round(m.ms)+' ms jimlik qo\'shildi (sinxron saqlandi)');}
+}
+/* ===== fayl yig'ish: STOP'dan keyin telefonlar navbat bilan yuboradi ===== */
+function srSessDir(){
+ if(SR.sess)return;
+ const d0=new Date(),p=n=>String(n).padStart(2,'0');
+ SR.sess=d0.getFullYear()+'-'+p(d0.getMonth()+1)+'-'+p(d0.getDate())+' '+p(d0.getHours())+'-'+p(d0.getMinutes())+(show&&show.title?' '+srSafe(show.title):'');
+ SR.sessRel='yozuvlar/'+SR.sess;SR.used=new Set();SR.files=[];
+}
+function srXferBegin(d,m){
+ srSessDir();const fn=srUniq(srSafe(d.name)+'.wav');
+ d.xfer={name:fn,size:+m.size||0,got:0,dur:+m.dur||0,w:srWriter(SR.sessRel+'/'+fn,null),done:false,err:null};SR.sig='';srDraw();
+}
+async function srXferEnd(d){
+ const X=d.xfer;if(!X||X.done)return;X.done=true;
+ await X.w.close();
+ const ok=!X.err&&!X.w.err&&(!X.size||X.got>=X.size);
+ SR.files.push({name:X.name,size:X.got,w:X.w,dev:d.name,err:ok?null:(X.err||(X.w.err&&X.w.err.message)||'to\'liq kelmadi')});
+ if(ok){srSend(d,{t:'got'});logEvent('🎙 Fayl qabul qilindi: '+X.name+' · '+srMb(X.got));}
+ else toast('⚠ '+d.name+': fayl to\'liq kelmadi — telefonda «Telefonga saqlash» bilan oling');
+ d.xfer=null;SR.sig='';srDraw();srXferNext();
+}
+function srXferNext(){
+ while(SR.xq.length){
+  const id=SR.xq[0],d=SR.devs[id];
+  if(d&&d.xfer&&!d.xfer.done)return; // shu qurilma hali yuboryapti
+  SR.xq.shift();
+  if(d&&d.dc&&srSend(d,{t:'send'}))return;
+ }
+ if(SR.collect){SR.collect=false;const ok=SR.files.filter(f=>!f.err).length;toast('✓ Sahna yozuvi tayyor: '+ok+' ta fayl'+(NATIVE?' — Hujjatlar / Sahna Ovozi / yozuvlar':''));logEvent('🎙 Sahna yozuvi yig\'ildi: '+SR.sess+' · '+ok+' fayl');}
+ SR.sig='';srDraw();
+}
+function srFetch(id){const d=SR.devs[id];if(!d||!d.dc)return;if(SR.rec){toast('Yozuv davom etmoqda');return;}if(!SR.xq.includes(id))SR.xq.push(id);if(SR.xq.length===1)srXferNext();}
+
+/* ===== REC / STOP ===== */
+async function srRecStart(){
+ if(SR.rec)return;
+ if(SR.xq.length||Object.values(SR.devs).some(d=>d.xfer&&!d.xfer.done)){toast('Oldingi yozuv fayllari hali yig\'ilmoqda — kuting');return;}
+ const ready=Object.values(SR.devs).filter(d=>d.dc&&d.st==='ok'&&d.off!=null);
+ const pult=SR.opt.pult&&!!ctx;
+ if(!ready.length&&!pult){toast(SR.opt.pult?'Hech qanday telefon ulanmagan, pult ovozi ham yoqilmagan':'Hech qanday telefon ulanmagan — telefonda /yozuv sahifasini oching');return;}
+ SR.sess='';srSessDir();
+ const T=performance.now()+1500; // 1,5 s oldindan — buyruq hamma telefonga yetib borsin
+ SR.rec={T,markers:[],stage:'pre',devs:ready.map(d=>d.id),pult:null};
+ for(const d of ready){srSend(d,{t:'rec',at:T+d.off,sess:SR.sess});d.rec=true;}
+ if(pult){try{
+  if(ctx.state!=='running')await ctx.resume();
+  const tap=await vsTap(limiter,'sr'),sr=ctx.sampleRate;
+  const ts=ctx.getOutputTimestamp?ctx.getOutputTimestamp():null;
+  const ct=ts&&ts.performanceTime>0?ts.contextTime+(T-ts.performanceTime)/1000:ctx.currentTime+(T-performance.now())/1000;
+  const fn=srUniq('Pult (master).wav');
+  const P={tap,sr,fn,frames:0,w:srWriter(SR.sessRel+'/'+fn,srWavHdr(sr,2,24,0))};
+  tap.port.postMessage({start:Math.max(0,Math.round(ct*sr))});SR.rec.pult=P;
+ }catch(e){toast('Pult chiqishini yozib bo\'lmadi: '+(e.message||e));}}
+ SR.sig='';srDraw();srBtnUI();
+ logEvent('● Sahna yozuvi boshlandi: '+SR.sess+' · '+ready.length+' telefon'+(SR.rec.pult?' + pult':''));
+}
+function srDrainPult(){const P=SR.rec&&SR.rec.pult;if(!P)return;const ch=P.tap.ch.splice(0);P.tap.len=0;for(const [L,R] of ch){P.frames+=L.length;P.w.push(srEnc24([L,R]));}}
+async function srRecStop(){
+ const R=SR.rec;if(!R||R.stage==='stop')return;R.stage='stop';
+ for(const id of R.devs){const d=SR.devs[id];if(d)srSend(d,{t:'stop'});}
+ const btn=srE('srRecBtn');if(btn){btn.disabled=true;btn.textContent='… saqlanmoqda';}
+ if(R.pult){const P=R.pult;
+  await new Promise(r=>{P.tap.done=r;P.tap.port.postMessage({stop:true});setTimeout(r,1500);});
+  try{P.tap.src.disconnect(P.tap.node);P.tap.node.disconnect();}catch(e){}
+  srDrainPult();await P.w.close(srWavHdr(P.sr,2,24,P.frames*6));
+  SR.files.push({name:P.fn,size:P.w.size,w:P.w,dev:'Pult',err:P.w.err?String(P.w.err.message||P.w.err):null});}
+ const tot=Math.max(0,(performance.now()-R.T)/1000);
+ if(R.markers.length){const csv='﻿No;Vaqt (s);Timecode;Cue\r\n'+R.markers.map((m,i)=>(i+1)+';'+m.t.toFixed(3)+';'+vsTC(m.t,SR_FPS)+';"'+String(m.label).replace(/"/g,'""')+'"').join('\r\n')+'\r\n';
+  const w=srWriter(SR.sessRel+'/markerlar.csv',new TextEncoder().encode(csv));await w.close();SR.files.push({name:'markerlar.csv',size:w.size,w,dev:'Cue',err:w.err?String(w.err):null});}
+ SR.rec=null;SR.xq=R.devs.slice();SR.collect=true;
+ logEvent('■ Sahna yozuvi to\'xtatildi: '+vsShort(tot)+' · '+R.markers.length+' cue belgisi');
+ SR.sig='';srDraw();srBtnUI();
+ setTimeout(srXferNext,600); // telefonlar faylni yopib olsin
+}
+function srMark(label){const R=SR.rec;if(!R||R.stage==='stop')return;const t=(performance.now()-R.T)/1000;if(t<0)return;R.markers.push({t,label});srDrawMk();}
+
+/* ===== UI ===== */
+function srRender(){
+ const R=SR.root;if(!R)return;const pop=SR.mode==='pop';
+ R.innerHTML='<div class="sr-title" data-srdrag="1"><span class="sr-dot" id="srDot"></span><b>● Sahna yozuvi</b><span class="sr-sub">ko\'p qurilmali spektakl yozuvi</span><span class="sr-sp"></span>'+
+  (pop?'<button type="button" class="sr-ic" data-sr="dock" title="Pult ichiga qaytarish">⇲</button>':'<button type="button" class="sr-ic" data-sr="pop" title="Alohida oyna — boshqa monitorga sudrab olib boring">⧉</button>')+
+  '<button type="button" class="sr-ic sr-x" data-sr="close" title="Yopish">✕</button></div>'+
+  '<div class="sr-top" id="srTop"></div>'+
+  '<div class="sr-main"><div class="sr-left"><div class="sr-fl">Qurilmalar</div><div class="sr-devs" id="srDevs"></div><div class="sr-fl">Yozilgan fayllar</div><div class="sr-files" id="srFiles"></div></div>'+
+  '<div class="sr-right" id="srRight"></div></div>';
+ srRight();srDraw(true);srLoopUI();
+}
+function srRight(){
+ const P=srE('srRight');if(!P)return;const link=RM_API+'/yozuv?kod='+RM.room;
+ P.innerHTML='<div class="sr-fl" style="margin-top:0">Telefonni ulash</div><div class="sr-code">'+esc(RM.room)+'</div>'+
+  '<div class="sr-link">'+esc(link)+'</div><div class="sr-db"><button type="button" data-sr="copy">Havolani nusxalash</button><button type="button" data-sr="copycode">Kodni nusxalash</button></div>'+
+  '<ol class="sr-steps"><li>Telefonda havolani oching (yoki <b>sahna-ovozi.pages.dev/yozuv</b> va kodni yozing)</li><li>Raqam (1–8) va aktyor ismini tanlang → <b>Ulanish</b></li><li>Hamma telefon yashil bo\'lsa — <b>● REC</b></li><li><b>■ STOP</b> → fayllar o\'zi shu kompyuterga yig\'iladi</li></ol>'+
+  '<div class="sr-warn">Telefonlar va kompyuter bitta Wi-Fi\'da bo\'lsa, aloqa eng tez va ishonchli. Internet faqat birinchi tanishish uchun kerak.</div>'+
+  '<div class="sr-fl">Cue belgilari (sinxron marker)</div><div class="sr-mks" id="srMks"></div>'+
+  '<div class="sr-fl">Saqlanadigan joy</div>'+(NATIVE?'<div class="sr-db"><button type="button" data-sr="folder">📂 Hujjatlar / Sahna Ovozi / yozuvlar</button></div>':'<div class="sr-none">Brauzerda: fayllar chapdagi ro\'yxatdan «⬇ Yuklab olish» bilan olinadi. O\'rnatilgan dasturda — Hujjatlar / Sahna Ovozi / yozuvlar papkasiga o\'zi yoziladi.</div>');
+ srDrawMk();
+}
+function srDrawMk(){const M=srE('srMks');if(!M)return;const L=SR.rec?SR.rec.markers:SR.lastMk||[];if(SR.rec)SR.lastMk=SR.rec.markers;
+ M.innerHTML=L.length?L.slice(-60).map(m=>'<div class="sr-mk"><i>'+vsTC(m.t,SR_FPS)+'</i><span>'+esc(m.label)+'</span></div>').join(''):'<div class="sr-none">Yozuv paytida pultda GO bosilgan har bir cue shu yerda vaqti bilan belgilanadi va markerlar.csv fayliga yoziladi.</div>';M.scrollTop=M.scrollHeight;}
+function srDevSt(d){if(d.xfer&&!d.xfer.done)return 'xfer';if(d.st!=='ok'||!d.dc)return 'lost';if(Date.now()-d.seen>6000)return 'lost';return d.rec?'rec':'ok';}
+function srDraw(force){
+ if(!SR.root)return;
+ const D=Object.values(SR.devs).sort((a,b)=>a.id.localeCompare(b.id));
+ const sig=JSON.stringify([!!SR.rec,SR.rec&&SR.rec.stage,SR.opt.pult,!!ctx,SR.err,SR.xq.length,SR.files.length,D.map(d=>[d.id,d.name,srDevSt(d),d.take,!!d.xfer])]);
+ if(!force&&sig===SR.sig)return;SR.sig=sig;
+ const R=SR.rec,top=srE('srTop'),ready=D.filter(d=>srDevSt(d)==='ok'||srDevSt(d)==='rec').length,coll=SR.xq.length||D.some(d=>d.xfer&&!d.xfer.done);
+ if(top)top.innerHTML='<button type="button" class="sr-rec'+(R?' on':'')+'" data-sr="rec" id="srRecBtn"'+(coll&&!R?' disabled':'')+'>'+(R?'■ STOP':'● REC')+'</button>'+
+  '<span class="sr-tc'+(R?' on':'')+'" id="srTc">00:00:00:00</span>'+
+  '<div class="sr-stt"><b id="srSt">'+(R?(R.stage==='pre'?'Tayyorlanmoqda…':'Yozilmoqda'):coll?'Fayllar yig\'ilmoqda…':'Tayyor')+'</b><span>'+ready+' ta telefon ulangan'+(SR.opt.pult?(ctx?' · pult chiqishi ham yoziladi':' · pult ovozi yoqilmagan'):'')+(SR.err?' · ⚠ serverga ulanib bo\'lmadi':'')+'</span></div>'+
+  '<span class="sr-sp" style="flex:1"></span>'+
+  '<label class="sr-opt"><input type="checkbox" data-sro="pult"'+(SR.opt.pult?' checked':'')+(R?' disabled':'')+'><span>Pult chiqishini ham yozish<br><small style="color:#8A93A3">master mix · 24-bit stereo</small></span></label>';
+ const g=srE('srDevs');
+ if(g){const pc='<div class="sr-dev '+(SR.opt.pult&&ctx?(R&&R.pult?'rec':'ok'):'off')+'"><div class="sr-dh"><span class="sr-ld"></span><b style="flex:1">🖥 Pult (shu kompyuter)</b></div><div class="sr-mt"><i id="srL_pult"></i></div><div class="sr-dm"><span>master mix · <b>'+(ctx?Math.round(ctx.sampleRate/100)/10+' kHz':'—')+'</b></span><span id="srD_pult"></span></div></div>';
+  g.innerHTML=pc+(D.length?D.map(d=>{const s=srDevSt(d);return '<div class="sr-dev '+s+'"><div class="sr-dh"><span class="sr-ld"></span><span style="color:#8A93A3;font-size:11px">#'+d.id.slice(3)+'</span><input value="'+esc(d.name)+'" data-srname="'+d.id+'" title="Ism — bosing va o\'zgartiring (fayl nomi shu bo\'ladi)" aria-label="Qurilma nomi"></div>'+
+   '<div class="sr-mt"><i id="srL_'+d.id+'"></i></div><div class="sr-dm" id="srM_'+d.id+'"></div>'+
+   (s==='xfer'?'<div class="sr-pg"><i id="srP_'+d.id+'"></i></div>':'')+
+   '<div class="sr-db">'+(s==='lost'?'<span style="color:#F2A93B;font-size:11px;align-self:center">'+(d.st==='conn'?'ulanmoqda…':'aloqa uzildi — telefon o\'zi qayta ulanadi')+'</span><span style="flex:1"></span><button type="button" data-srdel="'+d.id+'" title="Ro\'yxatdan olib tashlash">✕</button>':
+   (d.take&&!R&&s!=='xfer'?'<button type="button" data-srget="'+d.id+'">📥 Faylni olish</button>':''))+'</div></div>';}).join(''):'<div class="sr-none" style="align-self:center">Hali telefon ulanmagan. O\'ng tomondagi havolani aktyorlar telefonida oching.</div>');}
+ const F=srE('srFiles');
+ if(F)F.innerHTML=SR.files.length?SR.files.map((f,i)=>'<div class="sr-file'+(f.err?' err':'')+'"><span>'+(f.err?'⚠ ':'✓ ')+esc(f.name)+'</span><small>'+srMb(f.size)+(f.err?' · '+esc(f.err):'')+'</small>'+(f.w&&f.w.url?'<button type="button" class="sr-b" data-srdl="'+i+'">⬇ Yuklab olish</button>':'')+'</div>').join('')+(NATIVE?'<div><button type="button" class="sr-b" data-sr="folder">📂 Papkani ochish</button></div>':''):'<div class="sr-none">STOP bosilgandan keyin hamma telefon va pult yozuvlari shu yerda ko\'rinadi.</div>';
+ const dot=srE('srDot');if(dot)dot.classList.toggle('on',!!R);
+}
+function srMeterW(v){if(!(v>0))return 0;const db=20*Math.log10(v);return Math.max(0,Math.min(100,(db+60)/60*100));}
+function srLoopUI(){
+ if(SR.raf)return;
+ const tick=()=>{SR.raf=0;if(!SR.root&&!SR.rec)return;
+  const R=SR.rec,now=performance.now();
+  if(R){if(R.stage==='pre'&&now>=R.T){R.stage='rec';SR.sig='';}srDrainPult();}
+  srDraw();
+  if(SR.root){
+   const tc=srE('srTc');if(tc)tc.textContent=R?vsTC(Math.max(0,(now-R.T)/1000),SR_FPS):'00:00:00:00';
+   const st=srE('srSt');if(st&&R)st.textContent=R.stage==='pre'?'Tayyorlanmoqda… '+Math.ceil((R.T-now)/1000):'Yozilmoqda';
+   const pl=srE('srL_pult');if(pl){let v=0;try{const a=SR.an||(ctx&&limiter?(SR.an=ctx.createAnalyser(),SR.an.fftSize=1024,limiter.connect(SR.an),SR.an):null);if(a){const b=SR.ab||(SR.ab=new Float32Array(a.fftSize));a.getFloatTimeDomainData(b);for(let k=0;k<b.length;k++){const x=Math.abs(b[k]);if(x>v)v=x;}}}catch(e){}pl.style.width=srMeterW(v)+'%';}
+   const pd=srE('srD_pult');if(pd)pd.textContent=R&&R.pult?'● '+vsShort(R.pult.frames/R.pult.sr)+' · '+srMb(R.pult.w.size):'';
+   for(const d of Object.values(SR.devs)){
+    const l=srE('srL_'+d.id);if(l)l.style.width=srMeterW(d.lvl)+'%';
+    const m=srE('srM_'+d.id);if(m)m.innerHTML=(d.rec?'<span style="color:#ff8a8d">● <b style="color:#ff8a8d">'+vsShort(d.dur)+'</b></span>':'')+
+     '<span>sinxron <b>'+(d.rtt!=null?'±'+Math.max(1,Math.round(d.rtt/2))+' ms':'…')+'</b></span>'+
+     (d.bat!=null?'<span>🔋 <b'+(d.bat<20&&!d.chg?' style="color:#F2A93B"':'')+'>'+d.bat+'%</b>'+(d.chg?' ⚡':'')+'</span>':'')+
+     (d.sr?'<span><b>'+Math.round(d.sr/100)/10+'</b> kHz</span>':'')+(d.clip?'<span style="color:#ef4444"><b>CLIP</b></span>':'');
+    const p=srE('srP_'+d.id);if(p&&d.xfer)p.style.width=(d.xfer.size?Math.min(100,d.xfer.got/d.xfer.size*100):0)+'%';
+   }
+  }
+  srBtnUI();
+  SR.raf=setTimeout(tick,100);};
+ SR.raf=setTimeout(tick,100);
+}
+function srClick(e){
+ const b=e.target.closest('[data-sr],[data-srdel],[data-srget],[data-srdl]');if(!b)return;const d=b.dataset;
+ if(d.srdel){const x=SR.devs[d.srdel];if(x){try{x.pc&&x.pc.close();}catch(err){}delete SR.devs[d.srdel];}SR.sig='';srDraw();return;}
+ if(d.srget){srFetch(d.srget);return;}
+ if(d.srdl){const f=SR.files[+d.srdl];if(f&&f.w&&f.w.url){const a=SR.doc.createElement('a');a.href=f.w.url;a.download=f.name;SR.doc.body.appendChild(a);a.click();a.remove();}return;}
+ const a=d.sr;
+ if(a==='rec'){SR.rec?srRecStop():srRecStart();}
+ else if(a==='copy'||a==='copycode'){const s=a==='copy'?RM_API+'/yozuv?kod='+RM.room:RM.room;(SR.win||window).navigator.clipboard.writeText(s).then(()=>toast('Nusxalandi: '+s),()=>toast(s));}
+ else if(a==='folder'){if(NATIVE)azNative.openDocs();}
+ else if(a==='pop')srOpen('pop');else if(a==='dock')srOpen('dock');else if(a==='close')srClose();
+}
+function srChange(e){const t=e.target;
+ if(t.dataset.sro){SR.opt[t.dataset.sro]=t.checked;SR.sig='';srDraw();return;}
+ if(t.dataset.srname){const d=SR.devs[t.dataset.srname];const n=srSafe(t.value);if(d&&n){d.name=n;srSend(d,{t:'name',name:n});}}}
+function srPtr(e){
+ if(SR.mode!=='dock'||!e.target.closest('[data-srdrag]')||e.target.closest('button,input,label'))return;
+ const R=SR.root,sx=e.clientX-R.offsetLeft,sy=e.clientY-R.offsetTop;
+ const mv=ev=>{R.style.left=Math.max(-R.offsetWidth+120,Math.min(innerWidth-120,ev.clientX-sx))+'px';R.style.top=Math.max(0,Math.min(innerHeight-40,ev.clientY-sy))+'px';},
+  up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);SR.dockRect={x:R.offsetLeft,y:R.offsetTop,w:R.offsetWidth,h:R.offsetHeight};};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up);
+}
+function srWireRoot(R){
+ R.addEventListener('click',srClick);R.addEventListener('change',srChange);R.addEventListener('pointerdown',srPtr);
+ R.addEventListener('keydown',e=>{if(e.target.dataset&&e.target.dataset.srname){e.stopPropagation();if(e.key==='Enter')e.target.blur();return;}
+  if((e.key==='R'||e.key==='r')&&e.shiftKey&&!e.ctrlKey&&!e.metaKey){e.preventDefault();e.stopPropagation();SR.rec?srRecStop():srRecStart();}});
+}
+function srWireDoc(D){
+ setTimeout(()=>srWireRoot(D.getElementById('srRoot')),0);
+ // yozuv oynasida bosilgan pult tugmalari (GO — Probel, SFX, Esc …) asosiy pultga uzatiladi
+ const fwd=type=>e=>{if(e.defaultPrevented||/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName))return;
+  const ev=new KeyboardEvent(type,{key:e.key,code:e.code,location:e.location,repeat:e.repeat,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,bubbles:true,cancelable:true});
+  document.body.dispatchEvent(ev);if(ev.defaultPrevented)e.preventDefault();};
+ D.addEventListener('keydown',fwd('keydown'));D.addEventListener('keyup',fwd('keyup'));
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#srBtn');if(!b)return;e.stopPropagation();if(SR.doc){if(SR.win)SR.win.focus();else srClose();}else srOpen(IS_FRAME?'dock':'pop');},true);
+
 function logEvent(txt){
  const d=new Date(),p=n=>String(n).padStart(2,'0');
  const line=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' | '+txt;
