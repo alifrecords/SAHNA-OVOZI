@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0F12">
+<title>Yozuv — Sahna Ovozi</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#0E0F12;color:#E8E8EA;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #23262d}
+header b{letter-spacing:.06em}header small{color:#F2A93B;letter-spacing:.14em;font-size:10px;display:block}
+main{flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px;max-width:560px;width:100%;margin:0 auto}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#8b90a0;flex:1}
+input,select{background:#16181d;border:1px solid #2c3038;color:#fff;border-radius:10px;padding:12px;font:600 17px system-ui,sans-serif;width:100%}
+#code{font:700 22px ui-monospace,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;text-align:center}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+button{background:#1b1e24;border:1px solid #2f343d;color:#E8E8EA;border-radius:10px;padding:12px 16px;font:600 15px system-ui,sans-serif;cursor:pointer}
+button.pri{background:#F2A93B;border-color:#F2A93B;color:#14110a;width:100%;font-size:17px;padding:14px}
+button.stop{background:#7A1F23;border-color:#E5484D;color:#fff;width:100%}
+.big{border-radius:16px;padding:18px;text-align:center;background:#16181d;border:1px solid #2c3038}
+.big b{display:block;font-size:20px;letter-spacing:.04em}.big .tc{font:700 44px ui-monospace,Consolas,monospace;letter-spacing:.04em;margin-top:4px}
+.big.ok{border-color:#2F6B5F}.big.ok b{color:#3DD68C}
+.big.rec{border-color:#E5484D;background:#1C1416}.big.rec b,.big.rec .tc{color:#ff8a8d}.big.rec b::before{content:'● ';animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.3}}
+.big.wait b{color:#F2A93B}.big.err b{color:#E5484D}
+.meter{height:14px;border-radius:7px;background:#23262d;overflow:hidden;position:relative}.meter i{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#22c55e 0 70%,#eab308 70% 88%,#ef4444 88%);background-size:min(528px,calc(100vw - 32px)) 100%;transition:width .06s}
+.st{padding:10px 12px;border-radius:10px;background:#16181d;font-size:14px;color:#B8C0CE}
+.hint{color:#8b90a0;font-size:13px;margin:0}
+.take{display:flex;gap:8px;align-items:center;padding:10px 12px;border:1px solid #2c3038;border-radius:10px}.take span{flex:1;font-size:13px}
+.info{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#8b90a0}.info b{color:#E8E8EA}
+</style>
+</head>
+<body>
+<header><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 7v10M11 4v16M15 8v8M19 10v4"/></svg><div><b>SAHNA OVOZI · YOZUV</b><small>AZIMXODJAYEV MUSIC</small></div></header>
+<main>
+  <section id="setup">
+    <div class="row">
+      <label class="f">Xona kodi<input id="code" maxlength="6" placeholder="KOD" autocomplete="off"></label>
+      <label class="f" style="flex:0 0 96px">Raqam<select id="slot"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></label>
+    </div>
+    <div class="row" style="margin-top:8px"><label class="f">Aktyor / rol nomi (fayl nomi shu bo'ladi)<input id="name" maxlength="40" placeholder="Aktyor 1"></label></div>
+    <div style="margin-top:12px"><button class="pri" id="start" type="button">🎙 Ulanish</button></div>
+    <p class="hint" style="margin-top:10px">Kod — teatr pultida <b>● REC</b> oynasida. Har bir telefonga boshqa raqam bering (1–8).</p>
+  </section>
+  <div class="big wait" id="big"><b id="bigT">Ulanmagan</b><div class="tc" id="tc" hidden>00:00:00</div></div>
+  <div class="meter" aria-label="Mikrofon darajasi"><i id="lvl"></i></div>
+  <div class="info"><span>Mikrofon: <b id="iSr">—</b></span><span>Sinxron: <b id="iSy">—</b></span><span id="iBat"></span></div>
+  <div class="st" id="st">Kodni yozing, raqam va ismni tanlang, «Ulanish»ni bosing.</div>
+  <button class="stop" id="stopBtn" type="button" hidden>■ Shu telefonda to'xtatish</button>
+  <div id="takeBox" hidden><div class="take"><span id="takeT"></span><button type="button" id="save">⬇ Telefonga saqlash</button></div></div>
+  <p class="hint">Telefonni aktyorga yaqin joylang (yoki lavalier mikrofon ulang) va quvvatga ulab qo'ying. Bu sahifa ochiq tursin — ekran o'chmaydi. Yozuv telefonning o'zida saqlanadi, Wi-Fi uzilib qolsa ham yo'qolmaydi; STOP'dan keyin pultga o'zi yuboriladi.</p>
+</main>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const API = /^https?:$/.test(location.protocol) && /pages\.dev$|localhost|127\.0\.0\.1/.test(location.hostname) ? location.origin : 'https://sahna-ovozi.pages.dev';
+  const ICE = [{ urls: ['stun:stun.cloudflare.com:3478', 'stun:stun.l.google.com:19302'] }];
+  const LS = 'sahnaOvozi.yozuv';
+  const S = { room: '', role: '', name: '', stream: null, ac: null, node: null, pc: null, dc: null, gen: 0, wake: null, lvl: 0, clip: 0, rec: null, take: null, stopping: null, offerT: 0, bat: null, chg: false, sync: null };
+  const qs = new URLSearchParams(location.search);
+  let saved = {}; try { saved = JSON.parse(localStorage.getItem(LS) || '{}'); } catch (_) {}
+  $('#code').value = (qs.get('kod') || saved.room || '').toUpperCase();
+  $('#slot').value = saved.slot || '1';
+  $('#name').value = saved.name || '';
+  const st = (t) => { $('#st').textContent = t; };
+  const big = (t, c) => { $('#bigT').textContent = t; $('#big').className = 'big ' + (c || ''); };
+  const hms = (s) => { s = Math.max(0, Math.floor(s)); const p = (n) => String(n).padStart(2, '0'); return p(Math.floor(s / 3600)) + ':' + p(Math.floor(s / 60) % 60) + ':' + p(s % 60); };
+  const mb = (b) => (b / 1e6).toFixed(1) + ' MB';
+
+  // ---- 24-bit WAV ----
+  function enc24(a) { const o = new Uint8Array(a.length * 3); let j = 0; for (let i = 0; i < a.length; i++) { let v = a[i]; v = v > 1 ? 1 : v < -1 ? -1 : (v || 0); const s = Math.round(v * 8388607); o[j++] = s & 255; o[j++] = (s >> 8) & 255; o[j++] = (s >> 16) & 255; } return o; }
+  function hdr(sr, data) {
+    const b = new ArrayBuffer(44), v = new DataView(b), w = (o, s) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + data, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true);
+    v.setUint32(28, sr * 3, true); v.setUint16(32, 3, true); v.setUint16(34, 24, true); w(36, 'data'); v.setUint32(40, data, true); return new Uint8Array(b);
+  }
+
+  // ---- mikrofon: AudioWorklet doim ishlaydi (daraja), yozuv aniq kadrdan boshlanadi ----
+  const WK = `class C extends AudioWorkletProcessor{constructor(){super();this.on=false;this.at=-1;this.n=0;this.bl=16384;this.b=new Float32Array(this.bl);this.pk=0;this.pn=0;
+   this.port.onmessage=e=>{const d=e.data;if(d.start!=null){this.at=d.start;}if(d.stop){this.flush();this.on=false;this.at=-1;this.port.postMessage({done:true});}};}
+   flush(){if(this.n){this.port.postMessage({d:this.b.slice(0,this.n)});this.n=0;}}
+   process(inp){const a=inp[0]&&inp[0][0];const len=a?a.length:128;
+    if(a){for(let k=0;k<len;k++){const x=a[k]<0?-a[k]:a[k];if(x>this.pk)this.pk=x;}}this.pn+=len;if(this.pn>=sampleRate/20){this.port.postMessage({pk:this.pk});this.pk=0;this.pn=0;}
+    let s=0;if(!this.on&&this.at>=0&&currentFrame+len>this.at){this.on=true;s=Math.max(0,this.at-currentFrame);this.port.postMessage({started:Math.max(this.at,currentFrame),late:Math.max(0,currentFrame-this.at)});this.at=-1;}
+    if(this.on){for(let k=s;k<len;k++){this.b[this.n++]=a?a[k]:0;if(this.n===this.bl)this.flush();}}
+    return true;}}registerProcessor('yz-rec',C);`;
+  async function getMedia() {
+    if (S.stream) return;
+    S.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+    S.ac = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+    await S.ac.audioWorklet.addModule(URL.createObjectURL(new Blob([WK], { type: 'application/javascript' })));
+    const src = S.ac.createMediaStreamSource(S.stream);
+    const n = new AudioWorkletNode(S.ac, 'yz-rec', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1], channelCount: 1, channelCountMode: 'explicit' });
+    const mute = S.ac.createGain(); mute.gain.value = 0; src.connect(n); n.connect(mute); mute.connect(S.ac.destination);
+    n.port.onmessage = (e) => onWk(e.data); S.node = n;
+    if (S.ac.state !== 'running') await S.ac.resume();
+    $('#iSr').textContent = Math.round(S.ac.sampleRate / 100) / 10 + ' kHz · 24-bit';
+    S.stream.getAudioTracks()[0].addEventListener('ended', () => { st('⚠ Mikrofon uzildi — sahifani yangilang'); big('Mikrofon uzildi', 'err'); });
+  }
+  function onWk(d) {
+    if (d.pk != null) { S.lvl = d.pk; if (d.pk >= 0.999) S.clip = Date.now(); $('#lvl').style.width = (d.pk > 0 ? Math.max(0, Math.min(100, (20 * Math.log10(d.pk) + 60) / 60 * 100)) : 0) + '%'; return; }
+    const R = S.rec; if (!R) return;
+    if (d.started != null) {
+      R.started = true;
+      if (d.late > 0) { // buyruq kech keldi — sinxron buzilmasin, boshiga jimlik
+        const z = new Uint8Array(d.late * 3); push(z); send({ t: 'late', ms: d.late / S.ac.sampleRate * 1000 });
+      }
+      return;
+    }
+    if (d.d) { R.frames += d.d.length; push(enc24(d.d)); return; }
+    if (d.done && R.done) R.done();
+  }
+  function push(u8) { const R = S.rec; R.parts.push(u8); R.pb += u8.length; R.bytes += u8.length; if (R.pb >= 8 * 1048576) { R.blobs.push(new Blob(R.parts)); R.parts = []; R.pb = 0; } }
+
+  // ---- master soatini telefon AudioContext kadriga aylantirish ----
+  function frameAt(perfMs) {
+    const ac = S.ac, ts = ac.getOutputTimestamp ? ac.getOutputTimestamp() : null;
+    let lat = (ac.outputLatency || ac.baseLatency || 0);
+    try { const l = S.stream.getAudioTracks()[0].getSettings().latency; if (l > 0 && l < 1) lat += l; } catch (_) {}
+    const ct = ts && ts.performanceTime > 0 ? ts.contextTime + (perfMs - ts.performanceTime) / 1000 : ac.currentTime + (perfMs - performance.now()) / 1000;
+    return Math.round((ct + lat) * ac.sampleRate);
+  }
+  function startRec(at, sess) {
+    if (S.rec) return;
+    if (S.stopping) { S.stopping.then(() => startRec(at, sess)); return; }
+    S.take = null; $('#takeBox').hidden = true;
+    S.rec = { sess, parts: [], blobs: [], pb: 0, bytes: 0, frames: 0, started: false, done: null, t0: at };
+    S.node.port.postMessage({ start: Math.max(0, frameAt(at)) });
+    $('#stopBtn').hidden = false; $('#setup').hidden = true; $('#tc').hidden = false;
+    big('YOZILMOQDA', 'rec'); st('Pult buyrug‘i bilan yozuv boshlandi. Telefonni qimirlatmang.');
+  }
+  function stopRec() {
+    const R = S.rec; if (!R) return S.stopping || Promise.resolve();
+    S.stopping = new Promise((res) => {
+      R.done = () => {
+        R.done = null; S.rec = null;
+        const sr = S.ac.sampleRate;
+        if (R.parts.length) R.blobs.push(new Blob(R.parts));
+        const blob = new Blob([hdr(sr, R.bytes), ...R.blobs], { type: 'audio/wav' });
+        S.take = { blob, dur: R.bytes / 3 / sr, sess: R.sess, sent: false };
+        $('#stopBtn').hidden = true; $('#takeBox').hidden = false;
+        $('#takeT').textContent = hms(S.take.dur) + ' · ' + mb(blob.size) + ' · ' + (R.sess || 'yozuv');
+        big(S.dc ? 'Yozuv tugadi — pultga yuborilmoqda…' : 'Yozuv saqlandi', 'ok'); $('#tc').hidden = true;
+        st(S.dc ? 'Pult faylni o‘zi so‘raydi. Sahifani yopmang.' : 'Pult bilan aloqa yo‘q. Ulanganda pultda «📥 Faylni olish» bosiladi yoki «Telefonga saqlash».');
+        S.stopping = null; res();
+      };
+      S.node.port.postMessage({ stop: true });
+      setTimeout(() => { if (R.done) R.done(); }, 2000);
+    });
+    return S.stopping;
+  }
+  async function sendFile() {
+    if (S.stopping) await S.stopping;
+    const T = S.take, dc = S.dc;
+    if (!dc || dc.readyState !== 'open') return;
+    if (!T) { dc.send(JSON.stringify({ t: 'nofile' })); return; }
+    const size = T.blob.size, CH = (S.pc.sctp && S.pc.sctp.maxMessageSize >= 65536) ? 65536 : 16384;
+    dc.send(JSON.stringify({ t: 'file', size, dur: T.dur, name: S.name }));
+    dc.bufferedAmountLowThreshold = 1 << 20;
+    big('Pultga yuborilmoqda…', 'wait');
+    for (let o = 0; o < size; o += CH) {
+      if (dc.readyState !== 'open') { big('Yuborish uzildi', 'err'); st('Aloqa uzildi. Qayta ulanganda pultda «📥 Faylni olish» bosing yoki «Telefonga saqlash».'); return; }
+      if (dc.bufferedAmount > 8 << 20) await new Promise((r) => { const f = () => { dc.removeEventListener('bufferedamountlow', f); r(); }; dc.addEventListener('bufferedamountlow', f); setTimeout(f, 3000); });
+      dc.send(await T.blob.slice(o, o + CH).arrayBuffer());
+      if ((o / CH) % 32 === 0) st('Yuborilmoqda: ' + Math.round(o / size * 100) + '%');
+    }
+    dc.send(JSON.stringify({ t: 'eof' }));
+    st('Yuborildi — pult tasdiqlashini kutyapman…');
+  }
+
+  // ---- aloqa: signal /api/remote orqali, keyin to'g'ridan-to'g'ri WebRTC kanali ----
+  async function post(msg) { try { await fetch(API + '/api/remote', { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ room: S.room, from: S.role, to: 'master', msg }) }); } catch (_) {} }
+  const send = (o) => { try { if (S.dc && S.dc.readyState === 'open') S.dc.send(JSON.stringify(o)); } catch (_) {} };
+  const gathered = (pc) => new Promise((res) => { if (pc.iceGatheringState === 'complete') return res(); const t = setTimeout(res, 2500); pc.addEventListener('icegatheringstatechange', () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); res(); } }); });
+  async function offer() {
+    S.offerT = Date.now();
+    if (S.pc) { try { S.pc.close(); } catch (_) {} }
+    const pc = new RTCPeerConnection({ iceServers: ICE }); S.pc = pc; S.dc = null;
+    const dc = pc.createDataChannel('sahna-yozuv', { ordered: true }); dc.binaryType = 'arraybuffer';
+    dc.onopen = () => { if (S.pc !== pc) return; S.dc = dc; if (!S.rec) big('Tayyor — pult REC kutilmoqda', 'ok'); st('● Pultga ulandi. REC pultdan boshqariladi.'); status(); };
+    dc.onclose = () => { if (S.dc !== dc) return; S.dc = null; if (!S.rec) big('Pult bilan aloqa uzildi', 'wait'); st('Qayta ulanmoqda… (yozuv bo‘lsa — davom etyapti)'); };
+    dc.onmessage = (e) => onDc(e.data);
+    await pc.setLocalDescription(await pc.createOffer());
+    await gathered(pc);
+    if (S.pc === pc) post({ t: 'offer', sdp: pc.localDescription.sdp, name: S.name });
+  }
+  function onDc(x) {
+    if (typeof x !== 'string') return;
+    let m; try { m = JSON.parse(x); } catch (_) { return; }
+    if (m.t === 'ping') { send({ t: 'pong', a: m.a, b: performance.now() }); if (m.q != null) $('#iSy').textContent = '±' + m.q + ' ms'; }
+    else if (m.t === 'rec') { startRec(m.at, m.sess || ''); }
+    else if (m.t === 'stop') { stopRec(); }
+    else if (m.t === 'send') { sendFile(); }
+    else if (m.t === 'got') { if (S.take) S.take.sent = true; big('✓ Pultga yetib bordi', 'ok'); st('Fayl pultda saqlandi. Keyingi REC kutilmoqda.'); }
+    else if (m.t === 'name') { S.name = m.name; $('#name').value = m.name; store(); }
+    else if (m.t === 'hi') { if (S.rec && !m.rec) stopRec(); } // aloqa uzilgan paytda STOP bosilgan bo'lsa
+  }
+  async function onSig(m) {
+    if (m.t === 'answer' && S.pc && S.pc.signalingState === 'have-local-offer') { try { await S.pc.setRemoteDescription({ type: 'answer', sdp: m.sdp }); } catch (_) {} }
+  }
+  async function loop(my) {
+    let after = -1;
+    while (my === S.gen) {
+      try {
+        const r = await fetch(API + '/api/remote?room=' + S.room + '&role=' + S.role + '&after=' + after, { cache: 'no-store' });
+        const j = await r.json(); if (!r.ok) throw 0;
+        if (after >= 0) (j.msgs || []).forEach((x) => { try { onSig(JSON.parse(x)); } catch (_) {} });
+        after = typeof j.last === 'number' ? j.last : Math.max(after, 0);
+        if (!S.dc && Date.now() - S.offerT > 10000) { // pult oynasi ochilishini kutamiz — har 10 s qayta taklif
+          const a = (j.ages || {}).master;
+          if (!S.rec) big(a != null && a < 20000 ? 'Pultga ulanmoqda…' : 'Pult oynasi kutilmoqda', 'wait');
+          if (!S.rec) st(a != null && a < 20000 ? 'Pult onlayn — ulanmoqda…' : 'Teatr kompyuterida ● REC oynasini oching.');
+          offer();
+        }
+      } catch (_) { if (!S.rec) st('Serverga ulanib bo‘lmadi — internetni tekshiring'); await new Promise((r) => setTimeout(r, 3000)); }
+    }
+  }
+  function status() { send({ t: 'st', lvl: S.lvl, rec: !!S.rec, dur: S.rec ? S.rec.frames / S.ac.sampleRate : 0, take: !!(S.take && !S.take.sent), bat: S.bat, chg: S.chg, sr: S.ac ? S.ac.sampleRate : 0, clip: Date.now() - S.clip < 1500, name: S.name }); }
+  setInterval(() => { status(); if (S.rec) $('#tc').textContent = hms(S.rec.frames / S.ac.sampleRate); }, 150);
+  try { navigator.getBattery && navigator.getBattery().then((b) => { const u = () => { S.bat = Math.round(b.level * 100); S.chg = b.charging; $('#iBat').innerHTML = 'Batareya: <b>' + S.bat + '%</b>' + (S.chg ? ' ⚡' : ''); }; u(); b.addEventListener('levelchange', u); b.addEventListener('chargingchange', u); }); } catch (_) {}
+  async function wake() { try { if ('wakeLock' in navigator) S.wake = await navigator.wakeLock.request('screen'); } catch (_) {} }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.stream) { wake(); if (S.ac && S.ac.state !== 'running') S.ac.resume(); } });
+  addEventListener('beforeunload', (e) => { if (S.rec || (S.take && !S.take.sent)) { e.preventDefault(); e.returnValue = ''; } });
+  function store() { try { localStorage.setItem(LS, JSON.stringify({ room: S.room, slot: $('#slot').value, name: S.name })); } catch (_) {} }
+
+  $('#start').onclick = async () => {
+    const v = $('#code').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!/^[A-Z0-9]{6}$/.test(v)) { st('Kod 6 belgidan iborat bo‘lishi kerak'); return; }
+    S.room = v; S.role = 'rec' + $('#slot').value; S.name = ($('#name').value.trim() || 'Aktyor ' + $('#slot').value).slice(0, 40); $('#name').value = S.name; store();
+    try { await getMedia(); } catch (e) { st('Mikrofonga ruxsat berilmadi: ' + (e.message || e)); big('Mikrofon yo‘q', 'err'); return; }
+    wake(); S.gen++; S.offerT = 0; loop(S.gen);
+    $('#start').textContent = '↻ Qayta ulash'; big('Pultga ulanmoqda…', 'wait');
+  };
+  $('#stopBtn').onclick = () => stopRec();
+  $('#save').onclick = () => {
+    if (!S.take) return;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(S.take.blob);
+    a.download = (S.name || 'yozuv').replace(/[\\/:*?"<>|]/g, '-') + ' ' + (S.take.sess || '').replace(/[\\/:*?"<>|]/g, '-') + '.wav';
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+})();
+</script>
+</body>
+</html>

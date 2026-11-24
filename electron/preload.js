@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('azNative', {
   read: async id => u8(await fsop('read', id)),
   write: (id, ab) => fsop('write', id, ab),
   append: (id, ab) => fsop('append', id, ab),
+  patch: (id, off, ab) => fsop('patch', id, { off, data: ab }),
   remove: id => fsop('remove', id),
   saveDialog: name => ipcRenderer.invoke('dlg-save', name),
   openDialog: () => ipcRenderer.invoke('dlg-open'),

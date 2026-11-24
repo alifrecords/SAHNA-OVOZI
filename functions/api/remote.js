@@ -1,5 +1,5 @@
 // 📡 MASOFAVIY PULT — teatr kompyuteri (master), masofadagi operator (remote) va sahnadagi telefon-kamera (camera)
-// bitta 6 belgili xona kodi orqali bog'lanadi.
+// bitta 6 belgili xona kodi orqali bog'lanadi. ● Sahna yozuvi telefonlari (rec1…rec8) ham shu xona orqali pult bilan tanishadi.
 //   POST /api/remote                      {room, from, to, msg}   — rolga xabar (buyruq yoki WebRTC signal)
 //   POST /api/remote                      {room, from:"master", state} — pult holati (cue'lar, faderlar…)
 //   GET  /api/remote?room=..&role=..&after=ID[&since=TS]  — long-poll (6 s gacha kutadi); after=-1 — boshlash
@@ -7,7 +7,7 @@
 import { jsonPublic as out, optionsPublic } from "./_db.js";
 
 const ROOM_RE = /^[A-Z0-9]{6}$/;
-const ROLES = ["master", "remote", "camera"];
+const ROLES = ["master", "remote", "camera", "rec1", "rec2", "rec3", "rec4", "rec5", "rec6", "rec7", "rec8"]; // rec1…rec8 — ● Sahna yozuvi telefonlari (/yozuv)
 const WAIT_MS = 6000, STEP_MS = 300, FRESH_MS = 20000; // ≤ ~44 ta D1 so‘rovi bitta chaqiriqda (bepul tarif chegarasi 50)
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
