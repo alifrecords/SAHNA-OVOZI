@@ -4320,7 +4320,8 @@ async function loadProjectBuffer(ab,name,handle){
   logEvent('Loyiha ochildi: '+proj.name);toast('Ochildi: '+proj.name+' · '+head.assets.length+' ta o\'z fayli'+(bad?' ('+bad+' tasi o\'qilmadi)':''));
  }finally{projLoading=false;}
 }
-async function verifyPerm(h,write){try{const o={mode:write?'readwrite':'read'};if(await h.queryPermission(o)==='granted')return true;return await h.requestPermission(o)==='granted';}catch(e){return false;}}
+function TO(p,ms,fb){return Promise.race([Promise.resolve(p).catch(()=>fb),new Promise(r=>setTimeout(()=>r(fb),ms))]);}
+async function verifyPerm(h,write){try{const o={mode:write?'readwrite':'read'};if(await TO(h.queryPermission(o),3000,'timeout')==='granted')return true;return await TO(h.requestPermission(o),20000,'timeout')==='granted';}catch(e){return false;}}
 async function addRecent(h){if(!h)return;const all=await DB.all();let r=(all.__recent||[]).filter(x=>x.name!==h.name);r.unshift({name:h.name,handle:h,at:Date.now()});DB.put('__recent',r.slice(0,8));}
 const FT=[{description:'Sahna Ovozi loyihasi',accept:{'application/x-sahna-ovozi':['.sahna'],'application/zip':['.zip']}}];
 async function saveProject(as,opt){
@@ -4335,7 +4336,7 @@ async function saveProject(as,opt){
   return;}
  if(CAN_FS){
   try{let h=as?null:proj.handle;
-   if(silent){if(!h)return;try{if(h.queryPermission&&await h.queryPermission({mode:'readwrite'})!=='granted')return;}catch(e){return;}}
+   if(silent){if(!h)return;try{if(h.queryPermission&&await TO(h.queryPermission({mode:'readwrite'}),3000,'timeout')!=='granted')return;}catch(e){return;}}
    if(!h)h=await window.showSaveFilePicker({...(Store.mode==='folder'?{startIn:FS.dirs.loyihalar}:{}),suggestedName:(proj.name==='Nomsiz loyiha'?show.title.replace(/[\[\]]/g,'').trim()||'Loyiha':proj.name)+'.sahna',types:FT});
    if(!(await verifyPerm(h,true))){toast('Faylga yozishga ruxsat berilmadi');return;}
    const w=await h.createWritable();await w.write(blob);await w.close();
@@ -4910,13 +4911,13 @@ async function boot(){
   // Documents bazasi: ruxsatni shu bosish ichida so'raymiz
   let dir=null;
   if(NATIVE)dir=NATIVE_ROOT;
-  else if(FSUP&&!IS_FRAME){try{const h=await DB.get('__dir');if(h){let st=await h.queryPermission({mode:'readwrite'});if(st!=='granted')st=await h.requestPermission({mode:'readwrite'});if(st==='granted')dir=h;else toast('Documents papkasiga ruxsat berilmadi — brauzer bazasida ishlayapti');}}catch(e){}}
+  else if(FSUP&&!IS_FRAME){try{const h=await TO(DB.get('__dir'),3000,null);if(h){let st=await TO(h.queryPermission({mode:'readwrite'}),3000,'timeout');if(st==='prompt'||st==='denied')st=await TO(h.requestPermission({mode:'readwrite'}),20000,'timeout');if(st==='granted')dir=h;else if(st==='timeout')toast('Documents papkasi javob bermadi — brauzer bazasida ishlayapti. Papkani 💾 Baza menyusidan qayta tanlang');else toast('Documents papkasiga ruxsat berilmadi — brauzer bazasida ishlayapti');}}catch(e){}}
   if(resumeP)await resumeP;
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   SP(1,'Ovoz kutubxonasi yuklanmoqda',0.2);
   const ids=Object.keys(ASSETS);let done=0;
   await Promise.all(ids.map(async id=>{const b=await decode(b64ToAB(ASSETS[id]));buffers[id]=origBuffers[id]=b;done++;$('#gateMsg').textContent=done+' / '+ids.length+' ovoz tayyor';SP(1,done+' / '+ids.length+' ovoz tayyor',0.2+0.45*done/ids.length);}));
-  if(dir){try{await FS.init(dir);Store.mode='folder';}catch(e){Store.mode='browser';toast('Papkani o\'qib bo\'lmadi — brauzer bazasida ishlayapti');}}
+  if(dir){try{if(await TO(FS.init(dir).then(()=>'ok'),8000,'timeout')!=='ok')throw new Error('timeout');Store.mode='folder';}catch(e){Store.mode='browser';toast('Papkani o\'qib bo\'lmadi — brauzer bazasida ishlayapti');}}
   if(Store.mode==='browser'){const lg=await DB.get('__log');if(Array.isArray(lg))logRing=lg;}
   $('#gateMsg').textContent='Baza tiklanmoqda…';SP(2,NATIVE?'Hujjatlar / Sahna Ovozi bazasi':'Ma\'lumotlar bazasi',0.72);
   const nUser=await hydrate(await Store.all());
