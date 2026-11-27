@@ -9,12 +9,22 @@ concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  APP_VERSION: 1.19.1
-
 jobs:
+  ver:
+    # Versiya package.json'dan olinadi — har safar qo'lda yozish shart emas
+    runs-on: ubuntu-latest
+    outputs:
+      v: ${{ steps.v.outputs.v }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
   windows:
+    needs: ver
     runs-on: windows-latest
+    env:
+      APP_VERSION: ${{ needs.ver.outputs.v }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,11 +77,13 @@ jobs:
         with: { name: Sahna-Ovozi-macOS, path: Sahna-Ovozi-macOS.zip }
 
   release:
-    needs: [ windows, macos ]
+    needs: [ ver, windows, macos ]
     # macOS kechiksa yoki bekor bo'lsa ham Windows Setup.exe Release'ga chiqadi
     if: ${{ always() && needs.windows.result == 'success' }}
     runs-on: ubuntu-latest
     permissions: { contents: write }
+    env:
+      APP_VERSION: ${{ needs.ver.outputs.v }}
     steps:
       - uses: actions/download-artifact@v4
       - run: cd Sahna-Ovozi-Windows && zip -r ../Sahna-Ovozi-Windows.zip . && cd ..

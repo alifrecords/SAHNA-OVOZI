@@ -3297,7 +3297,7 @@ setTimeout(linkCheck,2500);
    sahnadagi telefon (/kamera) unga jonli video va zal ovozini yuboradi. Hammasi 6 belgili xona kodi orqali (/api/remote).
    Ovoz va chiroq doim shu kompyuterdan chiqadi; internet uzilsa pult o'z holicha ishlayveradi. */
 const RM_API=(/^https?:$/.test(location.protocol)&&/pages\.dev$/.test(location.hostname))?location.origin:'https://sahna-ovozi.pages.dev';
-const RM_VER='1.24.1';
+const RM_VER='1.24.2';
 const RM={on:false,room:'',go:true,gen:0,ages:{},sent:'',postT:0,ack:'',err:false,last:''};
 try{const o=JSON.parse(localStorage.getItem('sahnaOvozi.rm')||'{}');RM.on=!!o.on;RM.room=/^[A-Z0-9]{6}$/.test(o.room||'')?o.room:'';RM.go=o.go!==false;}catch(e){}
 function rmSave(){try{localStorage.setItem('sahnaOvozi.rm',JSON.stringify({on:RM.on,room:RM.room,go:RM.go}));}catch(e){}}
